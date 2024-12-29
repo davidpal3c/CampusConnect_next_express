@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter);
+}
+
+
+@font-face {
+  font-family: 'CampusConnect';
+  src: url('/src/app/assets/fonts/Inter-Bold.ttf') format('woff2'),
+    url('/src/app/assets/fonts/Inter-Regular.ttf') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
