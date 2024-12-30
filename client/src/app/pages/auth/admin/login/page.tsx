@@ -9,11 +9,12 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import axios from "axios";
 
 
 export default function AdminLogin() {
 
-    const { user, setUser, googleSignIn, firebaseSignOut } = useUserAuth();
+    const { user, setUser, googleSignIn, firebaseSignOut, getIdToken } = useUserAuth();
     const router = useRouter();
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -35,6 +36,14 @@ export default function AdminLogin() {
             const result = await googleSignIn();
             console.log("Sign In result: ", result);
             setUser(result.user);
+
+            //backend api call
+            const token = await getIdToken();
+            console.log(token);
+
+            const response = await axios.post("/api/auth/login", { token });
+            console.log(response.data);
+
             handleLoaderClose();
         } catch (err) {
             console.log("Sign In error: ", err);

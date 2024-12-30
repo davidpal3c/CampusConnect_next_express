@@ -4,6 +4,8 @@
 
 import express from 'express';
 import userRoutes from './routes/user.route';
+// import authRoutes from './routes/auth.route';
+
 import cors from 'cors';
 
 const app = express();
@@ -11,6 +13,7 @@ const PORT = 8080;
 
 
 app.use(cors());
+// app.use('/api', authRoutes);
 app.use('/api/users', userRoutes);
 
 // app.get("/api/home", (req, res) => {
