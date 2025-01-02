@@ -8,9 +8,77 @@ datasource db {
 }
 
 model User {
-  id          Int    @id @default(autoincrement())
-  name        String
-  email       String @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  user_id     String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  first_name  String
+  last_name   String
+  role        Role
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  Admin       Admin?
+  Student     Student?
+  Alumni      Alumni?
+}
+
+model Admin {
+  admin_id    String   @id @default(uuid())
+  user_id     String   @unique @map("user_id_fk")
+  permissions String?
+
+  // Relation
+  User        User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model Student {
+  student_id  String   @id @default(uuid())
+  user_id     String   @unique @map("user_id_fk")
+  program_id  String   @map("program_id_fk")
+  status      Status
+
+  // Relations
+  User        User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Program     Program  @relation(fields: [program_id], references: [program_id])
+}
+
+model Alumni {
+  alumni_id      String   @id @default(uuid())
+  user_id        String   @unique @map("user_id_fk")
+  graduation_year Int
+  credentials    String?
+  current_position String?
+  company         String?
+
+  // Relation
+  User           User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model Program {
+  program_id String  @id @default(uuid())
+  name       String
+  Department Department @relation(fields: [department_id], references: [department_id])
+  department_id String  @map("department_id_fk")
+  Students    Student[]
+}
+
+model Department {
+  department_id String  @id @default(uuid())
+  name          String
+  contact_email String
+  contact_phone String
+  Programs      Program[]
+}
+
+enum Role {
+  Admin
+  Student
+  Alumni
+}
+
+enum Status {
+  Active
+  Inactive
+  Preapproved
 }
