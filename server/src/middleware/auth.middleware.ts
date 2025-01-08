@@ -19,8 +19,9 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
 
     try {
         const decodedToken = await verifyIdToken(token);
-        req.body = decodedToken;                                    // Add the user info from the decoded token to the request object
-        next();
+        req.body = decodedToken;                        // Add the decoded token to the request body to be used in the controller
+        next();                                  
+        // next(req.body as AuthenticatedRequest);                    // Call the next middleware
     } catch (error) {
         return res.status(401).json({ message: 'Unauthorized: Invalid Token' });
     }

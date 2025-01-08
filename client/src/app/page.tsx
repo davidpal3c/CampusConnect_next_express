@@ -12,7 +12,7 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`);
       const data = await response.json();
       console.log(data);
       setPeople(data);
@@ -33,7 +33,6 @@ export default function Home() {
       console.error(err);
     }
   }
-
 
   useEffect(() => {
     fetchData();

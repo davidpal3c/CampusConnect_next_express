@@ -34,19 +34,40 @@ export default function AdminLogin() {
 
         try {
             const result = await googleSignIn();
-            console.log("Sign In result: ", result);
-            setUser(result.user);
+            // console.log("Sign In result: ", result);
+            console.log("User: ", result.user);
+
+            const userInfo = {
+                email: result.user.email
+            }
 
             //backend api call
             const token = await getIdToken();
             console.log(token);
 
-            const response = await axios.post("/api/auth/login", { token });
-            console.log(response.data);
+            // const response = await axios.post(`http://localhost:8080/api/auth/login`, { 
+            //     token,
+            //     email: userInfo,
+            // } , {
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            // });
+            console.log(`API endpoint: ${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`);
+            // console.log(response.data);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token, userInfo }),
+              });
+              
 
             handleLoaderClose();
-        } catch (err) {
-            console.log("Sign In error: ", err);
+            console.log("Login successful:", response);
+        } catch (error) {
+            console.log("Sign In error: ", error);
+            // console.error("Login failed:", error.response?.data || error.message);
             handleLoaderClose();
         }
     }
