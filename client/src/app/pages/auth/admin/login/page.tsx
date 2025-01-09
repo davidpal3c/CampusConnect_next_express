@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from "axios";
+import { toast } from "react-toastify";
 
 
 
@@ -56,7 +57,6 @@ export default function AdminLogin() {
             // });
             // console.log("Login successful:", await response.data);
 
-
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -66,24 +66,36 @@ export default function AdminLogin() {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.log("Login failed:", errorData);  
+                toast.error(errorData.message || "An unknown error occurred");
                 throw new Error(errorData.message || "Something went wrong!");
             }
-
+            
             console.log("Login successful:", await response.json());
 
             //TODO: load userContext from response
 
-            console.log("Response: ", response);
+            toast.success("Welcome to Campus Connect Admin Portal!");
             handleLoaderClose();
             router.push("/admin/");
 
-        } catch (error) {
+        } catch (error: any) {
             console.log("Sign In error: ", error);
-            // console.error("Login failed:", error.response?.data || error.message);
             handleLoaderClose();
+
+            toast.error(error.message || "Oops Something went wrong!", {
+                // position: "top-center",
+                // autoClose: 3000,
+                // hideProgressBar: true,
+                // closeOnClick: true,
+                // pauseOnHover: true,
+                // draggable: true,
+              });
         }
     }
 
+    // const handleShowToast = (message: String) => {
+    //     toast.success(message);
+    //   };
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -98,6 +110,7 @@ export default function AdminLogin() {
         fetchToken();
       }, [user, getIdToken]);
 
+
     // Check if the window is closed to sign out the user 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -111,8 +124,6 @@ export default function AdminLogin() {
 
         return () => clearInterval(interval);
     }, []);
-
-
 
     return (
         <div className="bg-blue-gradient flex flex-col md:flex-row h-screen">
@@ -216,9 +227,11 @@ export default function AdminLogin() {
                                 // className=" w-40 font-light text-saitWhite"
                                 className=" w-40 font-normal text-saitWhite"
                             >{loading ? "Signing in..." : "Sign in with Google"}</p>
-                        </button>
+                        </button>                       
                     </div>
+                    
                 </div>
+
 
 
             </div>

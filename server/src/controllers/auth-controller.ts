@@ -12,7 +12,6 @@ export interface AuthenticatedRequest extends Request {
   }
 
 export const loginAdmin = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    console.log("Login request received");
    
     try {
         //TODO: add MIDDLEWARE separately to login route
@@ -26,12 +25,11 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response, next:
         }
 
         const email = userInfo.email;
-        
 
         // verify ID token : protectRoute
         const decodedToken = await admin.auth().verifyIdToken(token);
         if (decodedToken.email !== email) {
-            return res.status(400).json({ message: "Email mismatch" });
+            return res.status(400).json({ message: "Token or Email mismatch" });
         }
 
         // approveUser middleware: pre-registered email check + admin user type check (next())
