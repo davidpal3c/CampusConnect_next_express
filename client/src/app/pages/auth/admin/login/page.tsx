@@ -12,9 +12,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import axios from "axios";
 
 
+
 export default function AdminLogin() {
 
-    const { user, setUser, googleSignIn, firebaseSignOut, getIdToken } = useUserAuth();
+    const { user, googleSignIn, firebaseSignOut, getIdToken } = useUserAuth();
     const router = useRouter();
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -43,18 +44,18 @@ export default function AdminLogin() {
 
             //backend api call
             const token = await getIdToken();
-            console.log(token);
+            console.log("TOKEN from client:", token);
 
             // const response = await axios.post(`http://localhost:8080/api/auth/login`, { 
             //     token,
-            //     email: userInfo,
+            //     userInfo,
             // } , {
             //     headers: {
             //         "Content-Type": "application/json",
             //     },
             // });
-            console.log(`API endpoint: ${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`);
-            // console.log(response.data);
+            // console.log("Login successful:", await response.data);
+
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
                 method: "POST",
@@ -62,9 +63,20 @@ export default function AdminLogin() {
                 body: JSON.stringify({ token, userInfo }),
               });
               
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log("Login failed:", errorData);  
+                throw new Error(errorData.message || "Something went wrong!");
+            }
 
+            console.log("Login successful:", await response.json());
+
+            //TODO: load userContext from response
+
+            console.log("Response: ", response);
             handleLoaderClose();
-            console.log("Login successful:", response);
+            router.push("/admin/");
+
         } catch (error) {
             console.log("Sign In error: ", error);
             // console.error("Login failed:", error.response?.data || error.message);
@@ -72,12 +84,19 @@ export default function AdminLogin() {
         }
     }
 
-    useEffect(() => {
-        if (user) {
-            router.push("/admin/");
-        }
-    }, [user, router]);
 
+    useEffect(() => {
+        const fetchToken = async () => {
+          if (user) {
+            // await getIdToken();
+            const token = await getIdToken();
+            console.log("Token retrieved in component:", token);
+          } 
+          // console.log("User is not ready yet.");          
+        };
+      
+        fetchToken();
+      }, [user, getIdToken]);
 
     // Check if the window is closed to sign out the user 
     useEffect(() => {
@@ -134,6 +153,7 @@ export default function AdminLogin() {
                             id="email"
                             name="email"
                             placeholder="Email"
+                            aria-label="Email"
                             // className="w-70 font-light text-saitWhite placeholder-white bg-transparent my-1 ml-4 focus:outline-none focus:border-transparent"   // original  : out of contrast with blue gradient
                             className="w-70 font-normal text-saitWhite placeholder-slate-900 bg-transparent my-1 ml-4 focus:outline-none focus:border-transparent"
                         />
@@ -151,6 +171,7 @@ export default function AdminLogin() {
                                 id="password"
                                 name="password"
                                 placeholder="Password"
+                                aria-label="Password"
                                 // className="w-70 font-light text-saitWhite placeholder-saitWhite bg-transparent my-1 ml-4 focus:outline-none appearance-none"  // original : out of contrast with blue gradient       
                                 className="w-70 font-normal text-saitWhite placeholder-slate-900 bg-transparent my-1 ml-4 focus:outline-none appearance-none"
                             />

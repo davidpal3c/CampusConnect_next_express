@@ -19,21 +19,24 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const getIdToken = async () => {
-    if (user) {
-      try {
-        const token = await user.getIdToken(true);
-        return token;
-        
-      } catch (error) {
-        console.error("Error fetching ID token", error);
-        return null;
-      }
+    if (!user) {
+      console.log("getIdToken called but user is not set yet.");
+      return null;
     }
-    return null;
+    try {
+        const token = await user.getIdToken(true);
+        console.log("ID token fetched", token);
+        return token;        
+    } catch (error) {
+      console.error("Error fetching ID token", error);
+      return null;
+    }
+    
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      // console.log("Auth state changed. Current user:", currentUser);
       setUser(currentUser);
     });
 
