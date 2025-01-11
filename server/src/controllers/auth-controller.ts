@@ -76,6 +76,6 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response, next:
         
     } catch (error) {
         console.error("Error during login:", error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
     } 
 };

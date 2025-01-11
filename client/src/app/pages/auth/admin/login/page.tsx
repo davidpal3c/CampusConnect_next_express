@@ -77,7 +77,8 @@ export default function AdminLogin() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {loaderBackdrop && <LoaderView route={adminRoute} result={userResultProp}/>}
+            {loaderBackdrop && <LoaderView route={adminRoute} result={userResultProp} backdrop={setLoaderBackdrop}/>}
+
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">
                 <img
