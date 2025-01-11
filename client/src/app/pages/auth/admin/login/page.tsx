@@ -9,17 +9,20 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import axios from "axios";
-import { toast } from "react-toastify";
+import LoaderView from "@/app/components/LoaderView";
 
 
 
 export default function AdminLogin() {
 
     const { user, googleSignIn, firebaseSignOut, getIdToken } = useUserAuth();
-    const router = useRouter();
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const [loaderBackdrop, setLoaderBackdrop] = useState(false);
+    const [adminRoute, setAdminRoute] = useState("");    
+    const [userResultProp, setUserResultProp] = useState(false);
+
 
     const handleLoaderClose = () => {
         setBackdrop(false);
@@ -31,84 +34,25 @@ export default function AdminLogin() {
         setLoading(true);
     };
 
+
     async function handleSignIn() {
         handleLoaderOpen();
 
         try {
             const result = await googleSignIn();
-            // console.log("Sign In result: ", result);
-            console.log("User: ", result.user);
+            setUserResultProp(result);
+            await getIdToken();
 
-            const userInfo = {
-                email: result.user.email
-            }
+            setAdminRoute("/admin/");
 
-            //backend api call
-            const token = await getIdToken();
-            console.log("TOKEN from client:", token);
-
-            // const response = await axios.post(`http://localhost:8080/api/auth/login`, { 
-            //     token,
-            //     userInfo,
-            // } , {
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            // });
-            // console.log("Login successful:", await response.data);
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, userInfo }),
-              });
-              
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.log("Login failed:", errorData);  
-                toast.error(errorData.message || "An unknown error occurred");
-                throw new Error(errorData.message || "Something went wrong!");
-            }
-            
-            console.log("Login successful:", await response.json());
-
-            //TODO: load userContext from response
-
-            toast.success("Welcome to Campus Connect Admin Portal!");
+            setLoaderBackdrop(true);
             handleLoaderClose();
-            router.push("/admin/");
-
+            
         } catch (error: any) {
             console.log("Sign In error: ", error);
             handleLoaderClose();
-
-            toast.error(error.message || "Oops Something went wrong!", {
-                // position: "top-center",
-                // autoClose: 3000,
-                // hideProgressBar: true,
-                // closeOnClick: true,
-                // pauseOnHover: true,
-                // draggable: true,
-              });
         }
     }
-
-    // const handleShowToast = (message: String) => {
-    //     toast.success(message);
-    //   };
-
-    useEffect(() => {
-        const fetchToken = async () => {
-          if (user) {
-            // await getIdToken();
-            const token = await getIdToken();
-            console.log("Token retrieved in component:", token);
-          } 
-          // console.log("User is not ready yet.");          
-        };
-      
-        fetchToken();
-      }, [user, getIdToken]);
 
 
     // Check if the window is closed to sign out the user 
@@ -133,6 +77,7 @@ export default function AdminLogin() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
+            {loaderBackdrop && <LoaderView route={adminRoute} result={userResultProp}/>}
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">
                 <img

@@ -70,7 +70,7 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response, next:
 
         return res.json({
             status: 'success',
-            message: 'Profile data retrieved, Login successful',
+            message: 'Welcome to Campus Connect Admin Portal!',
             data: enrichedUser,
         });
         
