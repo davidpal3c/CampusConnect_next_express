@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import LoaderView from "@/app/components/LoaderView";
+import LoginLoader from "@/app/components/LoginLoader";
 
 
 
@@ -77,7 +77,7 @@ export default function AdminLogin() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {loaderBackdrop && <LoaderView route={adminRoute} result={userResultProp} backdrop={setLoaderBackdrop}/>}
+            {loaderBackdrop && <LoginLoader route={adminRoute} result={userResultProp} backdrop={setLoaderBackdrop}/>}
 
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">

@@ -36,7 +36,7 @@ export default function AdminPage() {
     if (isClient && !user) {
       const timer = setTimeout(() => {
         router.push("/admin/login");
-      }, 10000);
+      }, 5000);
 
       return () => clearTimeout(timer);        
     }

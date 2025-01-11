@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { useUserAuth } from "@/app/_utils/auth-context";
 import { toast } from "react-toastify";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 interface LoaderPageProps {
@@ -45,7 +46,7 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
                 body: JSON.stringify({ token, userInfo }),
             });
             
-            if (!response.ok || user?.role !== "Admin") {
+            if (!response.ok) {
                 const errorData = await response.json();
                 console.log("Login failed:", errorData);  
                 toast.error(errorData.message || "An unknown error occurred");
@@ -59,12 +60,6 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
             //TODO: load userContext from response
             const userResponse = await response.json();
             
-            // if (userResponse.data.role !== "Admin") {
-            //     toast.error(userResponse.message);
-            //     router.push("/admin/login");
-            //     return
-            // }
-
             // setDbUser(userResponse);
             // console.log("DB User: ", dbUser);
 
@@ -102,9 +97,12 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
 
 
     return (
-        <div className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">            
-            {!isMounted && <p className="text-slate-100">Loading...</p>}
-            <p className="text-slate-100">Loading Admin Page... Please wait...</p>            
+        <div className="bg-slate-800 flex justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">            
+            <div className="flex flex-col justify-center items-center">
+                {!isMounted && <p className="text-slate-100">Loading...</p>}
+                <p className="text-slate-100 mb-4">Loading Admin Page... Please wait...</p>    
+                <CircularProgress sx={{ color: "white"}}/>               
+            </div>
         </div>
     );
 }
