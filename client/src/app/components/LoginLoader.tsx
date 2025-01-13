@@ -29,11 +29,15 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
     const processSignIn = async () => {
         try {
             console.log("User: ", result.user);
-            const userInfo = {
-                email: result.user.email
-            }
+            // const userInfo = {
+            //     email: result.user.email
+            // }
 
-            const token = await getIdToken();
+            
+            let token = await getIdToken(true);
+            sessionStorage.setItem('authToken', token);
+
+            token = sessionStorage.getItem('authToken');
 
             if (!token) {
                 throw new Error("Token not available. Please try again.");
@@ -42,8 +46,11 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
             //backend api call
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, userInfo }),
+                headers: { 
+                    "content-type": "application/json",
+                    "authorization": `Bearer ${token}`
+                },
+                // body: JSON.stringify({ userInfo }),
             });
             
             if (!response.ok) {
@@ -77,6 +84,7 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
                 pauseOnHover: true,
                 draggable: true,
             });
+            
             // router.push("/auth/admin/login");
         }
     } 

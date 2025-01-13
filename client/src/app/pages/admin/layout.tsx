@@ -3,8 +3,6 @@
 import Sidebar from '@/app/components/Sidebar/Sidebar';
 import Header from '@/app/components/Header/Header';
 import { useUserAuth } from "@/app/_utils/auth-context";
-import { useEffect, useState } from "react";
-
 
 export default function AdminLayout({
     children,

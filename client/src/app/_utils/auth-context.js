@@ -20,12 +20,12 @@ export const AuthContextProvider = ({ children }) => {
 
   const getIdToken = async () => {
     if (!user) {
-      console.log("getIdToken called but user is not set yet.");
+      // console.log("getIdToken called but user is not set yet.");
       return null;
     }
     try {
         const token = await user.getIdToken(true);
-        console.log("ID token fetched", token);
+        // console.log("ID token fetched", token);
         return token;        
     } catch (error) {
       console.error("Error fetching ID token", error);
