@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Firebase Admin SDK - Service Account
 cc-dev-firebase-adminsdk.json
+
+# DBeaver
+/server/prisma/.dbeaver

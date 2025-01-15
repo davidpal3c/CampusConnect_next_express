@@ -28,7 +28,7 @@ export default function AdminPage() {
 
   return (
     user ? (
-      <main className="min-h-screen bg-gray-100 text-black m-4">
+      <main className="min-h-screen bg-saitWhite text-black m-4">
         <h1 className="text-2xl font-bold mb-6">Admin Dashboard - Overview</h1>
         {/* Grid Container */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -37,7 +37,7 @@ export default function AdminPage() {
           <div className="bg-white p-4 rounded-xl shadow-md">
             <h2 className="text-lg font-semibold mb-4">App Logins</h2>
             {/* Example Chart Placeholder */}
-            <div className="h-48 bg-gray-100 rounded-md flex items-center justify-center">
+            <div className="h-48 bg-saitWhite rounded-md flex items-center justify-center">
               <span className="text-gray-500">[ Chart Placeholder ]</span>
             </div>
           </div>
