@@ -15,16 +15,6 @@ export default function AdminPage() {
     setIsClient(true);                                                                  // set to true only after component has mounted on the client
   }, []);
 
-  useEffect(() => {
-    if (user?.role !== "Admin") {
-      const timeout = setTimeout(() => {
-        router.push("/admin/login");
-      }, 3000); 
-
-    return () => clearTimeout(timeout);
-    }
-  }, []);
-
 
   if (authUserLoading || !isClient) {
     return null;                                                // prevent rendering until the component is mounted on the client side

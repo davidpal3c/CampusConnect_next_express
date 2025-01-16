@@ -99,8 +99,10 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     if (!authUserLoading && user) {
       if (user.role !== "Admin") {
+        console.log("redirecting to admin login");
         router.push("/admin/login");
       } else {
+        console.log("redirecting to admin dashboard");
         router.push("/admin");
       }
     }

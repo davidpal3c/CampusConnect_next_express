@@ -29,11 +29,11 @@ export const auth = getAuth(app);
 
 
 // Enable local persistence
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    console.log("Session persistence set to local");
-  })
-  .catch((error) => {
-    console.error("Error setting local persistence:", error);
-  });
+// setPersistence(auth, browserLocalPersistence)
+//   .then(() => {
+//     console.log("Session persistence set to local");
+//   })
+//   .catch((error) => {
+//     console.error("Error setting local persistence:", error);
+//   });
 
