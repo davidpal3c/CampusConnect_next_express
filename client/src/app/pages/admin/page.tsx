@@ -3,53 +3,39 @@
 import { useUserAuth } from "@/app/_utils/auth-context";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAdminUser } from "@/app/_utils/adminUser-context";
+// import { useAdminUser } from "@/app/_utils/adminUser-context";
 
 export default function AdminPage() {
-  const { user } = useUserAuth();
+  const { user, authUserLoading } = useUserAuth();
   const [isClient, setIsClient] = useState(false);                                    // dummy state to track code is running client-side
   const router = useRouter();
-
-  const [authorizedUser, setAuthorizedUser] = useState(false);  
-
-  const validateUser = async () => {
-    try {
-      if (user?.role === "Admin" || !user.role) {
-        setAuthorizedUser(true);
-      } else {
-        setAuthorizedUser(false);
-      }
-    } catch (error) {
-      console.error("Error validating user: ", error);
-    }
-  }  
+  // const { adminUser, updateAdminUser } = useAdminUser();
 
   useEffect(() => {
     setIsClient(true);                                                                  // set to true only after component has mounted on the client
   }, []);
 
   useEffect(() => {
-    if (user) {
-      validateUser();
-      return;
-    }
-
-    if (isClient && !user) {
-      const timer = setTimeout(() => {
+    if (user?.role !== "Admin") {
+      const timeout = setTimeout(() => {
         router.push("/admin/login");
-      }, 5000);
+      }, 3000); 
 
-      return () => clearTimeout(timer);        
+    return () => clearTimeout(timeout);
     }
-  }, [user, isClient, router]);
+  }, []);
 
 
-  if (!isClient) {
+  if (authUserLoading || !isClient) {
     return null;                                                // prevent rendering until the component is mounted on the client side
   }
 
   return (
-    authorizedUser ? (
+    user?.role !== "Admin" ? (
+      <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
+        <p className="text-white">You must Log In as an Administrator to view this page. Redirecting to login...</p>
+      </main>
+    ) : (
       <main className="min-h-screen bg-gray-100 text-black m-4">
         <h1 className="text-2xl font-bold mb-6">Admin Dashboard - Overview</h1>
         {/* Grid Container */}
@@ -209,10 +195,6 @@ export default function AdminPage() {
         </div>
       </main>
 
-    ) : (
-      <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
-        <p className="text-white">You must Log In as an Administrator to view this page. Redirecting to login...</p>
-      </main>
     )
   );
 }

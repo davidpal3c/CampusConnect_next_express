@@ -33,7 +33,7 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
             //     email: result.user.email
             // }
 
-            const token = await getIdToken();            
+            const token = await getIdToken(true);                 
             
             if (!token) {
                 throw new Error("Token not available. Please try again.");
@@ -71,8 +71,8 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
             updateAuthUser(newUserData);
             updateAdminUser(userResponse.data);
             
-            console.log("UPDATED AUTH USER: ", user);
-            console.log("UPDATED ADMIN USER: ", adminUser);
+            // console.log("UPDATED AUTH USER: ", user);
+            // console.log("UPDATED ADMIN USER: ", adminUser);
 
             toast.success(userResponse.message);
             router.push(route);
@@ -87,6 +87,8 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
                 pauseOnHover: true,
                 draggable: true,
             });
+            signOutFirebase();
+            closeLoaderBackdrop();
             // router.push("/auth/admin/login");
         }
     } 

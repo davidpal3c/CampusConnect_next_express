@@ -1,17 +1,16 @@
 
 // Firebase product SDKs 
 import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged ,setPersistence, browserLocalPersistence } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
  
-interface FirebaseConfig {
-  apiKey: string;
-  authDomain: string;
-  projectId: string;
-  storageBucket: string;
-  messagingSenderId: string;
-  appId: string;
-}
-
+// interface FirebaseConfig {
+//   apiKey: string;
+//   authDomain: string;
+//   projectId: string;
+//   storageBucket: string;
+//   messagingSenderId: string;
+//   appId: string;
+// }
 
 // Your web app's Firebase configuration
 const firebaseConfig = {

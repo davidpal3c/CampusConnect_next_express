@@ -3,7 +3,6 @@ import { initializeFirebaseAdmin } from '../config/firebase';
 import admin from 'firebase-admin';
 import { prisma } from '../lib/prismaClient';
 
-
 export interface AuthenticatedRequest extends Request {
     user?: any; 
 }
@@ -24,7 +23,7 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
         const token = req.headers['authorization']?.split(' ')[1];
 
         if (!token) {
-            res.status(400).json({ status: 'error', message: 'Invalid request: token or email is missing' });
+            res.status(400).json({ status: 'error', message: 'Invalid request: id token not provided' });
             return;
         }
 
@@ -36,6 +35,7 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
     } catch (error: any) {
         res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
         return;
+        // return res.redirect(`${process.env.CLIENT_ORIGIN}/admin/login`);
     }
 }
 
@@ -113,20 +113,28 @@ export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, 
     }
 }    
 
-// verify session cookie and set user object in request
+// session request route: verify session cookie and set user object in request
 export const verifySession = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        // console.log("request cookies: ", req.cookies)
-        if (!req.session) {
+                
+        // if (!req.session) {
+        //     res.status(403).json({ status: 'error', message: 'Unauthorized: Session cookie is missing' });
+        //     return;
+        // }
+
+        // const sessionCookie = req.cookies?.session;
+        const sessionCookie = req.cookies.get('session');
+
+        if (!sessionCookie) {
             res.status(403).json({ status: 'error', message: 'Unauthorized: Session cookie is missing' });
+            //redirect to login page
             return;
         }
 
-        const sessionCookie = req.cookies.session || '';
         const decodedToken = await admin.auth().verifySessionCookie(sessionCookie, true);
-        
         req.user = { decodedToken: decodedToken };      
         next();        
+        
     } catch (error: any) {
         console.error("Error verifying session:", error);
         res.status(403).json({ status: 'error', message: 'Unauthorized', error: error.message });

@@ -7,6 +7,7 @@ import userRoutes from './routes/user-route';
 import authRoutes from './routes/auth-route';
 import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+// import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -14,6 +15,7 @@ dotenv.config();
 const app = express();
 const PORT = 8080;
 
+// app.use(cookieParser());
 
 // server Middlewares
 app.use(cors({
