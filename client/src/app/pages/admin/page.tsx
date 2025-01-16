@@ -3,10 +3,11 @@
 import { useUserAuth } from "@/app/_utils/auth-context";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAdminUser } from "@/app/_utils/adminUser-context";
 
 export default function AdminPage() {
   const { user } = useUserAuth();
-  const [isClient, setIsClient] = useState(false);                // dummy state to track code is running client-side
+  const [isClient, setIsClient] = useState(false);                                    // dummy state to track code is running client-side
   const router = useRouter();
 
   const [authorizedUser, setAuthorizedUser] = useState(false);  
@@ -24,7 +25,7 @@ export default function AdminPage() {
   }  
 
   useEffect(() => {
-    setIsClient(true);                                          // set to true only after component has mounted on the client
+    setIsClient(true);                                                                  // set to true only after component has mounted on the client
   }, []);
 
   useEffect(() => {

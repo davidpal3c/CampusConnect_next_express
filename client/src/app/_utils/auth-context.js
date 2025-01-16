@@ -9,6 +9,13 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  const updateAuthUser = (newData) => { 
+    setUser((prevUser) => ({
+      ...prevUser,
+      ...newData,
+    }));
+  };
+
   const googleSignIn = () => {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);
@@ -23,9 +30,10 @@ export const AuthContextProvider = ({ children }) => {
       // console.log("getIdToken called but user is not set yet.");
       return null;
     }
+    
     try {
         const token = await user.getIdToken(true);
-        // console.log("ID token fetched", token);
+        console.log("ID token fetched", token);
         return token;        
     } catch (error) {
       console.error("Error fetching ID token", error);
@@ -36,7 +44,7 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      // console.log("Auth state changed. Current user:", currentUser);
+      console.log("Auth state changed. Current user:", currentUser);
       setUser(currentUser);
     });
 
@@ -44,7 +52,7 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, googleSignIn, signOutFirebase, getIdToken }}>
+    <AuthContext.Provider value={{ user, updateAuthUser, googleSignIn, signOutFirebase, getIdToken }}>
       {children}
     </AuthContext.Provider>
   );

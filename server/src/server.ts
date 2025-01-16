@@ -6,14 +6,22 @@ import express from 'express';
 import userRoutes from './routes/user-route';
 import authRoutes from './routes/auth-route';
 import { Request, Response, NextFunction } from 'express';
-
 import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const PORT = 8080;
 
+
 // server Middlewares
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_ORIGIN,
+  credentials: true
+}));
+
+
 app.use(express.json());   
 
 // global error handling middleware 

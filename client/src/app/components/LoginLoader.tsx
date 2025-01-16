@@ -5,7 +5,7 @@ import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { useUserAuth } from "@/app/_utils/auth-context";
 import { toast } from "react-toastify";
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { useAdminUser } from '@/app/_utils/adminUser-context';
 
 interface LoaderPageProps {
     route: string; 
@@ -17,8 +17,8 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
     const [isMounted, setIsMounted] = useState(false);
     const router = useRouter();
 
-    // const [dbUser, setDbUser] = useState(false);
-    const { user, signOutFirebase, getIdToken } = useUserAuth();    
+    const { user, updateAuthUser, signOutFirebase, getIdToken } = useUserAuth();    
+    const { adminUser, updateAdminUser } = useAdminUser();
 
     const closeLoaderBackdrop = () => {
         if (typeof backdrop === "function") {
@@ -28,17 +28,13 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
 
     const processSignIn = async () => {
         try {
-            console.log("User: ", result.user);
+            // console.log("User: ", result.user);
             // const userInfo = {
             //     email: result.user.email
             // }
 
+            const token = await getIdToken();            
             
-            let token = await getIdToken(true);
-            sessionStorage.setItem('authToken', token);
-
-            token = sessionStorage.getItem('authToken');
-
             if (!token) {
                 throw new Error("Token not available. Please try again.");
             }
@@ -50,6 +46,7 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
                     "content-type": "application/json",
                     "authorization": `Bearer ${token}`
                 },
+                credentials: "include",                         // include cookies in the request
                 // body: JSON.stringify({ userInfo }),
             });
             
@@ -66,12 +63,18 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
 
             //TODO: load userContext from response
             const userResponse = await response.json();
+            console.log("User response: ", userResponse);
+
+            const newUserData =  { role: userResponse.data.role };
+
+            // // Update user contexts 
+            updateAuthUser(newUserData);
+            updateAdminUser(userResponse.data);
             
-            // setDbUser(userResponse);
-            // console.log("DB User: ", dbUser);
+            console.log("UPDATED AUTH USER: ", user);
+            console.log("UPDATED ADMIN USER: ", adminUser);
 
             toast.success(userResponse.message);
-
             router.push(route);
 
         } catch (error: any) {
@@ -84,7 +87,6 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
                 pauseOnHover: true,
                 draggable: true,
             });
-            
             // router.push("/auth/admin/login");
         }
     } 
@@ -102,6 +104,14 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
             return () => clearTimeout(timer);                   // Cleanup the timer on component unmount
         }
     }, [isMounted, router, route]);
+
+    useEffect(() => {
+        console.log("Updated user on reload: ", user);    
+    }, [user]);
+
+    useEffect(() => {
+        console.log("Updated adminUser on reload: ", adminUser);    
+    }, [adminUser]);
 
 
     return (
