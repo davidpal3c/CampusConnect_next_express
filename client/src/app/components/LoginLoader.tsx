@@ -67,7 +67,7 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
             const userResponse = await response.json();
             console.log("User response: ", userResponse);
 
-            // Update contexts with the new data
+            
             updateAuthUser({ 
                 role: userResponse.data.role,
                 currentToken: token 
