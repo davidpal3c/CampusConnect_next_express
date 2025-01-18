@@ -22,32 +22,36 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
 
     const closeLoaderBackdrop = () => {
         if (typeof backdrop === "function") {
+            console.log("Closing loader...");
             backdrop(false);
         }
     }
 
     const processSignIn = async () => {
         try {
-            // console.log("User: ", result.user);
-            // const userInfo = {
-            //     email: result.user.email
-            // }
-
-            const token = await getIdToken(true);                 
-            
-            if (!token) {
-                throw new Error("Token not available. Please try again.");
+            if (!user) {
+                throw new Error("No user available, unable to retrieve token.");
             }
 
-            //backend api call
+            let token = user.currentToken;
+            if (!token) {
+                console.log("No token in user object, attempting to fetch new token...");
+                token = await getIdToken(true);
+            }
+
+            if (!token) {
+                throw new Error("Unable to retrieve authentication token. Please try again.");
+            }
+
+            console.log("Token retrieved successfully:", token);
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { 
                     "content-type": "application/json",
                     "authorization": `Bearer ${token}`
                 },
-                credentials: "include",                         // include cookies in the request
-                // body: JSON.stringify({ userInfo }),
+                credentials: "include",
             });
             
             if (!response.ok) {
@@ -55,30 +59,26 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
                 console.log("Login failed:", errorData);  
                 toast.error(errorData.message || "An unknown error occurred");
 
-                signOutFirebase();
+                await signOutFirebase();
                 closeLoaderBackdrop();
-                // router.push("/admin/login");
-                return
+                return;
             }            
 
-            //TODO: load userContext from response
             const userResponse = await response.json();
             console.log("User response: ", userResponse);
 
-            const newUserData =  { role: userResponse.data.role };
-
-            // // Update user contexts 
-            updateAuthUser(newUserData);
+            // Update contexts with the new data
+            updateAuthUser({ 
+                role: userResponse.data.role,
+                currentToken: token 
+            });
             updateAdminUser(userResponse.data);
             
-            // console.log("UPDATED AUTH USER: ", user);
-            // console.log("UPDATED ADMIN USER: ", adminUser);
-
             toast.success(userResponse.message);
             router.push(route);
 
         } catch (error: any) {
-            console.log("Sign In error: ", error);        
+            console.error("Sign In process error:", error);        
             toast.error(error.message || "Oops Something went wrong!", {
                 position: "top-center",
                 autoClose: 3000,
@@ -87,9 +87,8 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
                 pauseOnHover: true,
                 draggable: true,
             });
-            signOutFirebase();
+            await signOutFirebase();
             closeLoaderBackdrop();
-            // router.push("/auth/admin/login");
         }
     } 
 
@@ -101,28 +100,29 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
         if (isMounted) {
             const timer = setTimeout(() => {
                 processSignIn();
-            }, 5000);
+            }, 2000); 
 
-            return () => clearTimeout(timer);                   // Cleanup the timer on component unmount
+            return () => clearTimeout(timer);
         }
-    }, [isMounted, router, route]);
+    }, [isMounted]);
 
+    // Debug logging
     useEffect(() => {
-        console.log("Updated user on reload: ", user);    
+        console.log("User state updated:", user);    
     }, [user]);
 
     useEffect(() => {
-        console.log("Updated adminUser on reload: ", adminUser);    
+        console.log("Admin user state updated:", adminUser);    
     }, [adminUser]);
-
 
     return (
         <div className="bg-slate-800 flex justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">            
             <div className="flex flex-col justify-center items-center">
-                {!isMounted && <p className="text-slate-100">Loading...</p>}
                 <p className="text-slate-100 mb-4">Loading Admin Page... Please wait...</p>    
                 <CircularProgress sx={{ color: "white"}}/>               
             </div>
         </div>
     );
 }
+
+

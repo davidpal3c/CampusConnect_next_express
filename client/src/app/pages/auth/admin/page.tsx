@@ -10,12 +10,13 @@ import { useEffect } from "react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import LoginLoader from "@/app/components/LoginLoader";
+import { sign } from "crypto";
 
 
 
 export default function AdminLogin() {
 
-    const { user, googleSignIn, firebaseSignOut, getIdToken } = useUserAuth();
+    const { user, googleSignIn, signOutFirebase, getIdToken } = useUserAuth();
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -35,13 +36,19 @@ export default function AdminLogin() {
     };
 
 
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
     async function handleSignIn() {
         handleLoaderOpen();
+        await delay(500);
 
         try {
             const result = await googleSignIn();
+
             setUserResultProp(result);
-            await getIdToken();
+
+            // const idToken = await getIdToken();
+            // console.log("ID Token - initial login: ", idToken);
 
             setAdminRoute("/admin/");
 
@@ -50,6 +57,7 @@ export default function AdminLogin() {
             
         } catch (error: any) {
             console.log("Sign In error: ", error);
+            signOutFirebase();  
             handleLoaderClose();
         }
     }
