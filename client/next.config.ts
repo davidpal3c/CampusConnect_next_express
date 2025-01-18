@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       { source: '/admin', destination: '/pages/admin' },
-      { source: '/admin/login', destination: '/pages/auth/admin/login' },
+      { source: '/admin/login', destination: '/pages/auth/admin' },
       { source: '/admin/analytics', destination: '/pages/admin/analytics' },
       { source: '/admin/articles', destination: '/pages/admin/articles' },
       { source: '/admin/events', destination: '/pages/admin/events' },
