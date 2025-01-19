@@ -14,6 +14,9 @@ export const AuthContextProvider = ({ children }) => {
 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
+
+    provider.setCustomParameters({       prompt: 'select_account'     });
+
     try {
       const result = await signInWithPopup(auth, provider);
       // Immediately get and store the token
