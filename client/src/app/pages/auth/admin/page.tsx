@@ -63,12 +63,12 @@ export default function AdminLogin() {
     }
 
 
-    // Check if the window is closed to sign out the user 
+    // checks if window is closed to sign out the user 
     useEffect(() => {
         const interval = setInterval(() => {
 
             if (window.closed) {
-                firebaseSignOut();
+                signOutFirebase();
                 handleLoaderClose();
                 clearInterval(interval);
             }

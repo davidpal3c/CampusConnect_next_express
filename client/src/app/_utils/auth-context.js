@@ -45,6 +45,7 @@ export const AuthContextProvider = ({ children }) => {
       await signOut(auth);
       localStorage.removeItem("user");
       setUser(null);
+      
     } catch (error) {
       console.error("Sign Out Error:", error);
       throw error;
