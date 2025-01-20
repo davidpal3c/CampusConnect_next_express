@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useContext, createContext, useState, useEffect } from "react";
@@ -7,7 +6,6 @@ import { auth } from "./firebase";
 import { useRouter } from "next/navigation";
 import { useAdminUser } from "./adminUser-context";
 import { toast } from "react-toastify";
-
 
 const AuthContext = createContext();
 
@@ -18,13 +16,9 @@ export const AuthContextProvider = ({ children }) => {
   const { updateAdminUser } = useAdminUser();
   const [isProcessingAuth, setIsProcessingAuth] = useState(false);
 
-  
   const googleSignIn = async () => {
-    
-    if (isProcessingAuth) {
-      return; 
-    }
-    setIsProcessingAuth(true);    
+    if (isProcessingAuth) return;
+    setIsProcessingAuth(true);
 
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
@@ -35,12 +29,11 @@ export const AuthContextProvider = ({ children }) => {
 
       const userWithToken = {
         ...result.user,
-        currentToken: token
+        currentToken: token,
       };
 
       setUser(userWithToken);
       return result;
-
     } catch (error) {
       console.error("Google Sign In Error:", error);
       throw error;
@@ -54,30 +47,27 @@ export const AuthContextProvider = ({ children }) => {
     sessionStorage.clear();
   };
 
-
   const signOutFirebase = async () => {
     try {
       clearLocalStorage();
       await signOut(auth);
       setUser(null);
-      
-      // clear Google Auth session
+
       const googleAuth = window.gapi?.auth2?.getAuthInstance();
       if (googleAuth) {
         await googleAuth.signOut();
       }
-
     } catch (error) {
       console.error("Sign Out Error:", error);
       throw error;
     }
   };
 
-  const signOutAll = async() => {
-    try {    
+  const signOutAll = async () => {
+    try {
       clearLocalStorage();
       await signOutFirebase();
-      updateAdminUser(null); 
+      updateAdminUser(null);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
         method: "POST",
@@ -90,16 +80,14 @@ export const AuthContextProvider = ({ children }) => {
         console.log("Logout failed:", errorData);
         throw new Error(errorData.message || "An unknown error occurred");
       }
-      
+
       console.log("Logout successful");
       router.push("/admin/login");
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Sign Out Error:", error);
-      throw error
+      throw error;
     }
   };
-
 
   const getIdToken = async (forceRefresh = true) => {
     try {
@@ -109,10 +97,9 @@ export const AuthContextProvider = ({ children }) => {
       }
       const token = await auth.currentUser.getIdToken(forceRefresh);
 
-      // update user object with new token
-      setUser(prevUser => ({
+      setUser((prevUser) => ({
         ...prevUser,
-        currentToken: token
+        currentToken: token,
       }));
 
       return token;
@@ -123,9 +110,8 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const processUserSignIn = async (result, closeLoaderBackdrop) => {
-    if (isProcessingAuth) {
-      return;
-    }
+    if (isProcessingAuth) return;
+    setIsProcessingAuth(true);
 
     try {
       if (!user) {
@@ -133,103 +119,87 @@ export const AuthContextProvider = ({ children }) => {
       }
 
       let token = user.currentToken;
-      
+
       if (!token) {
-          console.log("No token in user object, attempting to fetch new token...");
-          token = await getIdToken(true);
+        console.log("No token in user object, attempting to fetch new token...");
+        token = await getIdToken(true);
       }
 
       if (!token) {
-          throw new Error("Unable to retrieve authentication token. Please try again.");
+        throw new Error("Unable to retrieve authentication token. Please try again.");
       }
-
-      // console.log("Token retrieved successfully:", token);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
-          method: "POST",
-          headers: { 
-              "content-type": "application/json",
-              "authorization": `Bearer ${token}`
-          },
-          credentials: "include",
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("Login failed:", errorData);  
+        console.log("Login failed:", errorData);
         toast.error(errorData.message || "Login failed: unknown error occurred");
 
         await signOutFirebase();
         closeLoaderBackdrop();
         return;
-      }  
-    
+      }
+
       const userResponse = await response.json();
 
-      // console.log("User response: ", userResponse);
-
-      updateAuthUser({ 
+      updateAuthUser({
         role: userResponse.data.role,
-        currentToken: token 
+        currentToken: token,
       });
 
-      updateAdminUser(userResponse.data);                  
-      toast.success(userResponse.message);      
+      updateAdminUser(userResponse.data);
+      toast.success(userResponse.message);
       router.push("/admin/");
-      // closeLoaderBackdrop();
-
     } catch (error) {
-      console.error("Sign In process error:", error);        
+      console.error("Sign In process error:", error);
       toast.error(error.message || "Oops Something went wrong!", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
       await signOutFirebase();
       closeLoaderBackdrop();
+    } finally {
+      setIsProcessingAuth(false);
     }
   };
 
   const updateAuthUser = (newData) => {
-    setUser(prevUser => {
-      // if (!prevUser) return newData;
-      
-      // create new user object preserving Firebase methods
-      const mergedUser = {
-        ...prevUser,
-        ...newData,
-        currentToken: prevUser.currentToken
-      };      
-      
-      return mergedUser;
-    });
+    setUser((prevUser) => ({
+      ...prevUser,
+      ...newData,
+    }));
   };
 
   const validateSession = async (currentUser) => {
-
-    try {  
+    try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/session`, {
         method: "POST",
-        headers: { 
-          "content-type": "application/json"
+        headers: {
+          "content-type": "application/json",
         },
-        credentials: "include", 
+        credentials: "include",
       });
 
       if (response.ok) {
-        const userResponse = await response.json();        
+        const userResponse = await response.json();
 
         if (userResponse.data) {
           setUser({
             ...currentUser,
             role: userResponse.data.role,
           });
-
-          // updateAdminUser(userResponse.data);
-          
         } else {
           console.log("No session data received, user not authenticated.");
           setUser(null);
@@ -242,18 +212,16 @@ export const AuthContextProvider = ({ children }) => {
       console.error("Error checking session:", error);
       return null;
     }
-  }
-
-
+  };
 
   useEffect(() => {
     let isMounted = true;
-  
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (!isMounted) return;
-  
+
       setAuthUserLoading(true);
-  
+
       if (currentUser) {
         try {
           await validateSession(currentUser);
@@ -264,53 +232,50 @@ export const AuthContextProvider = ({ children }) => {
       } else {
         if (isMounted) setUser(null);
       }
-  
+
       if (isMounted) setAuthUserLoading(false);
     });
-  
+
     return () => {
       isMounted = false;
       unsubscribe();
     };
   }, []);
 
-
-  const delayedRouter = (path) => {
-    setTimeout(() => {
-      router.push(path);
-    }, 3000);
-  }
+  // const delayedRouter = (path) => {
+  //   setTimeout(() => {
+  //     router.push(path);
+  //   }, 3000);
+  // }
 
   useEffect(() => {
-    if (!authUserLoading) {
-
-      let redirectTimer;
-
+    if (!authUserLoading && !isProcessingAuth) {
       if (!user) {
         console.log("Redirecting to admin login...");
-        delayedRouter("/admin/login");
-
+        router.push("/admin/login");
       } else if (user.role !== "Admin") {
         console.log("Redirecting non-admin user to admin login...");
-        delayedRouter("/admin/login");
+        router.push("/admin/login");
       } else {
         console.log("Redirecting admin to dashboard...");
-        delayedRouter("/admin/");
+        router.push("/admin/");
       }
     }
-  }, [user, authUserLoading]);
+  }, [user, authUserLoading, isProcessingAuth]);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      authUserLoading,
-      updateAuthUser, 
-      googleSignIn, 
-      signOutAll,
-      signOutFirebase, 
-      getIdToken,
-      processUserSignIn
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        authUserLoading,
+        updateAuthUser,
+        googleSignIn,
+        signOutAll,
+        signOutFirebase,
+        getIdToken,
+        processUserSignIn,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
