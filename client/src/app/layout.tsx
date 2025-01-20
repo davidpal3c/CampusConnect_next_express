@@ -31,22 +31,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <AuthContextProvider>
-          <AdminUserProvider>
-            <ToastContainer 
-              position="top-center" 
-              autoClose={3000} 
-              hideProgressBar={false} 
-              newestOnTop
-              rtl={false}               // Support for right-to-left text
-              closeOnClick 
-              pauseOnHover 
-              draggable 
-              theme="colored"         
-            />
+        
+        <AdminUserProvider>
+          <ToastContainer 
+            position="top-center" 
+            autoClose={3000} 
+            hideProgressBar={false} 
+            newestOnTop
+            rtl={false}               // Support for right-to-left text
+            closeOnClick 
+            pauseOnHover 
+            draggable 
+            theme="colored"     
+          />
+          <AuthContextProvider>
             {children}
-          </AdminUserProvider>
-        </AuthContextProvider>
+          </AuthContextProvider>
+        </AdminUserProvider>
       </body>
     </html>
   );

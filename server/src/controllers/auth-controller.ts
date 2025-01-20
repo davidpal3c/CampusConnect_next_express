@@ -22,8 +22,7 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
 
         const enrichedUser = {
             ...dbUser,
-            permissions: adminPermissions,    
-            role: dbUser.role                 
+            permissions: adminPermissions,                
         }
 
         // console.log(">>Decoded token: ", decodedToken);
@@ -60,7 +59,6 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
     } 
 };
 
-
 export const checkSession = async (req: AuthenticatedRequest, res: Response) => {
     
     try {
@@ -68,8 +66,7 @@ export const checkSession = async (req: AuthenticatedRequest, res: Response) => 
 
         const enrichedUser = {
             ...dbUser,
-            permissions: adminPermissions,    
-            role: decodedToken.role,                   
+            permissions: adminPermissions,                 
         }
 
         res.json({
@@ -84,4 +81,18 @@ export const checkSession = async (req: AuthenticatedRequest, res: Response) => 
     }
 }
 
+export const logout = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        res.clearCookie('session', {
+            httpOnly: true,   
+            secure: process.env.NODE_ENV === 'production',  
+            sameSite: 'strict',  
+            path: '/',  
+        });
 
+        res.status(200).json({ status: 'success', message: 'Logged out successfully' });
+    } catch (error) {
+        console.error("Error clearing session cookie:", error);
+        res.status(500).json({ status: 'error', message: 'Error logging out' });
+    }
+};
