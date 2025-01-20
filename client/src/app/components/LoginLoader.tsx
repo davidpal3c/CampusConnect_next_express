@@ -20,7 +20,6 @@ export default function LoaderPage({ result, backdrop }: LoaderPageProps) {
 
     const closeLoaderBackdrop = () => {
         if (typeof backdrop === "function") {
-            console.log("Closing loader...");
             backdrop(false);
         }
     }
@@ -47,7 +46,7 @@ export default function LoaderPage({ result, backdrop }: LoaderPageProps) {
         }
     }, [isMounted]);
 
-    // Debug logging
+    // user contexts debug logging 
     useEffect(() => {
         console.log("User state updated:", user);    
     }, [user]);

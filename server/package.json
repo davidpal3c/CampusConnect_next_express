@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jnovalfonso/campus-connect.git#master"
+    "url": "git+https://github.com/davidpal3c/CampusConnect_next_express.git#main"
   },
   "author": "DP",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Jnovalfonso/campus-connect/issues"
+    "url": "https://github.com/davidpal3c/CampusConnect_next_express.git"
   },
-  "homepage": "https://github.com/Jnovalfonso/campus-connect/tree/master#readme",
+  "homepage": "https://github.com/davidpal3c/CampusConnect_next_express.git#readme",
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.1.0",

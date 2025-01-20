@@ -116,14 +116,11 @@ export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, 
 // session request route: verify session cookie and set user object in request
 export const verifySession = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-                
-        // if (!req.session) {
-        //     res.status(403).json({ status: 'error', message: 'Unauthorized: Session cookie is missing' });
-        //     return;
-        // }
+            
+        initializeFirebaseAdmin(); 
 
-        // const sessionCookie = req.cookies?.session;
-        const sessionCookie = req.cookies.get('session');
+        const sessionCookie = req.cookies['session'];
+        console.log("Session Cookie:  ", sessionCookie);
 
         if (!sessionCookie) {
             res.status(403).json({ status: 'error', message: 'Unauthorized: Session cookie is missing' });
