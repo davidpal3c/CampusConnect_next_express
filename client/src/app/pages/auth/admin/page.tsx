@@ -11,17 +11,18 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import LoginLoader from "@/app/components/LoginLoader";
 import { sign } from "crypto";
+import { auth } from "@/app/_utils/firebase";
 
 
 
 export default function AdminLogin() {
 
-    const { user, googleSignIn, signOutFirebase, getIdToken } = useUserAuth();
+    const { googleSignIn, signOutFirebase } = useUserAuth();
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const [loaderBackdrop, setLoaderBackdrop] = useState(false);
-    const [adminRoute, setAdminRoute] = useState("");    
+    // const [adminRoute, setAdminRoute] = useState("");    
     const [userResultProp, setUserResultProp] = useState(false);
 
 
@@ -42,15 +43,19 @@ export default function AdminLogin() {
         handleLoaderOpen();
         await delay(500);
 
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            // console.log("Existing session found, signing out first...", currentUser);
+            await signOutFirebase();
+        }
+
         try {
             const result = await googleSignIn();
-
             setUserResultProp(result);
 
             // const idToken = await getIdToken();
             // console.log("ID Token - initial login: ", idToken);
-
-            setAdminRoute("/admin/");
+            // setAdminRoute("/admin/");
 
             setLoaderBackdrop(true);
             handleLoaderClose();
@@ -85,7 +90,7 @@ export default function AdminLogin() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {loaderBackdrop && <LoginLoader route={adminRoute} result={userResultProp} backdrop={setLoaderBackdrop}/>}
+            {loaderBackdrop && <LoginLoader result={userResultProp} backdrop={setLoaderBackdrop}/>}
 
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">

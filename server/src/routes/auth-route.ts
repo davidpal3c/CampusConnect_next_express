@@ -10,5 +10,4 @@ router.post('/session', verifySession, adminRoute, setCustomClaims, checkSession
 // router.post('/register', loginAdmin as RequestHandler);
 // router.post('/forgot-password', forgotPassword);
 
-
 export default router; 

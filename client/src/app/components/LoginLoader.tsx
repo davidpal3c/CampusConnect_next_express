@@ -8,17 +8,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useAdminUser } from '@/app/_utils/adminUser-context';
 
 interface LoaderPageProps {
-    route: string; 
     result: any;
     backdrop?: boolean | Dispatch<SetStateAction<boolean>>;
 }
 
-export default function LoaderPage({ route, result, backdrop }: LoaderPageProps) {
+export default function LoaderPage({ result, backdrop }: LoaderPageProps) {
     const [isMounted, setIsMounted] = useState(false);
-    const router = useRouter();
 
-    const { user, updateAuthUser, signOutFirebase, getIdToken } = useUserAuth();    
-    const { adminUser, updateAdminUser } = useAdminUser();
+    const { user, processUserSignIn } = useUserAuth();    
+    const { adminUser } = useAdminUser();
 
     const closeLoaderBackdrop = () => {
         if (typeof backdrop === "function") {
@@ -29,66 +27,9 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
 
     const processSignIn = async () => {
         try {
-            if (!user) {
-                throw new Error("No user available, unable to retrieve token.");
-            }
-
-            let token = user.currentToken;
-            if (!token) {
-                console.log("No token in user object, attempting to fetch new token...");
-                token = await getIdToken(true);
-            }
-
-            if (!token) {
-                throw new Error("Unable to retrieve authentication token. Please try again.");
-            }
-
-            console.log("Token retrieved successfully:", token);
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
-                method: "POST",
-                headers: { 
-                    "content-type": "application/json",
-                    "authorization": `Bearer ${token}`
-                },
-                credentials: "include",
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.log("Login failed:", errorData);  
-                toast.error(errorData.message || "An unknown error occurred");
-
-                await signOutFirebase();
-                closeLoaderBackdrop();
-                return;
-            }            
-
-            const userResponse = await response.json();
-            console.log("User response: ", userResponse);
-
-            
-            updateAuthUser({ 
-                role: userResponse.data.role,
-                currentToken: token 
-            });
-            updateAdminUser(userResponse.data);
-            
-            toast.success(userResponse.message);
-            router.push(route);
-
+            processUserSignIn(result, closeLoaderBackdrop);     
         } catch (error: any) {
             console.error("Sign In process error:", error);        
-            toast.error(error.message || "Oops Something went wrong!", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            await signOutFirebase();
-            closeLoaderBackdrop();
         }
     } 
 
@@ -125,4 +66,4 @@ export default function LoaderPage({ route, result, backdrop }: LoaderPageProps)
     );
 }
 
-
+ 
