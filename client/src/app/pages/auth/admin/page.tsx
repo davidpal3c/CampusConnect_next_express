@@ -22,7 +22,7 @@ export default function AdminLogin() {
     const [loading, setLoading] = useState(false);
 
     const [loaderBackdrop, setLoaderBackdrop] = useState(false);
-    // const [adminRoute, setAdminRoute] = useState("");    
+    const [authRoleType, setAuthRoleType] = useState("");
     const [userResultProp, setUserResultProp] = useState(false);
 
 
@@ -56,7 +56,7 @@ export default function AdminLogin() {
             // const idToken = await getIdToken();
             // console.log("ID Token - initial login: ", idToken);
             // setAdminRoute("/admin/");
-
+            setAuthRoleType("admin");
             setLoaderBackdrop(true);
             handleLoaderClose();
             
@@ -90,7 +90,7 @@ export default function AdminLogin() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {loaderBackdrop && <LoginLoader result={userResultProp} backdrop={setLoaderBackdrop}/>}
+            {loaderBackdrop && <LoginLoader result={userResultProp} backdrop={setLoaderBackdrop} routeType={authRoleType}/>}
 
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">

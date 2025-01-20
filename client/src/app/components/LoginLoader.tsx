@@ -10,12 +10,13 @@ import { useAdminUser } from '@/app/_utils/adminUser-context';
 interface LoaderPageProps {
     result: any;
     backdrop?: boolean | Dispatch<SetStateAction<boolean>>;
+    routeType: string;
 }
 
-export default function LoaderPage({ result, backdrop }: LoaderPageProps) {
+export default function LoaderPage({ result, backdrop, routeType }: LoaderPageProps) {
     const [isMounted, setIsMounted] = useState(false);
 
-    const { user, processUserSignIn } = useUserAuth();    
+    const { user, processAdminSignIn } = useUserAuth();    
     const { adminUser } = useAdminUser();
 
     const closeLoaderBackdrop = () => {
@@ -26,7 +27,19 @@ export default function LoaderPage({ result, backdrop }: LoaderPageProps) {
 
     const processSignIn = async () => {
         try {
-            processUserSignIn(result, closeLoaderBackdrop);     
+            switch(routeType) {
+                case "admin":
+                    // if (result) {
+                    //     console.log("Admin sign in result:", result);
+                    // }
+                    processAdminSignIn(result, closeLoaderBackdrop);     
+                    break;
+                case "user":
+                    console.log("User sign in result:");
+                    break;
+                default:
+            }
+            
         } catch (error: any) {
             console.error("Sign In process error:", error);        
         }

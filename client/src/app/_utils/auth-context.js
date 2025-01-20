@@ -109,7 +109,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-  const processUserSignIn = async (result, closeLoaderBackdrop) => {
+  const processAdminSignIn = async (result, closeLoaderBackdrop) => {
     if (isProcessingAuth) return;
     setIsProcessingAuth(true);
 
@@ -174,6 +174,72 @@ export const AuthContextProvider = ({ children }) => {
       setIsProcessingAuth(false);
     }
   };
+
+  // const processUserSignIn = async (result, closeLoaderBackdrop) => {
+  //   if (isProcessingAuth) return;
+  //   setIsProcessingAuth(true);
+
+  //   try {
+  //     if (!user) {
+  //       throw new Error("No user available, unable to retrieve token.");
+  //     }
+
+  //     let token = user.currentToken;
+
+  //     if (!token) {
+  //       console.log("No token in user object, attempting to fetch new token...");
+  //       token = await getIdToken(true);
+  //     }
+
+  //     if (!token) {
+  //       throw new Error("Unable to retrieve authentication token. Please try again.");
+  //     }
+
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
+  //       method: "POST",
+  //       headers: {
+  //         "content-type": "application/json",
+  //         authorization: `Bearer ${token}`,
+  //       },
+  //       credentials: "include",
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       console.log("Login failed:", errorData);
+  //       toast.error(errorData.message || "Login failed: unknown error occurred");
+
+  //       await signOutFirebase();
+  //       closeLoaderBackdrop();
+  //       return;
+  //     }
+
+  //     const userResponse = await response.json();
+
+  //     updateAuthUser({
+  //       role: userResponse.data.role,
+  //       currentToken: token,
+  //     });
+
+  //     updateAdminUser(userResponse.data);
+  //     toast.success(userResponse.message);
+  //     router.push("/admin/");
+  //   } catch (error) {
+  //     console.error("Sign In process error:", error);
+  //     toast.error(error.message || "Oops Something went wrong!", {
+  //       position: "top-center",
+  //       autoClose: 3000,
+  //       hideProgressBar: true,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //     });
+  //     await signOutFirebase();
+  //     closeLoaderBackdrop();
+  //   } finally {
+  //     setIsProcessingAuth(false);
+  //   }
+  // };
 
   const updateAuthUser = (newData) => {
     setUser((prevUser) => ({
@@ -251,8 +317,9 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     if (!authUserLoading && !isProcessingAuth) {
       if (!user) {
-        console.log("Redirecting to admin login...");
-        router.push("/admin/login");
+        return;
+        // console.log("Redirecting to admin login...");
+        // router.push("/admin/login");
       } else if (user.role !== "Admin") {
         console.log("Redirecting non-admin user to admin login...");
         router.push("/admin/login");
@@ -273,7 +340,7 @@ export const AuthContextProvider = ({ children }) => {
         signOutAll,
         signOutFirebase,
         getIdToken,
-        processUserSignIn,
+        processAdminSignIn,
       }}
     >
       {children}
