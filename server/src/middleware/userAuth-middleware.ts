@@ -7,6 +7,13 @@ export interface AuthenticatedRequest extends Request {
     user?: any; 
 }
 
+type StudentFields = {
+    program_id?: string;
+    program_name?: string;
+    department?: any;
+    status?: string;
+}
+
 declare module 'express-serve-static-core' {
     interface Request {
       session?: any; 
@@ -41,7 +48,7 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
 
 
 export const userRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    
+
         try {
         // checks if email is pre-registered in db
         const email = req.user.decodedToken.email;
@@ -65,20 +72,27 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
 
         // retrieve user fields based on role (Student/Alumni) from db
         if (user?.role === "Student") {
-            const studentFields = await prisma.student.findUnique({
+            let studentTemporary = await prisma.student.findUnique({
                 where: {
                     user_id: user.user_id, 
                 },
                 include: {
-                    User: true, 
-                        Program: {
-                            include: {
-                                Department: true, 
-                            },
+                    Program: {
+                        include: {
+                            Department: true, 
+                        },
                     },
                 },
             });
-            // console.log("Student Fields: ", studentFields);
+
+            const studentFields: StudentFields = {
+                program_id: studentTemporary?.program_id,
+                program_name: studentTemporary?.Program?.name,
+                department: studentTemporary?.Program?.Department,
+                status: studentTemporary?.status,
+            };
+
+            studentTemporary = null;
 
             req.user = { ...req.user, dbUser: user, studentFields: studentFields };
 
