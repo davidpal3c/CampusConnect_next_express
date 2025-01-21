@@ -20,29 +20,24 @@ export const loginUser = async (req: AuthenticatedRequest, res: Response): Promi
             throw new Error("User missing in loginUser route handler...");
         }
 
-        const enrichedUser = () => {
-
-            if (dbUser?.role !== 'student') {
-                const { studentFields, department } = req.user;
+        const getEnrichedUser = () => {
+            if (dbUser?.role === 'Student') {
+                const { studentFields } = req.user;
                 
-                return {
-                    ...dbUser,
-                    studentFields: studentFields,
-                    department: department,
-                }            
+                return { ...dbUser, studentFields, }     
+
+            } else if (dbUser?.role === 'Alumni') {
+                const { alumniFields } = req.user;
+                return { ...dbUser, alumniFields: alumniFields }                                
 
             } else {
-                const { alumniFields } = req.user;
-                return {
-                    ...dbUser,
-                    alumniFields: alumniFields,
-                }            
-            }     
+                throw new Error(`Unsupported user role: ${dbUser.role}`);
+            }
         }
         
+        const enrichedUser = getEnrichedUser();
 
-        // console.log(">>Decoded token: ", decodedToken);
-        console.log("ENRICHED USER:", enrichedUser);
+        // console.log("ENRICHED USER:", enrichedUser);
 
         const token = req.headers['authorization']?.split(' ')[1]; 
         if (!token) {
@@ -75,6 +70,8 @@ export const loginUser = async (req: AuthenticatedRequest, res: Response): Promi
     } 
 };
 
+
+
 export const checkSession = async (req: AuthenticatedRequest, res: Response) => {
     
     try {
@@ -84,25 +81,22 @@ export const checkSession = async (req: AuthenticatedRequest, res: Response) => 
             throw new Error("User missing in User session route handler...");
         }
 
-        const enrichedUser = () => {
-
-            if (dbUser?.role !== 'student') {
-                const { studentFields, department } = req.user;
+        const getEnrichedUser = () => {
+            if (dbUser?.role === 'Student') {
+                const { studentFields } = req.user;
                 
-                return {
-                    ...dbUser,
-                    studentFields: studentFields,
-                    department: department,
-                }            
+                return { ...dbUser, studentFields, }     
+
+            } else if (dbUser?.role === 'Alumni') {
+                const { alumniFields } = req.user;
+                return { ...dbUser, alumniFields: alumniFields }                                
 
             } else {
-                const { alumniFields } = req.user;
-                return {
-                    ...dbUser,
-                    alumniFields: alumniFields,
-                }            
-            }     
+                throw new Error(`Unsupported user role: ${dbUser.role}`);
+            }
         }
+
+        const enrichedUser = getEnrichedUser();
 
         res.json({
             status: 'success',

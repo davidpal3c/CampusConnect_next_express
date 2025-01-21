@@ -4,7 +4,7 @@ import { useContext, createContext, useState, useEffect } from "react";
 import { signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "./firebase";
 import { useRouter } from "next/navigation";
-import { useAdminUser } from "./adminUser-context";
+import { useUserData } from "./userData-context";
 import { toast } from "react-toastify";
 
 const AuthContext = createContext();
@@ -13,7 +13,7 @@ export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authUserLoading, setAuthUserLoading] = useState(true);
   const router = useRouter();
-  const { updateAdminUser } = useAdminUser();
+  const { updateUserData } = useUserData();
   const [isProcessingAuth, setIsProcessingAuth] = useState(false);
 
   const googleSignIn = async () => {
@@ -67,7 +67,7 @@ export const AuthContextProvider = ({ children }) => {
     try {
       clearLocalStorage();
       await signOutFirebase();
-      updateAdminUser(null);
+      updateUserData(null);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout-admin`, {
         method: "POST",
@@ -155,7 +155,7 @@ export const AuthContextProvider = ({ children }) => {
         currentToken: token,
       });
 
-      updateAdminUser(userResponse.data);
+      updateUserData(userResponse.data);
       toast.success(userResponse.message);
       router.push("/admin/");
     } catch (error) {
@@ -221,9 +221,9 @@ export const AuthContextProvider = ({ children }) => {
         currentToken: token,
       });
 
-      updateAdminUser(userResponse.data);
+      updateUserData(userResponse.data);
       toast.success(userResponse.message);
-      router.push("/admin/");
+      router.push("/user/");
     } catch (error) {
       console.error("Sign In process error:", error);
       toast.error(error.message || "Oops Something went wrong!", {
@@ -250,7 +250,10 @@ export const AuthContextProvider = ({ children }) => {
 
   const validateSession = async (currentUser) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/session-admin`, {
+      
+      const sessionRoute = currentUser.role === "Admin" ? "session-admin" : "session-user";
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/${sessionRoute}`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -321,8 +324,9 @@ export const AuthContextProvider = ({ children }) => {
         // console.log("Redirecting to admin login...");
         // router.push("/admin/login");
       } else if (user.role !== "Admin") {
-        console.log("Redirecting non-admin user to admin login...");
-        router.push("/admin/login");
+        // console.log("Redirecting non-admin user to admin login...");
+        // router.push("/admin/login");
+        return;
       } else {
         console.log("Redirecting admin to dashboard...");
         router.push("/admin/");

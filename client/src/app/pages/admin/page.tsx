@@ -9,7 +9,6 @@ export default function AdminPage() {
   const { user, authUserLoading } = useUserAuth();
   const [isClient, setIsClient] = useState(false);                                    // dummy state to track code is running client-side
   const router = useRouter();
-  // const { adminUser, updateAdminUser } = useAdminUser();
 
   useEffect(() => {
     setIsClient(true);                                                                  // set to true only after component has mounted on the client

@@ -12,7 +12,7 @@
     },
     "include": [
         "src/**/*.ts"
-, "prisma/seed.ts"    ],
+, "prisma/seed(old).ts"    ],
     "exclude": [
         "node_modules"
     ]

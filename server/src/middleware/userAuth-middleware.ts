@@ -41,7 +41,7 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
 
 
 export const userRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-
+    
         try {
         // checks if email is pre-registered in db
         const email = req.user.decodedToken.email;
@@ -63,21 +63,28 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
             return;
         }
 
-
         // retrieve user fields based on role (Student/Alumni) from db
         if (user?.role === "Student") {
-            const studentFields = await prisma.student.findUnique({ where: { user_id: user.user_id } });
-            const department = await prisma.program.findUnique({ where: { program_id: studentFields?.program_id } });
+            const studentFields = await prisma.student.findUnique({
+                where: {
+                    user_id: user.user_id, 
+                },
+                include: {
+                    User: true, 
+                        Program: {
+                            include: {
+                                Department: true, 
+                            },
+                    },
+                },
+            });
+            // console.log("Student Fields: ", studentFields);
 
-            console.log("Student Fields: ", studentFields);
-            console.log("Department: ", department);
-
-            req.user = { ...req.user, dbUser: user, studentFields: studentFields, department: department };
+            req.user = { ...req.user, dbUser: user, studentFields: studentFields };
 
         } else if (user?.role === "Alumni") {
             const alumniFields = await prisma.alumni.findUnique({ where: { user_id: user.user_id } });
             
-            console.log("Alumni Fields: ", alumniFields);
             req.user = { ...req.user, dbUser: user, alumniFields: alumniFields };
 
         } else {
@@ -101,10 +108,6 @@ export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, 
     try {
         const { decodedToken, dbUser } = req.user;
 
-        // console.log("Request User:", req.user);
-        // console.log("Decoded Token:", decodedToken);
-        
-        // check if custom claims are set already, if not set them
         const userRecord = await admin.auth().getUser(decodedToken.uid);
         const existingClaims = userRecord.customClaims;
 
@@ -127,7 +130,7 @@ export const verifySession = async (req: AuthenticatedRequest, res: Response, ne
         initializeFirebaseAdmin(); 
 
         const sessionCookie = req.cookies['session'];
-        console.log("Session Cookie:  ", sessionCookie);
+        // console.log("Session Cookie:  ", sessionCookie);
 
         if (!sessionCookie) {
             res.status(403).json({ status: 'error', message: 'Unauthorized: Session cookie is missing' });
