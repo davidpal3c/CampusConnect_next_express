@@ -14,7 +14,7 @@ export default function Home() {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`);
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setPeople(data);
       setMessage("Data fetched from Backend successfully");
     } catch (error) {
@@ -27,7 +27,7 @@ export default function Home() {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`);
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setUser(data);
     } catch (err) {
       console.error(err);

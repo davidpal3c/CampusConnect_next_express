@@ -29,7 +29,7 @@ CREATE TABLE "Admin" (
 -- CreateTable
 CREATE TABLE "Student" (
     "user_id" TEXT NOT NULL,
-    "program_id_fk" TEXT NOT NULL,
+    "program_id" TEXT NOT NULL,
     "status" "Status" NOT NULL,
 
     CONSTRAINT "Student_pkey" PRIMARY KEY ("user_id")
@@ -50,7 +50,7 @@ CREATE TABLE "Alumni" (
 CREATE TABLE "Program" (
     "program_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "department_id_fk" TEXT NOT NULL,
+    "department_id" TEXT NOT NULL,
 
     CONSTRAINT "Program_pkey" PRIMARY KEY ("program_id")
 );
@@ -64,6 +64,9 @@ CREATE TABLE "Department" (
 
     CONSTRAINT "Department_pkey" PRIMARY KEY ("department_id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_user_id_key" ON "User"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
@@ -84,10 +87,10 @@ ALTER TABLE "Admin" ADD CONSTRAINT "Admin_user_id_fkey" FOREIGN KEY ("user_id") 
 ALTER TABLE "Student" ADD CONSTRAINT "Student_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Student" ADD CONSTRAINT "Student_program_id_fk_fkey" FOREIGN KEY ("program_id_fk") REFERENCES "Program"("program_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Student" ADD CONSTRAINT "Student_program_id_fkey" FOREIGN KEY ("program_id") REFERENCES "Program"("program_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Alumni" ADD CONSTRAINT "Alumni_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Program" ADD CONSTRAINT "Program_department_id_fk_fkey" FOREIGN KEY ("department_id_fk") REFERENCES "Department"("department_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Program" ADD CONSTRAINT "Program_department_id_fkey" FOREIGN KEY ("department_id") REFERENCES "Department"("department_id") ON DELETE RESTRICT ON UPDATE CASCADE;

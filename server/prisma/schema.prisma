@@ -8,44 +8,50 @@ datasource db {
 }
 
 model User {
-  user_id    String   @id @unique
-  email      String   @unique
-  password   String
-  first_name String
-  last_name  String
-  role       Role
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  Admin      Admin?
-  Alumni     Alumni?
-  Student    Student?
+  user_id     String   @id @unique
+  email       String   @unique
+  password    String
+  first_name  String
+  last_name   String
+  role        Role
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  Admin       Admin?
+  Student     Student?
+  Alumni      Alumni?
 }
 
 model Admin {
-  user_id     String  @id @unique
+  user_id     String   @id @unique
   permissions String?
   User        User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model Student {
-  user_id    String  @id @unique
-  program_id String
-  status     Status
-  Program    Program @relation(fields: [program_id], references: [program_id])
-  User       User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id     String   @id @unique
+  program_id  String
+  status      Status
+
+  // Relations
+  User        User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Program     Program  @relation(fields: [program_id], references: [program_id])
 }
 
 model Alumni {
-  user_id          String  @id @unique
-  graduation_year  Int
-  credentials      String?
-  current_position String?
-  company          String?
-  User             User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id           String   @id @unique
+  graduation_year   Int
+  credentials       String?
+  current_position  String?
+  company           String?
+
+  // Relation
+  User              User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model Program {
-  program_id    String     @id
+  program_id    String  @id 
   name          String
   department_id String
   Department    Department @relation(fields: [department_id], references: [department_id])
@@ -53,7 +59,7 @@ model Program {
 }
 
 model Department {
-  department_id String    @id
+  department_id String  @id 
   name          String
   contact_email String
   contact_phone String

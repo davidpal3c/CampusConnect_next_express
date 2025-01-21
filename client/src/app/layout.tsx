@@ -3,6 +3,10 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { AuthContextProvider } from "./_utils/auth-context";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 const inter = localFont({
   src: [
@@ -29,6 +33,17 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         <AuthContextProvider>
+          <ToastContainer 
+            position="top-center" 
+            autoClose={3000} 
+            hideProgressBar={false} 
+            newestOnTop
+            rtl={false}               // Support for right-to-left text
+            closeOnClick 
+            pauseOnHover 
+            draggable 
+            theme="colored"         
+          />
           {children}
         </AuthContextProvider>
       </body>

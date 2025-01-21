@@ -67,7 +67,7 @@ export default function Header() {
                     <p className="text-sm text-gray-950">Hello<span className="ml-1 font-semibold">{user.displayName}!</span></p>
                 </button>
             ) : (
-                <div>Loading...</div>
+                <div>Signing out...</div>
             )}
             <Menu
                 id="basic-menu"

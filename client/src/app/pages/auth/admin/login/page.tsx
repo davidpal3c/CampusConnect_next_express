@@ -9,15 +9,20 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import axios from "axios";
+import LoginLoader from "@/app/components/LoginLoader";
+
 
 
 export default function AdminLogin() {
 
-    const { user, setUser, googleSignIn, firebaseSignOut, getIdToken } = useUserAuth();
-    const router = useRouter();
+    const { user, googleSignIn, firebaseSignOut, getIdToken } = useUserAuth();
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const [loaderBackdrop, setLoaderBackdrop] = useState(false);
+    const [adminRoute, setAdminRoute] = useState("");    
+    const [userResultProp, setUserResultProp] = useState(false);
+
 
     const handleLoaderClose = () => {
         setBackdrop(false);
@@ -29,54 +34,25 @@ export default function AdminLogin() {
         setLoading(true);
     };
 
+
     async function handleSignIn() {
         handleLoaderOpen();
 
         try {
             const result = await googleSignIn();
-            // console.log("Sign In result: ", result);
-            console.log("User: ", result.user);
+            setUserResultProp(result);
+            await getIdToken();
 
-            const userInfo = {
-                email: result.user.email
-            }
+            setAdminRoute("/admin/");
 
-            //backend api call
-            const token = await getIdToken();
-            console.log(token);
-
-            // const response = await axios.post(`http://localhost:8080/api/auth/login`, { 
-            //     token,
-            //     email: userInfo,
-            // } , {
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            // });
-            console.log(`API endpoint: ${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`);
-            // console.log(response.data);
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, userInfo }),
-              });
-              
-
+            setLoaderBackdrop(true);
             handleLoaderClose();
-            console.log("Login successful:", response);
-        } catch (error) {
+            
+        } catch (error: any) {
             console.log("Sign In error: ", error);
-            // console.error("Login failed:", error.response?.data || error.message);
             handleLoaderClose();
         }
     }
-
-    useEffect(() => {
-        if (user) {
-            router.push("/admin/");
-        }
-    }, [user, router]);
 
 
     // Check if the window is closed to sign out the user 
@@ -93,8 +69,6 @@ export default function AdminLogin() {
         return () => clearInterval(interval);
     }, []);
 
-
-
     return (
         <div className="bg-blue-gradient flex flex-col md:flex-row h-screen">
             <Backdrop
@@ -103,6 +77,8 @@ export default function AdminLogin() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
+            {loaderBackdrop && <LoginLoader route={adminRoute} result={userResultProp} backdrop={setLoaderBackdrop}/>}
+
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">
                 <img
@@ -134,6 +110,7 @@ export default function AdminLogin() {
                             id="email"
                             name="email"
                             placeholder="Email"
+                            aria-label="Email"
                             // className="w-70 font-light text-saitWhite placeholder-white bg-transparent my-1 ml-4 focus:outline-none focus:border-transparent"   // original  : out of contrast with blue gradient
                             className="w-70 font-normal text-saitWhite placeholder-slate-900 bg-transparent my-1 ml-4 focus:outline-none focus:border-transparent"
                         />
@@ -151,6 +128,7 @@ export default function AdminLogin() {
                                 id="password"
                                 name="password"
                                 placeholder="Password"
+                                aria-label="Password"
                                 // className="w-70 font-light text-saitWhite placeholder-saitWhite bg-transparent my-1 ml-4 focus:outline-none appearance-none"  // original : out of contrast with blue gradient       
                                 className="w-70 font-normal text-saitWhite placeholder-slate-900 bg-transparent my-1 ml-4 focus:outline-none appearance-none"
                             />
@@ -195,9 +173,11 @@ export default function AdminLogin() {
                                 // className=" w-40 font-light text-saitWhite"
                                 className=" w-40 font-normal text-saitWhite"
                             >{loading ? "Signing in..." : "Sign in with Google"}</p>
-                        </button>
+                        </button>                       
                     </div>
+                    
                 </div>
+
 
 
             </div>
