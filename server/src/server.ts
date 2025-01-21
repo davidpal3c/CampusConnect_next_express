@@ -4,7 +4,8 @@
 
 import express from 'express';
 import userRoutes from './routes/user-route';
-import authRoutes from './routes/auth-route';
+import adminAuthRoutes from './routes/adminAuth-route';
+import userAuthRoutes from './routes/userAuth-route';
 import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -33,8 +34,12 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', adminAuthRoutes);
+app.use('/api/auth', userAuthRoutes);
+
 app.use('/api/users', userRoutes);
+
+
 
 app.get('/', (req, res) => {
   res.send('Hello from the server!');

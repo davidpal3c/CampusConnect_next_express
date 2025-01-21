@@ -10,6 +10,7 @@ export default function Home() {
   const [people, setPeople] = useState([]);
   const [user, setUser] = useState({});
 
+
   const fetchData = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`);
@@ -59,7 +60,7 @@ export default function Home() {
             Go to Admin Login Page
           </h1>
         </Link>
-        <Link href="/student/login">
+        <Link href="/user/login">
           <h1 className="text-center text-lg bg-saitLightBlue rounded-xl border-black font-semibold text-saitWhite hover:underline">
             Go to Student Login Page
           </h1>

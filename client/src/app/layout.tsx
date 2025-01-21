@@ -4,7 +4,7 @@ import "./globals.css";
 import { AuthContextProvider } from "@/app/_utils/auth-context";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AdminUserProvider } from '@/app/_utils/adminUser-context';
+import { UserDataProvider } from '@/app/_utils/userData-context';
 
 
 const inter = localFont({
@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         
-        <AdminUserProvider>
+        <UserDataProvider>
           <ToastContainer 
             position="top-center" 
             autoClose={3000} 
@@ -47,7 +47,7 @@ export default function RootLayout({
           <AuthContextProvider>
             {children}
           </AuthContextProvider>
-        </AdminUserProvider>
+        </UserDataProvider>
       </body>
     </html>
   );

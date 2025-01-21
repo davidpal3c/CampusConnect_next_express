@@ -37,7 +37,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.1",
-    "@types/node": "^22.10.5",
+    "@types/node": "^22.10.7",
     "nodemon": "^3.1.9",
     "prisma": "^6.1.0",
     "ts-node": "^10.9.2",

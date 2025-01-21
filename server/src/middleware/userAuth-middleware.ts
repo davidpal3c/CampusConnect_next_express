@@ -40,8 +40,8 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
 }
 
 
-export const adminRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-
+export const userRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    
         try {
         // checks if email is pre-registered in db
         const email = req.user.decodedToken.email;
@@ -63,28 +63,42 @@ export const adminRoute = async (req: AuthenticatedRequest, res: Response, next:
             return;
         }
 
-        // checks if user is admin
-        if (user?.role !== "Admin"){
+        // retrieve user fields based on role (Student/Alumni) from db
+        if (user?.role === "Student") {
+            const studentFields = await prisma.student.findUnique({
+                where: {
+                    user_id: user.user_id, 
+                },
+                include: {
+                    User: true, 
+                        Program: {
+                            include: {
+                                Department: true, 
+                            },
+                    },
+                },
+            });
+            // console.log("Student Fields: ", studentFields);
+
+            req.user = { ...req.user, dbUser: user, studentFields: studentFields };
+
+        } else if (user?.role === "Alumni") {
+            const alumniFields = await prisma.alumni.findUnique({ where: { user_id: user.user_id } });
+            
+            req.user = { ...req.user, dbUser: user, alumniFields: alumniFields };
+
+        } else {
             res.status(403).json({
                 status: 'error',
-                message: 'Forbidden Access: Admin privileges required. Please contact support.' 
+                message: 'Forbidden Access: User role not found. Please contact support.' 
             });
-            return;          
-        } 
-
-        // retrieve admin permission from db
-        const permissions = await prisma.admin.findUnique({ where: { user_id: user.user_id } });
-        
-        if (!permissions) {
-            res.status(404).json({ status: 'error', message: 'Admin permissions not found' });
             return;
-        }        
-                
-        req.user = { ...req.user, dbUser: user, adminPermissions: permissions };            
+        }
+   
         next();
 
     } catch (error: any) {
-        console.log("Admin route error:", error);
+        console.log("User route error:", error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
         return;
     }
@@ -94,10 +108,6 @@ export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, 
     try {
         const { decodedToken, dbUser } = req.user;
 
-        // console.log("Request User:", req.user);
-        // console.log("Decoded Token:", decodedToken);
-        
-        // check if custom claims are set already, if not set them
         const userRecord = await admin.auth().getUser(decodedToken.uid);
         const existingClaims = userRecord.customClaims;
 
@@ -120,7 +130,7 @@ export const verifySession = async (req: AuthenticatedRequest, res: Response, ne
         initializeFirebaseAdmin(); 
 
         const sessionCookie = req.cookies['session'];
-        console.log("Session Cookie:  ", sessionCookie);
+        // console.log("Session Cookie:  ", sessionCookie);
 
         if (!sessionCookie) {
             res.status(403).json({ status: 'error', message: 'Unauthorized: Session cookie is missing' });
