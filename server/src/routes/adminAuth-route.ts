@@ -4,9 +4,9 @@ import { protectRoute, adminRoute, setCustomClaims, verifySession } from '../mid
 
 const router = Router();
 
-router.post('/login', protectRoute, adminRoute, setCustomClaims, loginAdmin as RequestHandler);
-router.post('/session', verifySession, adminRoute, setCustomClaims, checkSession as RequestHandler);
-router.post('/logout', logout);
+router.post('/login-admin', protectRoute, adminRoute, setCustomClaims, loginAdmin as RequestHandler);
+router.post('/session-admin', verifySession, adminRoute, setCustomClaims, checkSession as RequestHandler);
+router.post('/logout-admin', logout);
 // router.post('/register', loginAdmin as RequestHandler);
 // router.post('/forgot-password', forgotPassword);
 

@@ -1,12 +1,12 @@
 import { Router, RequestHandler} from 'express';
-import { loginAdmin, checkSession, logout } from '../controllers/userAuth-controller';
-import { protectRoute, adminRoute, setCustomClaims, verifySession } from '../middleware/userAuth-middleware';
+import { loginUser, checkSession, logout } from '../controllers/userAuth-controller';
+import { protectRoute, userRoute, setCustomClaims, verifySession } from '../middleware/userAuth-middleware';
 
 const router = Router();
 
-router.post('/login', protectRoute, adminRoute, setCustomClaims, loginAdmin as RequestHandler);
-router.post('/session', verifySession, adminRoute, setCustomClaims, checkSession as RequestHandler);
-router.post('/logout', logout);
+router.post('/login-user', protectRoute, userRoute, setCustomClaims, loginUser as RequestHandler);
+router.post('/session-user', verifySession, userRoute, setCustomClaims, checkSession as RequestHandler);
+router.post('/logout-user', logout);
 // router.post('/register', loginAdmin as RequestHandler);
 // router.post('/forgot-password', forgotPassword);
 

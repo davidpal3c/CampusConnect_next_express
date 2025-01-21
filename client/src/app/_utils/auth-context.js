@@ -69,7 +69,7 @@ export const AuthContextProvider = ({ children }) => {
       await signOutFirebase();
       updateAdminUser(null);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout-admin`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         credentials: "include",
@@ -129,7 +129,7 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error("Unable to retrieve authentication token. Please try again.");
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login-admin`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -175,71 +175,71 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-  // const processUserSignIn = async (result, closeLoaderBackdrop) => {
-  //   if (isProcessingAuth) return;
-  //   setIsProcessingAuth(true);
+  const processUserSignIn = async (result, closeLoaderBackdrop) => {
+    if (isProcessingAuth) return;
+    setIsProcessingAuth(true);
 
-  //   try {
-  //     if (!user) {
-  //       throw new Error("No user available, unable to retrieve token.");
-  //     }
+    try {
+      if (!user) {
+        throw new Error("No user available, unable to retrieve token.");
+      }
 
-  //     let token = user.currentToken;
+      let token = user.currentToken;
 
-  //     if (!token) {
-  //       console.log("No token in user object, attempting to fetch new token...");
-  //       token = await getIdToken(true);
-  //     }
+      if (!token) {
+        console.log("No token in user object, attempting to fetch new token...");
+        token = await getIdToken(true);
+      }
 
-  //     if (!token) {
-  //       throw new Error("Unable to retrieve authentication token. Please try again.");
-  //     }
+      if (!token) {
+        throw new Error("Unable to retrieve authentication token. Please try again.");
+      }
 
-  //     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
-  //       method: "POST",
-  //       headers: {
-  //         "content-type": "application/json",
-  //         authorization: `Bearer ${token}`,
-  //       },
-  //       credentials: "include",
-  //     });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login-user`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      });
 
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.log("Login failed:", errorData);
-  //       toast.error(errorData.message || "Login failed: unknown error occurred");
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log("Login failed:", errorData);
+        toast.error(errorData.message || "Login failed: unknown error occurred");
 
-  //       await signOutFirebase();
-  //       closeLoaderBackdrop();
-  //       return;
-  //     }
+        await signOutFirebase();
+        closeLoaderBackdrop();
+        return;
+      }
 
-  //     const userResponse = await response.json();
+      const userResponse = await response.json();
 
-  //     updateAuthUser({
-  //       role: userResponse.data.role,
-  //       currentToken: token,
-  //     });
+      updateAuthUser({
+        role: userResponse.data.role,
+        currentToken: token,
+      });
 
-  //     updateAdminUser(userResponse.data);
-  //     toast.success(userResponse.message);
-  //     router.push("/admin/");
-  //   } catch (error) {
-  //     console.error("Sign In process error:", error);
-  //     toast.error(error.message || "Oops Something went wrong!", {
-  //       position: "top-center",
-  //       autoClose: 3000,
-  //       hideProgressBar: true,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //     });
-  //     await signOutFirebase();
-  //     closeLoaderBackdrop();
-  //   } finally {
-  //     setIsProcessingAuth(false);
-  //   }
-  // };
+      updateAdminUser(userResponse.data);
+      toast.success(userResponse.message);
+      router.push("/admin/");
+    } catch (error) {
+      console.error("Sign In process error:", error);
+      toast.error(error.message || "Oops Something went wrong!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      await signOutFirebase();
+      closeLoaderBackdrop();
+    } finally {
+      setIsProcessingAuth(false);
+    }
+  };
 
   const updateAuthUser = (newData) => {
     setUser((prevUser) => ({
@@ -250,7 +250,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const validateSession = async (currentUser) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/session`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/session-admin`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -341,6 +341,7 @@ export const AuthContextProvider = ({ children }) => {
         signOutFirebase,
         getIdToken,
         processAdminSignIn,
+        processUserSignIn
       }}
     >
       {children}

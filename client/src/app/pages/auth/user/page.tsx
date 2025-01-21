@@ -1,5 +1,4 @@
 //Student / Alumni login Page
-
 'use client';
 
 import Link from "next/link";
@@ -17,14 +16,14 @@ import { auth } from "@/app/_utils/firebase";
 
 
 
-export default function UserLoginPage() {
+export default function AdminLogin() {
 
     const { googleSignIn, signOutFirebase } = useUserAuth();
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const [loaderBackdrop, setLoaderBackdrop] = useState(false);
-    // const [adminRoute, setAdminRoute] = useState("");    
+    const [authRoleType, setAuthRoleType] = useState("");
     const [userResultProp, setUserResultProp] = useState(false);
 
 
@@ -58,7 +57,7 @@ export default function UserLoginPage() {
             // const idToken = await getIdToken();
             // console.log("ID Token - initial login: ", idToken);
             // setAdminRoute("/admin/");
-
+            setAuthRoleType("user");
             setLoaderBackdrop(true);
             handleLoaderClose();
             
@@ -92,7 +91,7 @@ export default function UserLoginPage() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {loaderBackdrop && <LoginLoader result={userResultProp} backdrop={setLoaderBackdrop}/>}
+            {loaderBackdrop && <LoginLoader result={userResultProp} backdrop={setLoaderBackdrop} routeType={authRoleType}/>}
 
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">

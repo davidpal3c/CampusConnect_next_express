@@ -36,6 +36,7 @@ export default function LoaderPage({ result, backdrop, routeType }: LoaderPagePr
                     break;
                 case "user":
                     console.log("User sign in result:");
+                    // processUserSignIn(result, closeLoaderBackdrop);                     
                     break;
                 default:
             }

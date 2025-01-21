@@ -11,22 +11,38 @@ export interface AuthenticatedRequest extends Request {
 const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 * 1000; 
 
 
-export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+export const loginUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    
     try {      
-        const { dbUser, adminPermissions } = req.user;
+        const { dbUser } = req.user;
 
-        if (!dbUser || !adminPermissions) {
-            throw new Error("User or admin permissions are missing.");
+        if (!dbUser) {
+            throw new Error("User missing in loginUser route handler...");
         }
 
-        const enrichedUser = {
-            ...dbUser,
-            permissions: adminPermissions,                
+        const enrichedUser = () => {
+
+            if (dbUser?.role !== 'student') {
+                const { studentFields, department } = req.user;
+                
+                return {
+                    ...dbUser,
+                    studentFields: studentFields,
+                    department: department,
+                }            
+
+            } else {
+                const { alumniFields } = req.user;
+                return {
+                    ...dbUser,
+                    alumniFields: alumniFields,
+                }            
+            }     
         }
+        
 
         // console.log(">>Decoded token: ", decodedToken);
-        // console.log("ENRICHED USER:", enrichedUser);
+        console.log("ENRICHED USER:", enrichedUser);
 
         const token = req.headers['authorization']?.split(' ')[1]; 
         if (!token) {
@@ -47,7 +63,7 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
 
         res.status(200).json({
             status: 'success',
-            message: 'Welcome to Campus Connect Admin Portal!',
+            message: 'Welcome to Campus Connect!',
             data: enrichedUser,
         });
 
@@ -62,11 +78,30 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
 export const checkSession = async (req: AuthenticatedRequest, res: Response) => {
     
     try {
-        const { dbUser, adminPermissions, decodedToken } = req.user;
+        const { dbUser } = req.user;
 
-        const enrichedUser = {
-            ...dbUser,
-            permissions: adminPermissions,                 
+        if (!dbUser) {
+            throw new Error("User missing in User session route handler...");
+        }
+
+        const enrichedUser = () => {
+
+            if (dbUser?.role !== 'student') {
+                const { studentFields, department } = req.user;
+                
+                return {
+                    ...dbUser,
+                    studentFields: studentFields,
+                    department: department,
+                }            
+
+            } else {
+                const { alumniFields } = req.user;
+                return {
+                    ...dbUser,
+                    alumniFields: alumniFields,
+                }            
+            }     
         }
 
         res.json({

@@ -40,7 +40,7 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
 }
 
 
-export const adminRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const userRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 
         try {
         // checks if email is pre-registered in db
@@ -63,28 +63,35 @@ export const adminRoute = async (req: AuthenticatedRequest, res: Response, next:
             return;
         }
 
-        // checks if user is admin
-        if (user?.role !== "Admin"){
+
+        // retrieve user fields based on role (Student/Alumni) from db
+        if (user?.role === "Student") {
+            const studentFields = await prisma.student.findUnique({ where: { user_id: user.user_id } });
+            const department = await prisma.program.findUnique({ where: { program_id: studentFields?.program_id } });
+
+            console.log("Student Fields: ", studentFields);
+            console.log("Department: ", department);
+
+            req.user = { ...req.user, dbUser: user, studentFields: studentFields, department: department };
+
+        } else if (user?.role === "Alumni") {
+            const alumniFields = await prisma.alumni.findUnique({ where: { user_id: user.user_id } });
+            
+            console.log("Alumni Fields: ", alumniFields);
+            req.user = { ...req.user, dbUser: user, alumniFields: alumniFields };
+
+        } else {
             res.status(403).json({
                 status: 'error',
-                message: 'Forbidden Access: Admin privileges required. Please contact support.' 
+                message: 'Forbidden Access: User role not found. Please contact support.' 
             });
-            return;          
-        } 
-
-        // retrieve admin permission from db
-        const permissions = await prisma.admin.findUnique({ where: { user_id: user.user_id } });
-        
-        if (!permissions) {
-            res.status(404).json({ status: 'error', message: 'Admin permissions not found' });
             return;
-        }        
-                
-        req.user = { ...req.user, dbUser: user, adminPermissions: permissions };            
+        }
+   
         next();
 
     } catch (error: any) {
-        console.log("Admin route error:", error);
+        console.log("User route error:", error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
         return;
     }
