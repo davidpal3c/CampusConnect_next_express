@@ -69,7 +69,9 @@ export const AuthContextProvider = ({ children }) => {
       await signOutFirebase();
       updateUserData(null);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout-admin`, {
+      const logoutRoute = user.role === "Admin" ? "logout-admin" : "logout-user";
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/${logoutRoute}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         credentials: "include",
@@ -250,7 +252,6 @@ export const AuthContextProvider = ({ children }) => {
 
   const validateSession = async (currentUser) => {
     try {
-      
       const sessionRoute = currentUser.role === "Admin" ? "session-admin" : "session-user";
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/${sessionRoute}`, {
