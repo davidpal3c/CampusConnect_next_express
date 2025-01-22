@@ -58,6 +58,7 @@ next-env.d.ts
 cc-dev-firebase-adminsdk.json
 
 
+
 # OS-specific
 .DS_Store
 Thumbs.db
@@ -71,3 +72,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# DBeaver
+/server/prisma/.dbeaver
+
