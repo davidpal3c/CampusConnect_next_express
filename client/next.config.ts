@@ -12,8 +12,8 @@ const nextConfig: NextConfig = {
       { source: '/admin/events', destination: '/pages/admin/events' },
       { source: '/admin/groups', destination: '/pages/admin/groups' },
       { source: '/admin/notifications', destination: '/pages/admin/notifications' },
-      { source: '/admin/students', destination: '/pages/admin/students' },
-      { source: '/student/login', destination: '/pages/auth/student/login' },
+      { source: '/admin/users', destination: '/pages/admin/users' },
+      { source: '/admin/users/:id', destination: '/pages/admin/users/:id' },
     ];
   },
 
