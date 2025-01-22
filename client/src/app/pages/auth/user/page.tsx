@@ -1,3 +1,4 @@
+//Student / Alumni login Page
 'use client';
 
 import Link from "next/link";
@@ -10,17 +11,19 @@ import { useEffect } from "react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import LoginLoader from "@/app/components/LoginLoader";
+import { sign } from "crypto";
+import { auth } from "@/app/_utils/firebase";
 
 
 
 export default function AdminLogin() {
 
-    const { user, googleSignIn, firebaseSignOut, getIdToken } = useUserAuth();
+    const { googleSignIn, signOutFirebase } = useUserAuth();
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const [loaderBackdrop, setLoaderBackdrop] = useState(false);
-    const [adminRoute, setAdminRoute] = useState("");    
+    const [authRoleType, setAuthRoleType] = useState("");
     const [userResultProp, setUserResultProp] = useState(false);
 
 
@@ -35,32 +38,43 @@ export default function AdminLogin() {
     };
 
 
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
     async function handleSignIn() {
         handleLoaderOpen();
+        await delay(500);
+
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            // console.log("Existing session found, signing out first...", currentUser);
+            await signOutFirebase();
+        }
 
         try {
             const result = await googleSignIn();
             setUserResultProp(result);
-            await getIdToken();
 
-            setAdminRoute("/admin/");
-
+            // const idToken = await getIdToken();
+            // console.log("ID Token - initial login: ", idToken);
+            // setAdminRoute("/admin/");
+            setAuthRoleType("user");
             setLoaderBackdrop(true);
             handleLoaderClose();
             
         } catch (error: any) {
             console.log("Sign In error: ", error);
+            signOutFirebase();  
             handleLoaderClose();
         }
     }
 
 
-    // Check if the window is closed to sign out the user 
+    // checks if window is closed to sign out the user 
     useEffect(() => {
         const interval = setInterval(() => {
 
             if (window.closed) {
-                firebaseSignOut();
+                signOutFirebase();
                 handleLoaderClose();
                 clearInterval(interval);
             }
@@ -77,7 +91,7 @@ export default function AdminLogin() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {loaderBackdrop && <LoginLoader route={adminRoute} result={userResultProp} backdrop={setLoaderBackdrop}/>}
+            {loaderBackdrop && <LoginLoader result={userResultProp} backdrop={setLoaderBackdrop} routeType={authRoleType}/>}
 
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">
@@ -96,8 +110,8 @@ export default function AdminLogin() {
             </div>
 
             {/* Main Column */}
-            <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-blue-gradient p-8">
-                <h1 className="text-saitWhite text-4xl mb-20 font-bold tracking-wider">ADMIN LOGIN</h1>
+            <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-red-gradient p-8">
+                <h1 className="text-saitWhite text-4xl mb-20 font-bold tracking-wider">CAMPUS CONNECT LOGIN</h1>
                 <div className="flex flex-col space-y-10">
                     {/* EMAIL INPUT */}
                     <div className="flex flex-row justify-center items-center bg-saitWhite bg-opacity-25 rounded-xl py-2 px-8 shadow-lg">

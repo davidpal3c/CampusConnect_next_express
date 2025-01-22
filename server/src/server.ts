@@ -4,16 +4,27 @@
 
 import express from 'express';
 import userRoutes from './routes/user-route';
-import authRoutes from './routes/auth-route';
+import adminAuthRoutes from './routes/adminAuth-route';
+import userAuthRoutes from './routes/userAuth-route';
 import { Request, Response, NextFunction } from 'express';
-
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const PORT = 8080;
 
+app.use(cookieParser());
+
 // server Middlewares
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_ORIGIN,
+  credentials: true
+}));
+
+
 app.use(express.json());   
 
 // global error handling middleware 
@@ -23,8 +34,12 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', adminAuthRoutes);
+app.use('/api/auth', userAuthRoutes);
+
 app.use('/api/users', userRoutes);
+
+
 
 app.get('/', (req, res) => {
   res.send('Hello from the server!');

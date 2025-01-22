@@ -6,11 +6,13 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "typeRoots": ["node_modules/@types", "./src/types"],
+        "types": ["node", "jest"],
     },
     "include": [
         "src/**/*.ts"
-, "prisma/seed.ts"    ],
+, "prisma/seed(old).ts"    ],
     "exclude": [
         "node_modules"
     ]

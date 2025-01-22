@@ -1,11 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import { initializeFirebaseAdmin } from '../config/firebase';
 import admin from 'firebase-admin';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prismaClient';
 
 export interface AuthenticatedRequest extends Request {
     user?: any; 
 }
+
+declare module 'express-serve-static-core' {
+    interface Request {
+      session?: any; 
+    }
+  }
+
 
 export const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
@@ -16,7 +23,7 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
         const token = req.headers['authorization']?.split(' ')[1];
 
         if (!token) {
-            res.status(400).json({ status: 'error', message: 'Invalid request: token or email is missing' });
+            res.status(400).json({ status: 'error', message: 'Invalid request: id token not provided' });
             return;
         }
 
@@ -28,18 +35,28 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
     } catch (error: any) {
         res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
         return;
+        // return res.redirect(`${process.env.CLIENT_ORIGIN}/admin/login`);
     }
 }
 
 
 export const adminRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    
-    const prisma = new PrismaClient();
 
-    try {
+        try {
         // checks if email is pre-registered in db
         const email = req.user.decodedToken.email;
-        const user = await prisma.user.findUnique({ where: { email } }); 
+        const user = await prisma.user.findUnique({ 
+            where: { email },
+            select: {
+                user_id: true,
+                email: true,
+                first_name: true,
+                last_name: true,
+                role: true,
+                created_at: true,
+                updated_at: true,
+            }
+        }); 
         
         if (!user) {
             res.status(404).json({ status: 'error', message: 'User not found. Please contact support' });
@@ -73,12 +90,10 @@ export const adminRoute = async (req: AuthenticatedRequest, res: Response, next:
     }
 }
 
-
 export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const { decodedToken, dbUser } = req.user;
-        
-        // check if custom claims are set already, if not set them
+
         const userRecord = await admin.auth().getUser(decodedToken.uid);
         const existingClaims = userRecord.customClaims;
 
@@ -93,3 +108,29 @@ export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, 
         return;
     }
 }    
+
+// session request route: verify session cookie and set user object in request
+export const verifySession = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+            
+        initializeFirebaseAdmin(); 
+
+        const sessionCookie = req.cookies['session'];
+        // console.log("Session Cookie:  ", sessionCookie);
+
+        if (!sessionCookie) {
+            res.status(403).json({ status: 'error', message: 'Unauthorized: Session cookie is missing' });
+            //redirect to login page
+            return;
+        }
+
+        const decodedToken = await admin.auth().verifySessionCookie(sessionCookie, true);
+        req.user = { decodedToken: decodedToken };      
+        next();        
+        
+    } catch (error: any) {
+        console.error("Error verifying session:", error);
+        res.status(403).json({ status: 'error', message: 'Unauthorized', error: error.message });
+        return;
+    }
+}

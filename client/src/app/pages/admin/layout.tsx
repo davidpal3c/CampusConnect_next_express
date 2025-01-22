@@ -1,15 +1,16 @@
 "use client"
 
+import React from 'react';
 import Sidebar from '@/app/components/Sidebar/Sidebar';
 import Header from '@/app/components/Header/Header';
-import { useUserAuth } from "@/app/_utils/auth-context";
+
+
 
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const { user } = useUserAuth();
 
     return (
         <main className="flex flex-row items-start min-h-screen bg-white">

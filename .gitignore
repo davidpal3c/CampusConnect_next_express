@@ -10,6 +10,10 @@ client/.env
 server/.env
 
 
+load-db.sql
+load-db2.sql
+seed.sql
+
 /.pnp
 .pnp.*
 .yarn/*

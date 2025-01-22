@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AuthContextProvider } from "./_utils/auth-context";
-
+import { AuthContextProvider } from "@/app/_utils/auth-context";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { UserDataProvider } from '@/app/_utils/userData-context';
 
 
 const inter = localFont({
@@ -32,7 +31,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <AuthContextProvider>
+        
+        <UserDataProvider>
           <ToastContainer 
             position="top-center" 
             autoClose={3000} 
@@ -42,10 +42,12 @@ export default function RootLayout({
             closeOnClick 
             pauseOnHover 
             draggable 
-            theme="colored"         
+            theme="colored"     
           />
-          {children}
-        </AuthContextProvider>
+          <AuthContextProvider>
+            {children}
+          </AuthContextProvider>
+        </UserDataProvider>
       </body>
     </html>
   );

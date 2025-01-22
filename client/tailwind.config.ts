@@ -24,6 +24,7 @@ export default {
       },
       backgroundImage: {
         "blue-gradient": `linear-gradient(to top, #2b64ae, #449dde)`,
+        "red-gradient": `linear-gradient(to top, #ca3929, #932728)`,
       },
     },
   },

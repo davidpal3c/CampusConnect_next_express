@@ -1,5 +1,5 @@
 import { useUserAuth } from "@/app/_utils/auth-context";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
@@ -12,10 +12,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 
 export default function Header() {
 
-    const { user, signOutFirebase } = useUserAuth();
+    const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
     const router = useRouter();
 
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
     const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -30,17 +30,14 @@ export default function Header() {
         setAnchorEl(null);
 
         try {
-            await signOutFirebase();
+            await signOutAll();
+            // await signOutFirebase();
+            // router.push("/admin/login");
         } catch (err) {
             console.log("Sign Out error:", err);
         }
     }
-
-    useEffect(() => {
-        if (!user) {
-            router.push("/admin/login");
-        }
-    }, []);
+    
 
     return (
         <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-2 -mt-2 w-full">
@@ -54,7 +51,12 @@ export default function Header() {
                 </div>
 
             </div>
-            {user ? (
+
+            {authUserLoading ? (
+                <div>
+                    <p className="text-sm">Loading...</p>
+                </div>
+            ) : user ? (
                 <button
                     id="basic-button"
                     aria-controls={open ? 'basic-menu' : undefined}
@@ -67,8 +69,11 @@ export default function Header() {
                     <p className="text-sm text-gray-950">Hello<span className="ml-1 font-semibold">{user.displayName}!</span></p>
                 </button>
             ) : (
-                <div>Signing out...</div>
+                <div>
+                    <p className="text-sm">Signing Out...</p>
+                </div>
             )}
+
             <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}

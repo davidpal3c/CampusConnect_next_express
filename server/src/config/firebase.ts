@@ -10,14 +10,6 @@ export const initializeFirebaseAdmin = () => {
     }
 }
 
-export const verifyIdToken = async (idToken: string) => {
-    try {
-        const decodedToken = await admin.auth().verifyIdToken(idToken);     
-        console.log("DECODED TOKEN: ", decodedToken);
-        return decodedToken;
-    } catch (error) {
-        throw new Error("Invalid Token");
-    }   
-};
+
 
 
