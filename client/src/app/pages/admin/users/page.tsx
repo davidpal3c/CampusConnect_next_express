@@ -22,7 +22,7 @@ export default function Users() {
     const [usersPerPage] = useState(10); 
     
     useEffect(() => {
-        fetchData();
+       fetchData();
     }, []);
     
     // Fetch data from the API
