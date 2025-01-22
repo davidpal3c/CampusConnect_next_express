@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 
-import React, { useState, useEffect } from "react";
-
 export default function Home() {
+
 
   const [message, setMessage] = useState("Loading...")
   const [people, setPeople] = useState([]);
@@ -65,23 +64,6 @@ export default function Home() {
             Go to Student Login Page
           </h1>
         </Link>
-      </div>
-      <div className="bg-white border-4 rounded-lg border-saitBlue shadow-lg w-11/12 md:w-1/2 lg:w-1/3 px-6 py-8">
-        <h1>Hello there</h1>
-        <p>{message ? message : null}</p>
-        <ul>
-          {people.map((person, index) => {
-            return (
-              <div key={index}>
-                <li>{person.id}</li>
-                <li>{person.name}</li>
-                <li>{person.age}</li>
-              </div>
-            )
-          })}
-        </ul>
-        <p className="mt-4">Selected User:</p>
-        <p>{JSON.stringify(user)}</p>
       </div>
     </div>
   );

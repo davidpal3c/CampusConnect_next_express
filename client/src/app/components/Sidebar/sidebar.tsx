@@ -37,8 +37,8 @@ export default function Sidebar(props: SidebarProps) {
           <SidebarButton href={"/admin/groups"} icon={GroupIcon}>
             Groups
           </SidebarButton>
-          <SidebarButton href={"/admin/students"} icon={StudentIcon}>
-            Students
+          <SidebarButton href={"/admin/users"} icon={StudentIcon}>
+            Users
           </SidebarButton>
           <SidebarButton href={"/admin/analytics"} icon={AnalyticIcon}>
             Analytics
