@@ -18,6 +18,8 @@ export default function Users() {
     // State Management
     const [users, setUsers] = useState([]);
     const [originalUsers, setOriginalUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [usersPerPage] = useState(10); 
     
     useEffect(() => {
         fetchData();
@@ -66,6 +68,22 @@ export default function Users() {
             setUsers(filteredUsers);
         }
     }
+
+    // Pagination
+
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+    const totalPages = Math.ceil(users.length / usersPerPage);
+
+    const handlePrevious = () => {
+        if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+    };
+
+    const handleNext = () => {
+        if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+    };
     
 
     return (
@@ -92,7 +110,7 @@ export default function Users() {
                     </div>
                 } />
                 <ul>
-                    {users.map((user, index) => {
+                    {currentUsers.map((user, index) => {
                         return (
                                 <UserItem 
                                     key={user.user_id}
@@ -105,6 +123,26 @@ export default function Users() {
                         )
                     })}
                 </ul>
+
+                <div className="flex justify-between items-center mt-4">
+                    <button 
+                        onClick={handlePrevious} 
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                    >
+                        Previous
+                    </button>
+                    <span>
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <button 
+                        onClick={handleNext} 
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+                </div>
         </div>
         
     );

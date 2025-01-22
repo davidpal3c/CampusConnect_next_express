@@ -8,10 +8,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
     const prisma = new PrismaClient();
 
-    const users = await prisma.user.findMany(); 
-
-
     try {
+        const users = await prisma.user.findMany(); 
         res.json(users);
     } catch (error) {
         console.log("error getting all users", error);
@@ -28,6 +26,11 @@ export const getUserById = async (req: Request, res: Response) : Promise<void> =
 
     try {
         const { id } = req.params; 
+
+        if (isNaN(Number(id))) {
+            res.status(404).json({ error: 'Invalid ID format' });
+            return;
+        }
 
         const user = await prisma.user.findUnique({
             where: { user_id: id }, // Will need to change this to parse to Int if we decide to use a number for the user_id for auto increment
