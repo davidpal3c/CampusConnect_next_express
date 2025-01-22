@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       { source: '/admin/groups', destination: '/pages/admin/groups' },
       { source: '/admin/notifications', destination: '/pages/admin/notifications' },
       { source: '/admin/students', destination: '/pages/admin/students' },
+      { source: '/student/login', destination: '/pages/auth/student/login' },
     ];
   },
 
