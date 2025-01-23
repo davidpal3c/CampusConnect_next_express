@@ -20,7 +20,13 @@ export default function UserDetails() {
     // Fetch user data from the API
     const fetchData = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${id}`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${id}`, {
+                method: "GET",
+                headers: {
+                  "content-type": "application/json",
+                },
+                credentials: "include",
+            });
             const data = await response.json();
             setUser(data);
         } catch (error) {
