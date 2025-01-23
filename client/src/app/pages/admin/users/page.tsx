@@ -7,11 +7,15 @@ import Link from "next/link";
 // Components
 import PageHeader from "@/app/components/PageHeader/PageHeader";
 import {FilterDropdown, FilterInput} from "@/app/components/Buttons/FilterButton/FilterButton";
-import UserItem from "@/app/components/page components/UserItem";
+import UserItem from "@/app/components/Page components/UserItem";
 
 // Icons for filters
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
+
+// libraries
+import { toast } from "react-toastify";
+
 
 export default function Users() {
 
@@ -28,12 +32,34 @@ export default function Users() {
     // Fetch data from the API
     const fetchData = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
+                method: "GET",
+                headers: {
+                  "content-type": "application/json",
+                },
+                credentials: "include",
+            });
+
             const data = await response.json();
+            if (!response.ok) {
+                const errorData = data;
+                toast.error(errorData.message || "An Error occurred fetching users.");
+                return;
+            }
+
             setUsers(data);
             setOriginalUsers(data); 
         } catch (error) {
             console.error(error);
+            // toast.error("Unknown error occurred fetching users: " + error);
+            toast.error("Unknown error occurred fetching users! : " + error, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
         }
     };
 

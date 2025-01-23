@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { initializeFirebaseAdmin } from '../config/firebase';
 import admin from 'firebase-admin';
-import { prisma } from '../lib/prismaClient';
+import { prisma } from '../config/prismaClient';
 
 export interface AuthenticatedRequest extends Request {
     user?: any; 

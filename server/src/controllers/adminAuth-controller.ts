@@ -25,9 +25,6 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
             permissions: adminPermissions,                
         }
 
-        // console.log(">>Decoded token: ", decodedToken);
-        // console.log("ENRICHED USER:", enrichedUser);
-
         const token = req.headers['authorization']?.split(' ')[1]; 
         if (!token) {
             throw new Error("Invalid request: token is missing");

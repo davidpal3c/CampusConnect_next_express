@@ -2,11 +2,10 @@
 // import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/prismaClient';
 
 
 export const getAllUsers = async (req: Request, res: Response) => {
-
-    const prisma = new PrismaClient();
 
     try {
         const users = await prisma.user.findMany(); 
@@ -21,8 +20,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
 }
 
 export const getUserById = async (req: Request, res: Response) : Promise<void> => {
-
-    const prisma = new PrismaClient();
 
     try {
         const { id } = req.params; 

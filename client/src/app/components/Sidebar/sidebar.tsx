@@ -1,11 +1,11 @@
 import SidebarButton from "./sidebar_button";
-import HomeIcon from "../icons/home_icon";
-import EventIcon from "../icons/event_icon";
-import NotificationIcon from "../icons/notification_icon";
-import GroupIcon from "../icons/group_icon";
-import StudentIcon from "../icons/student_icon";
-import AnalyticIcon from "../icons/analytic_icon";
-import ArticleIcon from "../icons/article_icon";
+import HomeIcon from "../Icons/home_icon";
+import EventIcon from "../Icons/event_icon";
+import NotificationIcon from "../Icons/notification_icon";
+import GroupIcon from "../Icons/group_icon";
+import StudentIcon from "../Icons/student_icon";
+import AnalyticIcon from "../Icons/analytic_icon";
+import ArticleIcon from "../Icons/article_icon";
 
 import { Link } from "@mui/material";
 import { useUserAuth } from "@/app/_utils/auth-context";
