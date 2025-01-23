@@ -252,7 +252,18 @@ export const AuthContextProvider = ({ children }) => {
 
   const validateSession = async (currentUser) => {
     try {
-      const sessionRoute = currentUser.role === "Admin" ? "session-admin" : "session-user";
+
+      // Propagate custom claims to user object, refreshing token for role-based session verification routing
+      const idTokenResult = await currentUser.getIdTokenResult(true);
+      const customClaims = idTokenResult.claims;
+      
+      const updatedUser = {
+        ...currentUser,
+        role: customClaims.role,
+      }
+
+      // fetch session route based on user role
+      const sessionRoute = updatedUser.role === "Admin" ? "session-admin" : "session-user";
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/${sessionRoute}`, {
         method: "POST",
@@ -291,6 +302,8 @@ export const AuthContextProvider = ({ children }) => {
       if (!isMounted) return;
 
       setAuthUserLoading(true);
+
+      console.log("Current User (useEffect - session verification): ", currentUser);
 
       if (currentUser) {
         try {

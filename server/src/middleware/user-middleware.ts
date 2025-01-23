@@ -10,7 +10,6 @@ export const verifySession = async (req: AuthenticatedRequest, res: Response, ne
     try {            
         initializeFirebaseAdmin(); 
         const sessionCookie = req.cookies['session'];
-        console.log("Session Cookie:  ", sessionCookie);
 
         if (!sessionCookie) {
             res.status(403).json({ status: 'error', message: 'Unauthorized: Session cookie is missing' });
