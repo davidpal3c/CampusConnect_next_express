@@ -15,6 +15,7 @@ export default {
         saitWhite: "#f7f7f7",
         saitRed: "#ca3929",
         saitDarkRed: "#932728",
+        saitLighterBlueOg: "#449dde", 
         saitLighterBlue: "#449dde",        // original : out of contrast with white
         saitLightBlue: "#2b64ae",
         saitBlue: "#005795",
