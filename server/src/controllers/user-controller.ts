@@ -5,6 +5,16 @@ import { PrismaClient } from '@prisma/client';
 import { prisma } from '../config/prismaClient';
 
 
+//TODO: store user_id for operation logger (include date)
+// const operationLog = {
+//     user_id: adminPermissions?.user_id,
+//     operation: "Check Admin Permissions",
+//     timestamp: new Date(),
+//   };
+// console.log("Operation Log: ", operationLog);
+
+
+
 export const getAllUsers = async (req: Request, res: Response) => {
 
     try {

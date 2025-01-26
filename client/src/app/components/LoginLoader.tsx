@@ -15,6 +15,7 @@ interface LoaderPageProps {
 
 export default function LoaderPage({ result, backdrop, routeType }: LoaderPageProps) {
     const [isMounted, setIsMounted] = useState(false);
+    const router = useRouter();
 
     const { user, processAdminSignIn, processUserSignIn } = useUserAuth();    
     const { userData } = useUserData();
@@ -29,11 +30,11 @@ export default function LoaderPage({ result, backdrop, routeType }: LoaderPagePr
         try {
             switch(routeType) {
                 case "admin":
-                    processAdminSignIn(result, closeLoaderBackdrop);     
+                    processAdminSignIn(result, closeLoaderBackdrop);    
                     break;
                 case "user":
                     console.log("User sign in result:");
-                    processUserSignIn(result, closeLoaderBackdrop);                     
+                    processUserSignIn(result, closeLoaderBackdrop);                
                     break;
                 default:
             }
