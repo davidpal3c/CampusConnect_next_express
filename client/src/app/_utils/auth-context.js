@@ -154,6 +154,7 @@ export const AuthContextProvider = ({ children }) => {
 
       updateAuthUser({
         role: userResponse.data.role,
+        permission: userResponse.data.permission,
         currentToken: token,
       });
 
@@ -186,7 +187,8 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error("No user available, unable to retrieve token.");
       }
 
-      let token = user.currentToken;
+      const token = await user.getIdToken(true);
+      // let token = user.currentToken;
 
       if (!token) {
         console.log("No token in user object, attempting to fetch new token...");
@@ -260,6 +262,7 @@ export const AuthContextProvider = ({ children }) => {
       const updatedUser = {
         ...currentUser,
         role: customClaims.role,
+        permission: customClaims.permission,
       }
 
       // fetch session route based on user role
@@ -280,6 +283,7 @@ export const AuthContextProvider = ({ children }) => {
           setUser({
             ...currentUser,
             role: userResponse.data.role,
+            permission: userResponse.data.permission,
           });
         } else {
           console.log("No session data received, user not authenticated.");
@@ -302,8 +306,6 @@ export const AuthContextProvider = ({ children }) => {
       if (!isMounted) return;
 
       setAuthUserLoading(true);
-
-      console.log("Current User (useEffect - session verification): ", currentUser);
 
       if (currentUser) {
         try {
@@ -342,8 +344,8 @@ export const AuthContextProvider = ({ children }) => {
         // router.push("/admin/login");
         return;
       } else {
-        console.log("Redirecting admin to dashboard...");
-        router.push("/admin/");
+        // console.log("Redirecting admin to dashboard...");
+        // router.push("/admin/");
       }
     }
   }, [user, authUserLoading, isProcessingAuth]);

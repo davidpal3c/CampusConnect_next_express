@@ -22,7 +22,7 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
 
         const enrichedUser = {
             ...dbUser,
-            permissions: adminPermissions,                
+            permission: adminPermissions.permissions,                
         }
 
         const token = req.headers['authorization']?.split(' ')[1]; 

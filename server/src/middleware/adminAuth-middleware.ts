@@ -92,15 +92,26 @@ export const adminRoute = async (req: AuthenticatedRequest, res: Response, next:
 
 export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const { decodedToken, dbUser } = req.user;
+        const { decodedToken, dbUser, adminPermissions } = req.user;
+
+        // console.log("Admin permissions (set custom claims middleware): ", adminPermissions); 
 
         const userRecord = await admin.auth().getUser(decodedToken.uid);
         const existingClaims = userRecord.customClaims;
 
-        if (!existingClaims?.role) {
-            await admin.auth().setCustomUserClaims(decodedToken.uid, { role: dbUser.role} );
-        }       
+        const customClaims = {
+            role: dbUser.role,
+            permissions: adminPermissions.permissions
+        };
 
+        await admin.auth().setCustomUserClaims(decodedToken.uid, customClaims );
+        // if (!existingClaims?.role) {
+        //     await admin.auth().setCustomUserClaims(decodedToken.uid, customClaims );
+        // }       
+
+        // console.log("Custom Claims set:", customClaims);
+        // console.log("Existing Claims set:", existingClaims);
+ 
         next();
     } catch (error: any) {
         console.log("Set Custom Claims error:", error);
