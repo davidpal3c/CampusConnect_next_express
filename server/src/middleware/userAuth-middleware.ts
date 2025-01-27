@@ -53,16 +53,7 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
         // checks if email is pre-registered in db
         const email = req.user.decodedToken.email;
         const user = await prisma.user.findUnique({ 
-            where: { email },
-            select: {
-                user_id: true,
-                email: true,
-                first_name: true,
-                last_name: true,
-                role: true,
-                created_at: true,
-                updated_at: true,
-            }
+            where: { email }
         }); 
         
         if (!user) {
@@ -70,30 +61,14 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
             return;
         }
 
+        const userId = user.user_id;
+
         // retrieve user fields based on role (Student/Alumni) from db
         if (user?.role === "Student") {
-            let studentTemporary = await prisma.student.findUnique({
-                where: {
-                    user_id: user.user_id, 
-                },
-                include: {
-                    Program: {
-                        include: {
-                            Department: true, 
-                        },
-                    },
-                },
+            const studentFields = await prisma.student.findUnique({
+                where: { user_id: userId },
             });
-
-            const studentFields: StudentFields = {
-                program_id: studentTemporary?.program_id,
-                program_name: studentTemporary?.Program?.name,
-                department: studentTemporary?.Program?.Department,
-                status: studentTemporary?.status,
-            };
-
-            studentTemporary = null;
-
+            
             req.user = { ...req.user, dbUser: user, studentFields: studentFields };
 
         } else if (user?.role === "Alumni") {

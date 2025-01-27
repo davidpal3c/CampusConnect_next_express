@@ -1,51 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 
 export default function Home() {
-
-
-  const [message, setMessage] = useState("Loading...")
-  const [people, setPeople] = useState([]);
-  const [user, setUser] = useState({});
-
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`);
-      const data = await response.json();
-      // console.log(data);
-      setPeople(data);
-      setMessage("Data fetched from Backend successfully");
-    } catch (error) {
-      console.error(error);
-      setMessage("Error fetching data");
-    }
-  }
-
-  const fetchUser = async (userId: number) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`);
-      const data = await response.json();
-      // console.log(data);
-      setUser(data);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  useEffect(() => {
-    fetchData();
-    // fetch("http://localhost:8080/api/users").then(
-    //   response => response.json()
-    // ).then(
-    //   data => {
-    //     console.log(data);
-    //     setPeople(data);
-    //   })s
-    fetchUser(2);
-  }, []);
 
   return (
     <div className="bg-saitLightBlue min-h-screen flex items-center justify-center">

@@ -46,16 +46,7 @@ export const adminRoute = async (req: AuthenticatedRequest, res: Response, next:
         // checks if email is pre-registered in db
         const email = req.user.decodedToken.email;
         const user = await prisma.user.findUnique({ 
-            where: { email },
-            select: {
-                user_id: true,
-                email: true,
-                first_name: true,
-                last_name: true,
-                role: true,
-                created_at: true,
-                updated_at: true,
-            }
+            where: { email }
         }); 
         
         if (!user) {

@@ -21,6 +21,11 @@ model User {
   Admin       Admin?
   Student     Student?
   Alumni      Alumni?
+  Notifications UserNotification[]
+  UserEvents  UserEvent[]
+  UserGroups  UserGroup[]
+  Groups      Group[]
+  MessagesSent  Message[]
 }
  
 model Admin {
@@ -33,12 +38,15 @@ model Admin {
  
 model Student {
   user_id     String   @id @unique
-  program_id  String
+  program_id  String?       // if null, reflect student status  
+  department_id   String           
+  intake_year Int     
   status      Status
  
   // Relations
   User        User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  Program     Program  @relation(fields: [program_id], references: [program_id])
+  Program     Program?  @relation(fields: [program_id], references: [program_id])
+  Department  Department @relation(fields: [department_id], references: [department_id])
 }
  
 model Alumni {
@@ -61,13 +69,127 @@ model Program {
 }
  
 model Department {
-  department_id String  @id 
+  department_id String  @id @unique 
   name          String
   contact_email String
   contact_phone String
   Programs      Program[]
+  Students      Student[]
 }
- 
+
+// Content Models
+model Article {
+  article_id      String    @id @unique @default(uuid())
+  title           String
+  datePublished   DateTime  @default(now())
+  content         String    @db.Text
+  author          String  
+  imageUrl        String?
+  audience        Json                // stores array of audience types and categories using JSONB
+  Categories      ArticleCategory[]
+
+}
+
+model ArticleCategory {
+  id           String    @id @unique @default(uuid())
+  article_id   String
+  category_id  String
+
+  //Relation
+  Article      Article   @relation(fields: [article_id], references: [article_id])
+  Category     Category  @relation(fields: [category_id], references: [category_id])
+}
+
+model Event {
+  event_id        String    @id @unique @default(uuid())
+  name            String
+  date            DateTime
+  location        String
+  audience        Json      
+  host            String
+  contact         String
+  capacity        Int
+  current_attendees Int   @default(0)
+
+  //Relation
+  Categories      EventCategory[]
+  UserEvents      UserEvent[]
+}
+
+model EventCategory {
+  id           String    @id @unique @default(uuid())
+  event_id     String
+  category_id  String
+
+  //Relation
+  Event        Event     @relation(fields: [event_id], references: [event_id])
+  Category     Category  @relation(fields: [category_id], references: [category_id])
+}
+
+model Category {
+  category_id  String    @id @unique @default(uuid())
+  name         String
+  Articles     ArticleCategory[]
+  Events       EventCategory[]
+}
+
+model Group {
+  group_id     String    @id @unique @default(uuid())
+  name         String
+  owner_id     String             //user_id    
+  owner        User      @relation(fields: [owner_id], references: [user_id])
+  audience     Json                 
+  allowed_users Json?                   // Optional: List of specific user IDs allowed 
+  Messages     Message[]
+  UserGroups   UserGroup[]
+}
+
+model Message {
+  message_id   String    @id @unique @default(uuid())
+  content      String
+  timestamp    DateTime  @default(now())
+  sender_id    String
+  group_id     String
+  Group        Group     @relation(fields: [group_id], references: [group_id], onDelete: Cascade)
+  Sender       User      @relation(fields: [sender_id], references: [user_id], onDelete: Cascade)
+}
+
+model UserEvent {
+  id           String    @id @unique @default(uuid())
+  user_id      String
+  event_id     String
+  rsvp         Boolean   @default(false)
+  User         User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Event        Event     @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+}
+
+model UserGroup {
+  id           String    @id @unique @default(uuid())
+  user_id      String
+  group_id     String
+  User         User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Group        Group     @relation(fields: [group_id], references: [group_id], onDelete: Cascade)
+}
+
+model Notification {
+  notification_id String    @id @unique @default(uuid())
+  type            Type    // Type(enum) of notification (Article, Event, Group/Message, etc.)
+  description     String
+  audience        Json      
+  created_at      DateTime  @default(now()) 
+  UserNotifications   UserNotification[]
+}
+
+model UserNotification {
+  id              String    @id @unique @default(uuid())
+  user_id         String      //fk
+  notification_id String
+  accessed        Boolean   @default(false)
+  User            User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Notification    Notification @relation(fields: [notification_id], references: [notification_id], onDelete: Cascade)
+}
+
+
 enum Role {
   Admin
   Student
@@ -78,4 +200,11 @@ enum Status {
   Active
   Inactive
   Preapproved
+  Prospective
+}
+
+enum Type {
+  Article
+  Event
+  Group
 }
