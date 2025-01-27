@@ -187,7 +187,7 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error("No user available, unable to retrieve token.");
       }
 
-      const token = await user.getIdToken(true);
+      const token = await getIdToken(true);
       // let token = user.currentToken;
 
       if (!token) {
