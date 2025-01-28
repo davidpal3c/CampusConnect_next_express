@@ -76,3 +76,7 @@ Thumbs.db
 # DBeaver
 /server/prisma/.dbeaver
 
+# Prisma seed files
+/server/prisma/seed.ts
+/server/prisma/seed.js
+/server/prisma/seed(old).ts

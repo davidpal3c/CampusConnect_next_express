@@ -38,44 +38,34 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
             res.status(403).json({ status: 'error', message: 'Forbidden Access: Admin privileges required.' });
             return;
         }
+        
+        const adminPermissions = decodedClaims.permissions;
+        
+        // const adminPermissions = await prisma.user.findUnique({ 
+        //     where: { 
+        //         email: email
+        //     },
+        //     select: {
+        //         user_id: true, 
+        //         Admin: {
+        //             select: {
+        //                 permissions: true
+        //             }
+        //         }
+        //     }
+        // });    
 
-        const email = decodedClaims.email;        
-
-        const adminPermissions = await prisma.user.findUnique({ 
-            where: { 
-                email: email
-            },
-            select: {
-                user_id: true, 
-                Admin: {
-                    select: {
-                        permissions: true
-                    }
-                }
-            }
-        });        
-
-        //TODO: store user_id for operation logger (include date)
-        // const operationLog = {
-        //     user_id: adminPermissions?.user_id,
-        //     operation: "Check Admin Permissions",
-        //     timestamp: new Date(),
-        //   };
-        // console.log("Operation Log: ", operationLog);
- 
         if (
             !adminPermissions ||
-            !adminPermissions.Admin ||
-            !adminPermissions.Admin.permissions ||
-            (
-              !adminPermissions.Admin.permissions.includes("Read-Only") &&
-              !adminPermissions.Admin.permissions.includes("Read-Write") &&
-              !adminPermissions.Admin.permissions.includes("Full Access")
+            (                                                                           // Check if Admin has at least one of the following permissions
+              adminPermissions !== "Read-Only" &&
+              adminPermissions !== "Read-Write" &&
+              adminPermissions !== "Full Access"
             )
           ) {
             res.status(403).json({ status: 'error', message: 'Forbidden Access: Admin privileges required (protect Route).' });
             return;
-        }
+        }   
 
         next();        
     } catch (error: any) {
