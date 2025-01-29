@@ -43,7 +43,7 @@ export const getUserById = async (req: Request, res: Response) : Promise<void> =
             return;
         }
 
-        const user = await prisma.user.findUnique({
+        let user = await prisma.user.findUnique({
             where: { user_id: id }, 
         });
 
