@@ -69,7 +69,7 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
         
         const { email } = req.user.decodedClaims;     
 
-        const user = await prisma.user.findUnique({
+        let user = await prisma.user.findUnique({
             where: { email: email }, 
         });
 
@@ -77,6 +77,36 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
             res.status(404).json({ error: 'User not found' });
             return;
         }
+
+        if (user.role === 'Student') {
+            const student = await prisma.student.findUnique({
+                where: { user_id: user.user_id },
+            });
+
+            if (!student) {
+                res.status(404).json({ error: 'Student not found' });
+                return;
+            }
+
+            user = { ...user, ...student};
+
+            res.status(200).json({ user });
+            return;
+        } else if (user.role === 'Alumni') {
+            const alumni = await prisma.alumni.findUnique({
+                where: { user_id: user.user_id },
+            });
+
+            if (!alumni) {
+                res.status(404).json({ error: 'Alumni not found' });
+                return;
+            }
+
+            user = { ...user, ...alumni};
+            
+            res.status(200).json({ user });
+            return
+        }        
 
         res.status(200).json(user);
         return;
@@ -123,6 +153,7 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
                     graduation_year: graduation_year,
                     credentials: credentials,
                     current_position: current_position || null,
+                    company: company || null,
                 }
             });
         }
@@ -183,6 +214,8 @@ export const updateUser = async (req: Request, res: Response) : Promise<void> =>
                 }
             });
         }
+
+        res.status(201).json({ message: 'User updated successfully', user });
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     } finally {
@@ -205,7 +238,7 @@ export const deleteUser = async (req: Request, res: Response) : Promise<void> =>
             where: { user_id: id },
         });
 
-        res.status(200).json(user);
+        res.status(200).json({ message: 'User deleted successfully', user });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
