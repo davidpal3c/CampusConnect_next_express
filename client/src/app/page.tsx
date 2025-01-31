@@ -1,10 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from 'react';
 
 export default function Home() {
 
-  return (
+  const [ isClient, setIsClient ] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  })
+
+  if (isClient) {
+    return (
     <div className="bg-saitLightBlue min-h-screen flex items-center justify-center">
       <div className="bg-white border-4 rounded-lg border-saitBlue shadow-lg w-11/12 md:w-1/2 lg:w-1/3 px-6 py-8">
         <img
@@ -25,4 +33,7 @@ export default function Home() {
       </div>
     </div>
   );
+  }
+
+  
 }
