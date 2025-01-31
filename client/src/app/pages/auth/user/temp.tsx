@@ -3,7 +3,7 @@
 "use client";
 import { useState } from "react";
 import { useUserAuth } from "@/app/_utils/auth-context";
-import StudentPageBtn from "@/app/components/Button/StudentLoginBtn";
+import StudentPageBtn from "@/app/components/Buttons/StudentPageButton/StudentLoginBtn";
 
 export default function StudentLogin() {
   const { googleSignIn, getIdToken } = useUserAuth();

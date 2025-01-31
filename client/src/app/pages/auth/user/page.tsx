@@ -12,7 +12,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import LoginLoader from "@/app/components/LoginLoader";
 import { auth } from "@/app/_utils/firebase";
-import StudentPageBtn from "@/app/components/Button/StudentLoginBtn";
+import StudentPageBtn from "@/app/components/Buttons/StudentPageButton/StudentLoginBtn";
 
 
 
