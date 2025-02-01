@@ -32,7 +32,7 @@ export default function Header() {
         try {
             await signOutAll();
             // await signOutFirebase();
-            // router.push("/admin/login");
+            router.push("/admin/login");
         } catch (err) {
             console.log("Sign Out error:", err);
         }
@@ -65,7 +65,7 @@ export default function Header() {
                     onClick={handleMenuClick}
                     className="flex items-center mr-3">
 
-                    <img src={user.photoURL} alt="" className="w-[2.4rem] h-[2.4rem] ml-3 mr-2 rounded-full border border-slate-500" />
+                    <img src={user.photoURL} alt="user-avatar-photo" className="w-[2.4rem] h-[2.4rem] ml-3 mr-2 rounded-full border border-slate-500" />
                     <p className="text-sm text-gray-950">Hello<span className="ml-1 font-semibold">{user.displayName}!</span></p>
                 </button>
             ) : (

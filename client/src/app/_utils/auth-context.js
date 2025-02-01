@@ -83,8 +83,7 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error(errorData.message || "An unknown error occurred");
       }
 
-      console.log("Logout successful");
-      router.push("/admin/login");
+      console.log("Logout successful");      
     } catch (error) {
       console.error("Sign Out Error:", error);
       throw error;
@@ -228,6 +227,7 @@ export const AuthContextProvider = ({ children }) => {
       updateUserData(userResponse.data);
       toast.success(userResponse.message);
       router.push("/user/");
+      
     } catch (error) {
       console.error("Sign In process error:", error);
       toast.error(error.message || "Oops Something went wrong!", {

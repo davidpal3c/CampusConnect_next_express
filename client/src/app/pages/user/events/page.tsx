@@ -1,7 +1,7 @@
 export default function Events() {
   return (
-    <div>
-      <div className="bg-saitWhite h-screen">events</div>
+    <div className="p-4 h-screen">
+      <div className="bg-saitWhite h-screen">Events</div>
     </div>
   );
 }

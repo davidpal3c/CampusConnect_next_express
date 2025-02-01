@@ -14,7 +14,7 @@ export default function AdminLayout({
 
     return (
         <main className="flex flex-row items-start min-h-screen bg-white">
-            <nav className="flex items-start w-52 md:w-60 lg:w-64 xl:w-72 h-full">
+            <nav className="flex items-start w-64 md:w-60 lg:w-64 xl:w-72 h-full">
                 <Sidebar />
             </nav>
             <div className="flex flex-col bg-gray-100 w-full h-full">
