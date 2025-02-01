@@ -1,4 +1,4 @@
-import SidebarButton from "./sidebar_button";
+import SidebarButton from "./SidebarButton";
 import HomeIcon from "../Icons/home_icon";
 import EventIcon from "../Icons/event_icon";
 import NotificationIcon from "../Icons/notification_icon";

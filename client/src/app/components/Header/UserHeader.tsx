@@ -16,7 +16,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 
 
 
-export default function StudentHeader() { 
+export default function UserHeader() { 
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
     const router = useRouter();

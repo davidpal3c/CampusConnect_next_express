@@ -2,8 +2,7 @@
 
 import { useUserAuth } from "@/app/_utils/auth-context";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import SidebarButton from "./sidebar_button";
+import UserSidebarButton from "./UserSidebarBbutton";
 import HomeIcon from "../Icons/home_icon";
 import EventIcon from "../Icons/event_icon";
 import NotificationIcon from "../Icons/notification_icon";
@@ -59,33 +58,33 @@ export default function StudentSidebar(props: SidebarProps) {
           />
         </div>
         <div>
-          <SidebarButton href={"/user"} icon={HomeIcon}>
+          <UserSidebarButton href={"/user"} icon={HomeIcon}>
             Dashboard
-          </SidebarButton>
-          <SidebarButton href={"/user/events"} icon={EventIcon}>
+          </UserSidebarButton>
+          <UserSidebarButton href={"/user/events"} icon={EventIcon}>
             Events
-          </SidebarButton>
-          <SidebarButton href={"/user/notifications"} icon={NotificationIcon}>
+          </UserSidebarButton>
+          <UserSidebarButton href={"/user/notifications"} icon={NotificationIcon}>
             Notifications
-          </SidebarButton>
-          <SidebarButton href={"/user/groups"} icon={GroupIcon}>
+          </UserSidebarButton>
+          <UserSidebarButton href={"/user/groups"} icon={GroupIcon}>
             Groups
-          </SidebarButton>
-          <SidebarButton
+          </UserSidebarButton>
+          <UserSidebarButton
             href={"/user/campusInformation"}
             icon={CampusInformationIcon}
           >
             Campus Information
-          </SidebarButton>
-          <SidebarButton
+          </UserSidebarButton>
+          <UserSidebarButton
             href={"/user/generalInformation"}
             icon={GeneralInformationIcon}
           >
             General Information
-          </SidebarButton>
-          <SidebarButton href={"/user/preArrival"} icon={PreArrivalIcon}>
+          </UserSidebarButton>
+          <UserSidebarButton href={"/user/preArrival"} icon={PreArrivalIcon}>
             Pre-Arrival
-          </SidebarButton>
+          </UserSidebarButton>
         </div>
       </div>
       <div className="w-screen">{}</div>

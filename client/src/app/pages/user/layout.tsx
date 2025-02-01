@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import StudentSidebar from "@/app/components/Sidebar/student_sidebar";
-import StudentHeader from "@/app/components/Header/StudentHeader";
+import StudentSidebar from "@/app/components/Sidebar/StudentSidebar";
+import UserHeader from "@/app/components/Header/UserHeader";
 
 export default function StudentLayout({
   children,
@@ -17,7 +17,7 @@ export default function StudentLayout({
       </nav>
       <div className="flex flex-col bg-gray-100 w-full h-full">
         <header className="flex justify-between h-[3.5rem] md:h-16 p-2">
-          <StudentHeader />
+          <UserHeader />
         </header>
         <main className="h-full">
           {children}

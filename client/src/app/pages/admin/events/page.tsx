@@ -1,6 +1,6 @@
 export default function Events() {
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4 h-screen">
       <div className="flex flex-col lg:flex-row bg-white shadow-lg rounded-lg p-6 w-full max-w-7xl gap-6">
         {/* Left Section - Event Details */}
         <div className="bg-white rounded-lg shadow p-6 flex-1">
