@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { initializeFirebaseAdmin, getAuth } from '../config/firebase';
-import { prisma } from '../config/prismaClient';
-
 
 export interface AuthenticatedRequest extends Request {
     user?: any; 
@@ -20,6 +18,11 @@ export const verifySession = async (req: AuthenticatedRequest, res: Response, ne
  
         const decodedClaims = await getAuth().verifySessionCookie(sessionCookie, true); 
 
+        if (!decodedClaims) {
+            res.status(403).json({ status: 'error', message: 'Unauthorized: Invalid session cookie' });
+            return;
+        }
+
         req.user = { decodedClaims: decodedClaims };
 
         next();        
@@ -31,17 +34,29 @@ export const verifySession = async (req: AuthenticatedRequest, res: Response, ne
     }
 }
 
+export const adminRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const { decodedClaims } = req.user;     
 
-export const protectRoute = (allowedPermissions: string[]) => {
+        if (!decodedClaims.role || decodedClaims.role !== "Admin") {
+            res.status(403).json({ status: 'error', message: 'Forbidden Access: Admin privileges required.' });
+            return;
+        }
+        
+        next();        
+    } catch (error: any) {
+        console.error("Error verifying ID Token:", error);
+        res.status(403).json({ status: 'error', message: 'Unauthorized', error: error.message });
+        return;
+    }
+}
+
+
+export const validatePermissions = (allowedPermissions: string[]) => {
 
     return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const { decodedClaims } = req.user;   
-    
-            if (!decodedClaims.role || decodedClaims.role !== "Admin") {
-                res.status(403).json({ status: 'error', message: 'Forbidden Access: Admin privileges required.' });
-                return;
-            }
             
             const adminPermissions = decodedClaims.permissions;            
     
