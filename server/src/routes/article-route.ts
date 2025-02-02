@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifySession, protectRoute } from '../middleware/user-middleware';
+import { verifySession, adminRoute, validatePermissions } from '../middleware/user-middleware';
 import { getAllArticles, getArticleById, createArticle, updateArticle, deleteArticle } from '../controllers/articles-controller';
 
 const router = express.Router();
@@ -11,16 +11,16 @@ router.get('/', verifySession, getAllArticles);
 router.get('/:id', verifySession, getArticleById);
 
 // POST: /api/articles/ - Create a new article
-router.post('/', verifySession, protectRoute(['Read-Write', 'Full Access']), createArticle);
+router.post('/', verifySession, adminRoute, validatePermissions(['Read-Write', 'Full Access']), createArticle);
 
 // PATCH /api/articles/:id - Update an article by ID. This is a partial update
-// router.patch('/:id', verifySession, protectRoute(['Read-Write', 'Full Access']), updateArticle);
+// router.patch('/:id', verifySession, validatePermissions(['Read-Write', 'Full Access']), updateArticle);
 
 // PUT /api/articles/:id - Update an article by ID. This is a full update
-router.put('/:id', verifySession, protectRoute(['Full Access']), updateArticle);
+router.put('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), updateArticle);
 
 // DELETE /api/articles/:id - Delete an article by ID
-router.delete('/:id', verifySession, protectRoute(['Full Access']), deleteArticle);
+router.delete('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), deleteArticle);
 
 
 export default router;

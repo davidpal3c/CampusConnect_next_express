@@ -27,6 +27,8 @@ model User {
   UserGroups  UserGroup[]
   Groups      Group[]
   MessagesSent  Message[]
+ 
+  //EventsOwned Event[]   
 
   @@index([email, user_id])
 }
@@ -109,7 +111,7 @@ model Event {
   date            DateTime
   location        String
   audience        Json      
-  host            String
+  host            String?     // descriptive (eg. department name, program name,etc)
   contact         String
   capacity        Int
   current_attendees Int   @default(0)
@@ -117,6 +119,11 @@ model Event {
   //Relation
   Categories      EventCategory[]
   UserEvents      UserEvent[]
+  
+  //User            User  @relation(fields: [owner], references: [user_id])
+
+  @@index([host])
+  //@@index([owner])
 }
 
 model EventCategory {
@@ -160,14 +167,17 @@ model Message {
 model UserEvent {
   id           String    @id @unique @default(uuid())
   user_id      String
-  user_email   String
+  user_email   String       //not referenced to User (yet)
   event_id     String
   rsvp         Boolean   @default(false)
+  owned        Boolean?  @default(false)
+
   User         User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   Event        Event     @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
 
   @@index([user_email])   
 }
+
 
 model UserGroup {
   id           String    @id @unique @default(uuid())
