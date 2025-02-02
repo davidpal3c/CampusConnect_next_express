@@ -3,9 +3,10 @@
 // const cors = require('cors');               //so that the server can accept requests from the client
 
 import express from 'express';
-import userRoutes from './routes/user-route';
-import adminAuthRoutes from './routes/adminAuth-route';
-import userAuthRoutes from './routes/userAuth-route';
+import userRoute from './routes/user-route';
+import adminAuthRoute from './routes/adminAuth-route';
+import userAuthRoute from './routes/userAuth-route';
+import articleRoute from './routes/article-route';
 import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -34,11 +35,11 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Routes
-app.use('/api/auth', adminAuthRoutes);
-app.use('/api/auth', userAuthRoutes);
-
-app.use('/api/users', userRoutes);
-
+app.use('/api/auth', adminAuthRoute);
+app.use('/api/auth', userAuthRoute);
+app.use('/api/users', userRoute);
+app.use('/api/articles', articleRoute);
+// app.use('/api/events', eventsRoute);
 
 
 app.get('/', (req, res) => {

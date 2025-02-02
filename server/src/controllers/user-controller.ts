@@ -1,7 +1,4 @@
-// import model 
-// import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { prisma } from '../config/prismaClient';
 
 export interface AuthenticatedRequest extends Request {
@@ -25,7 +22,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         res.json(users);
     } catch (error) {
         console.log("error getting all users", error);
-        res.status(500).json({ message: "Server Error", error: error });
+        res.status(500).json({ message: "Server Error: could ", error: error });
     } finally {
         await prisma.$disconnect(); 
     }
@@ -37,6 +34,7 @@ export const getUserById = async (req: Request, res: Response) : Promise<void> =
 
     try {
         const { id } = req.params; 
+        //change to query db for user by email
 
         if (isNaN(Number(id))) {
             res.status(404).json({ error: 'Invalid ID format' });
@@ -119,7 +117,7 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
 // POST: /api/users/ - Create a new user
 export const createUser = async (req: Request, res: Response) : Promise<void> => {
     try {
-        const { userId, firstName, lastName, email, role, } = req.body;
+        const { userId, firstName, lastName, email, role, imageUrl } = req.body;
 
         const user = await prisma.user.create({
             data: {
@@ -129,6 +127,7 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
                 email: email,
                 password: 'password',        // TODO: hash password
                 role: role,
+                // imageUrl: imageUrl ? imageUrl || null, 
             }
         });
 
