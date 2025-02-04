@@ -17,6 +17,7 @@ model User {
   imageUrl    String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  photoURL    String
  
   // Relations
   Admin       Admin?
