@@ -10,7 +10,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 
-export default function Header() {
+export default function AdminHeader() {
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
     const router = useRouter();
@@ -32,7 +32,7 @@ export default function Header() {
         try {
             await signOutAll();
             // await signOutFirebase();
-            // router.push("/admin/login");
+            router.push("/admin/login");
         } catch (err) {
             console.log("Sign Out error:", err);
         }
@@ -43,11 +43,11 @@ export default function Header() {
         <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-2 -mt-2 w-full">
             <div className="flex justify-between items-center space-x-3 ">
                 {/* <p>Some-btn</p> */}
-                <div className="grid place-items-center rounded-lg bg-slate-300 w-8 h-8 hover:bg-saitLightBlue hover:stroke-saitWhite transition-colors duration-300">
-                    <SettingsIcon sx={{ color: "#4c4c4c", fontSize: 22, ":hover": { color: '#fff' } }} />
+                <div className="grid place-items-center rounded-full bg-slate-300 w-[2.4rem] h-[2.4rem] hover:bg-saitLightBlue hover:stroke-saitWhite transition-colors duration-300">
+                    <SettingsIcon sx={{ color: "#4c4c4c", fontSize: 25, ":hover": { color: '#fff' } }} />
                 </div>
-                <div className="grid place-items-center rounded-lg bg-slate-300 w-8 h-8 hover:bg-saitLightBlue hover:stroke-saitWhite transition-colors duration-300">
-                    <DarkModeIcon sx={{ color: "#4c4c4c", fontSize: 22, ":hover": { color: '#fff' } }} />
+                <div className="grid place-items-center rounded-full bg-slate-300 w-[2.4rem] h-[2.4rem] hover:bg-saitLightBlue hover:stroke-saitWhite transition-colors duration-300">
+                    <DarkModeIcon sx={{ color: "#4c4c4c", fontSize: 25, ":hover": { color: '#fff' } }} />
                 </div>
 
             </div>
@@ -65,7 +65,7 @@ export default function Header() {
                     onClick={handleMenuClick}
                     className="flex items-center mr-3">
 
-                    <img src={user.photoURL} alt="" className="w-[2.4rem] h-[2.4rem] ml-3 mr-2 rounded-full border border-slate-500" />
+                    <img src={user.photoURL} alt="user-avatar-photo" className="w-[2.4rem] h-[2.4rem] ml-3 mr-2 rounded-full border border-slate-500" />
                     <p className="text-sm text-gray-950">Hello<span className="ml-1 font-semibold">{user.displayName}!</span></p>
                 </button>
             ) : (

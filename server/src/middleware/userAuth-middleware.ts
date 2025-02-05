@@ -18,8 +18,7 @@ declare module 'express-serve-static-core' {
     interface Request {
       session?: any; 
     }
-  }
-
+}
 
 export const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
