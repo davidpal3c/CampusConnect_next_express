@@ -4,13 +4,14 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from "next/navigation";
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 
-export default function AdminHeader() {
+export default function Header({handleSidebarToggle, shouldShowButton}) {
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
     const router = useRouter();
@@ -49,8 +50,12 @@ export default function AdminHeader() {
                 <div className="grid place-items-center rounded-full bg-slate-300 w-[2.4rem] h-[2.4rem] hover:bg-saitLightBlue hover:stroke-saitWhite transition-colors duration-300">
                     <DarkModeIcon sx={{ color: "#4c4c4c", fontSize: 25, ":hover": { color: '#fff' } }} />
                 </div>
-
             </div>
+            { shouldShowButton && (
+                    <div className="grid place-items-center rounded-lg bg-slate-300 w-8 h-8 ml-auto hover:bg-saitLightBlue hover:stroke-saitWhite transition-colors duration-300" onClick={handleSidebarToggle}>
+                        <MenuIcon sx={{ color: "#4c4c4c", fontSize: 22, ":hover": { color: '#fff' } }} />
+                    </div>
+            )}
 
             {authUserLoading ? (
                 <div>
