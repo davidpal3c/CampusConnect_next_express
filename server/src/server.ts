@@ -7,6 +7,7 @@ import userRoute from './routes/user-route';
 import adminAuthRoute from './routes/adminAuth-route';
 import userAuthRoute from './routes/userAuth-route';
 import articleRoute from './routes/article-route';
+import eventRoute from './routes/events-route';
 import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -39,7 +40,7 @@ app.use('/api/auth', adminAuthRoute);
 app.use('/api/auth', userAuthRoute);
 app.use('/api/users', userRoute);
 app.use('/api/articles', articleRoute);
-// app.use('/api/events', eventsRoute);
+app.use('/api/events', eventRoute);
 
 
 app.get('/', (req, res) => {
