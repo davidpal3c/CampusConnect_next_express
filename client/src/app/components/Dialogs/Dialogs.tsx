@@ -50,8 +50,9 @@ export function UpdateDialog ({
   
   const [user, setUser] = useState(initialData);
   const [role, setRole] = useState(initialData.role);
-  const [permissions, setPermissions] = useState(initialData.Admin.permissions);
-
+  const [permissions, setPermissions] = useState(
+    initialData.role === "Admin" ? initialData.Admin.permissions : []
+  );
   console.log(initialData);
 
   const rolesArray = ["Admin", "Alumni", "Student"];
