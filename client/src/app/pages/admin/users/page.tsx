@@ -124,19 +124,6 @@ export default function Users() {
         if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
     };
     
-
-    const columns = [
-        { key: 'name', label: 'Name' },
-        { key: 'role', label: 'Role' },
-        { key: 'email', label: 'Email' },
-        { key: 'createdAt', label: 'Created At' },
-      ];
-      
-      const data = [
-        { id: 1, name: 'Alice', role: 'Admin', email: 'alice@example.com', createdAt: '2023-01-01' },
-        { id: 2, name: 'Bob', role: 'User', email: 'bob@example.com', createdAt: '2023-02-01' },
-      ];
-
     return (
         <div className="bg-saitWhite h-screen">
             {isLoading ? (
@@ -198,7 +185,7 @@ export default function Users() {
                             Next
                         </button>
                     </div>
-                    <TableView columns={columns} data={data} />
+                    <TableView/>
                 </div>
             )}
         </div>

@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import { useMediaQuery } from "react-responsive";
 import Sidebar from '@/app/components/Sidebar/Sidebar';
-import Header from '@/app/components/Header/Header';
+import Header from '@/app/components/Header/AdminHeader';
 
 
 export default function AdminLayout({
