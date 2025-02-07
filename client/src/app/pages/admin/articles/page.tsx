@@ -178,7 +178,7 @@ export default function Articles() {
                 </button>
               ))
             ) : (
-              <p className="text-black">Loading...</p>
+              <p className="text-black">Loading.....</p>
             )}
         </div>
         {/* Pagination */}
