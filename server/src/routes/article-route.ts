@@ -1,11 +1,14 @@
 import express from 'express';
 import { verifySession, adminRoute, validatePermissions } from '../middleware/user-middleware';
-import { getAllArticles, getArticleById, createArticle, updateArticle, deleteArticle } from '../controllers/articles-controller';
+import { getAllArticles, getArticleCategories, getArticleById, createArticle, updateArticle, deleteArticle } from '../controllers/articles-controller';
 
 const router = express.Router();
 
 // GET /api/articles/ - Get all articles
 router.get('/', verifySession, getAllArticles);
+
+// GET /api/articles/categories - Get article categories
+router.get('/categories', verifySession, getArticleCategories);
 
 // GET /api/articles/:id - Get a single article by ID
 router.get('/:id', verifySession, getArticleById);

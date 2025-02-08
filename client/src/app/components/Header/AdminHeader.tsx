@@ -71,7 +71,7 @@ export default function Header({handleSidebarToggle, shouldShowButton}) {
                     className="flex items-center mr-3">
 
                     <img src={user.photoURL} alt="user-avatar-photo" className="w-[2.4rem] h-[2.4rem] ml-3 mr-2 rounded-full border border-slate-500" />
-                    <p className="text-sm text-gray-950">Hello<span className="ml-1 font-semibold">{user.displayName}!</span></p>
+                    <p className="text-sm text-gray-950">Hello,<span className="ml-1 font-semibold">{user.displayName}!</span></p>
                 </button>
             ) : (
                 <div>
@@ -87,12 +87,36 @@ export default function Header({handleSidebarToggle, shouldShowButton}) {
                 MenuListProps={{
                     'aria-labelledby': 'basic-button',
                 }}
-                sx={{ '& .MuiMenuItem-root': { fontFamily: 'Sans-serif', fontSize: '1rem' } }}
+                // sx={{ '& .MuiMenuItem-root': { fontFamily: 'Sans-serif', fontSize: '1rem' } }}
+                PaperProps={{
+                    sx: {
+                        backgroundColor: "#f7f7f7",
+                        borderRadius: "10px",
+                        border: "1px solid #005795",
+                        boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
+                        marginTop: "0.4rem",
+                        marginLeft: "0.9rem",
+                        width: "10rem",
+                    }
+                }}
             >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleSignOut}>Logout</MenuItem>
+                <MenuItem sx={menuStyles.menuItem} onClick={handleClose}>Profile</MenuItem>
+                <MenuItem sx={menuStyles.menuItem} onClick={handleClose}>My account</MenuItem>
+                <MenuItem sx={menuStyles.menuItem} onClick={handleSignOut}>Logout</MenuItem>
             </Menu>
         </header>
     );
+}
+
+const menuStyles = {
+    menuItem: {
+        ":hover": {
+            // backgroundColor: "#feba74",
+            backgroundColor: "#999999",
+            color: "#f7f7f7",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease-out, color 0.3s ease-out",
+        },
+        color: "#06222b"
+    }
 }

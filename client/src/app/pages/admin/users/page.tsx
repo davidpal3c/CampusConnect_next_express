@@ -17,6 +17,7 @@ import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
 
 // libraries
 import { toast } from "react-toastify";
+import Articles from "../articles/page";
 
 
 
@@ -29,7 +30,7 @@ export default function Users() {
     const [usersPerPage] = useState(10); 
     
     useEffect(() => {
-       fetchData();
+       fetchUserData();
     }, []);
 
 
@@ -44,7 +45,7 @@ export default function Users() {
 
     
     // Fetch data from the API
-    const fetchData = async () => {
+    const fetchUserData = async () => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
                 method: "GET",
@@ -95,7 +96,6 @@ export default function Users() {
             
         }
     };
-
 
     const filterByRole = (role: string) => {
         if (role === "") {
