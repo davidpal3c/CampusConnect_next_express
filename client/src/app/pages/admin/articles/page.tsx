@@ -152,7 +152,7 @@ export default function Articles() {
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row md:space-x-2 sm:space-x-6">
+          <div className="flex flex-col xs:flex-row xs:space-x-3 md:space-x-2 sm:space-x-6">
             <Tooltip title="New Article">
               <div>              
                 <ActionButton title="Create" onClick={handleCreateArticle} borderColor="border-saitBlue"
