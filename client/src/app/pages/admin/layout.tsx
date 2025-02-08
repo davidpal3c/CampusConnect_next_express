@@ -37,7 +37,7 @@ export default function AdminLayout({
                 </header>
 
                 {/* Page Content */}
-                <section className="flex-grow overflow-auto">
+                <section className="flex-grow overflow-auto relative">
                     {children}
                 </section>
             </div>
