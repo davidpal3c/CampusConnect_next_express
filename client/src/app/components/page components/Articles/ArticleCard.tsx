@@ -30,7 +30,9 @@ export default function ArticleCard({ article } : { article: any }) {
                         </div>
                         
                         <p className="text-sm text-gray-600">{article.author}</p>        
-                        <p className="text-sm text-gray-600">{`${contentReduced}...`}</p>
+                        <div className="flex flex-wrap relative">
+                            <p className="text-sm text-gray-600">{`${contentReduced}...`}</p>
+                        </div>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-40 w-40 bg-gray-200 rounded-lg">

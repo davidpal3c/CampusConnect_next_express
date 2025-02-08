@@ -27,7 +27,7 @@ export default function Articles() {
   const [articles, setArticles] = useState([]); 
   const [originalArticles, setOriginalArticles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [articlesPerPage] = useState(4); 
+  const [articlesPerPage] = useState(8); 
 
   const [searchValue, setSearchValue] = useState([]); 
 

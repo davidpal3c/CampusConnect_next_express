@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import { useMediaQuery } from "react-responsive";
 import Sidebar from '@/app/components/Sidebar/Sidebar';
-import Header from '@/app/components/Header/AdminHeader';
+import AdminHeader from '@/app/components/Header/AdminHeader';
 
 
 export default function AdminLayout({
@@ -26,14 +26,17 @@ export default function AdminLayout({
         <main className="flex min-h-screen bg-white">
             {/* Sidebar - Hidden on small screens */}
             <aside className={`fixed md:relative md:block ${isOpen ? "block" : "hidden"} z-50`}>
-                <Sidebar />
+                <div className="">
+                    <Sidebar />
+                </div>
+                
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex flex-col bg-gray-100 w-full h-screen">
+            <div className="flex flex-col bg-saitWhite w-full h-full">
                 {/* Header */}
                 <header className="flex justify-between h-[3.5rem] md:h-16 p-2">
-                    <Header shouldShowButton={shouldShowButton} handleSidebarToggle={handleSidebarToggle}/>
+                    <AdminHeader shouldShowButton={shouldShowButton} handleSidebarToggle={handleSidebarToggle}/>
                 </header>
 
                 {/* Page Content */}
