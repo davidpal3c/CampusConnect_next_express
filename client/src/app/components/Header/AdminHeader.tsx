@@ -10,6 +10,8 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsIcon from '@mui/icons-material/Settings';
 
+import { Tooltip } from "@mui/material";
+
 
 export default function Header({handleSidebarToggle, shouldShowButton}) {
 
@@ -62,17 +64,19 @@ export default function Header({handleSidebarToggle, shouldShowButton}) {
                     <p className="text-sm">Loading...</p>
                 </div>
             ) : user ? (
-                <button
-                    id="basic-button"
-                    aria-controls={open ? 'basic-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                    onClick={handleMenuClick}
-                    className="flex items-center mr-3">
+                <Tooltip title={`Hello, ${user.displayName}!`}>           
+                    <button
+                        id="basic-button"
+                        aria-controls={open ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleMenuClick}
+                        className="flex items-center mr-3">
 
-                    <img src={user.photoURL} alt="user-avatar-photo" className="w-[2.4rem] h-[2.4rem] ml-3 mr-2 rounded-full border border-slate-500" />
-                    <p className="text-sm text-gray-950">Hello,<span className="ml-1 font-semibold">{user.displayName}!</span></p>
-                </button>
+                        <img src={user.photoURL} alt="user-avatar-photo" className="w-[2.6rem] h-[2.6rem] ml-3 mr-2 rounded-full border border-slate-500" />
+                        {/* <p className="text-sm text-gray-950">Hello,<span className="ml-1 font-semibold">{user.displayName}!</span></p> */}
+                    </button>
+                </Tooltip>
             ) : (
                 <div>
                     <p className="text-sm">Signing Out...</p>
