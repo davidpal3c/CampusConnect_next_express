@@ -21,6 +21,5 @@ export default function UserPageHeader({ title, filter = null, subfilter = null 
                     </div>
                 )}
         </div>
-
     );
 }

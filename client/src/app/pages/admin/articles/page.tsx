@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
 import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 
 
@@ -146,9 +147,10 @@ export default function Articles() {
             <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 ">
               <input 
                   type="text" 
-                  placeholder="Name, Article ID, Author, Date Published" 
+                  placeholder="Search"      //Name, Article ID, Author, Date Published 
                   className="flex-1 text-saitGray text-sm bg-transparent w-64 focus:outline-none p-1" 
               />
+              <SearchOutlinedIcon className="text-saitGray" fontSize="small" />
             </div>
           </div>
           

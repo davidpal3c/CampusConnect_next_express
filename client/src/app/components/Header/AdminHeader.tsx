@@ -99,7 +99,7 @@ export default function Header({handleSidebarToggle, shouldShowButton}) {
                         border: "1px solid #005795",
                         boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
                         marginTop: "0.4rem",
-                        marginLeft: "0.9rem",
+                        marginRight: "1.3rem",
                         width: "10rem",
                     }
                 }}

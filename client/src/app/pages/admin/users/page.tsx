@@ -9,7 +9,7 @@ import PageHeader from "@/app/components/PageHeader/PageHeader";
 import {FilterDropdown, FilterInput} from "@/app/components/Buttons/FilterButton/FilterButton";
 import UserItem from "@/app/components/PageComponents/User/UserItem";
 import Loader from "@/app/components/Loader/Loader";
-import TableView from "./TableView";
+import TableView from "../../../components/PageComponents/Admin/User/TableView";
 
 // Icons for filters
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';

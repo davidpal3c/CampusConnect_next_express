@@ -225,7 +225,6 @@ enum Role {
 enum Status {
   Active
   Inactive
-  Preapproved
   Prospective
 }
 

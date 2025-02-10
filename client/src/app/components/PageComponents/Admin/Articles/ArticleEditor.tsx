@@ -245,7 +245,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             <textarea className={formStyling.inputStyling} id="content" cols={200} rows={10}
                                 {...register("content", { 
                                     required: 'Content is Required',
-                                    maxLength: { value: 5000, message: 'Content should not exceed 5000 characters' }
+                                    maxLength: { value: 6000, message: 'Content should not exceed 6000 characters' }
                                 })}
                             />
                             {errors.content && <p className={formStyling.errorStyle}>{errors.content.message}</p>}
