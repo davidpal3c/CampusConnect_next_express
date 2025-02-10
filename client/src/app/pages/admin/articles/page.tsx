@@ -3,10 +3,10 @@
 import React, { useState, useEffect, use } from "react";
 // import PageHeader from "@/app/components/PageHeader/PageHeader";
 // import {FilterDropdown, FilterInput} from "@/app/components/Buttons/FilterButton/FilterButton";
-import ArticleCard from "@/app/components/Page components/Articles/ArticleCard";
+import ArticleCard from "@/app/components/PageComponents/Admin/Articles/ArticleCard";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import ArticleOptionsBtn from "@/app/components/Buttons/ArticleOptionsBtn";
-import ArticleEditor from "@/app/components/Page components/Articles/ArticleEditor";
+import ArticleEditor from "@/app/components/PageComponents/Admin/Articles/ArticleEditor";
 
 import { toast } from "react-toastify";
 
@@ -112,7 +112,7 @@ export default function Articles() {
 
 
   return(
-    <main className="bg-saitWhite h-screen p-4">
+    <main className="bg-saitWhite h-screen p-4 xl:pr-8">
       <div className="">
         <header className="flex flex-col items-center justify-between border-b-2 border-saitBlack pb-3 lg:flex-row md:space-y-3 xs:space-y-3">
           <h1 className="text-2xl font-bold">Articles</h1>
@@ -161,15 +161,12 @@ export default function Articles() {
               </div>
             </Tooltip>
             <div>
-              <ArticleOptionsBtn icon={<MoreVertRoundedIcon />}
-                borderColor="border-saitPurple" textColor="text-saitGray" hoverTextColor="text-saitWhite" borderColor="border-saitGray"
-              />
+              <ArticleOptionsBtn icon={<MoreVertRoundedIcon />} />
             </div>
           </div>
         </header>
 
-        {/* Simplified Article View */}
-        
+        {/* Simplified Article View */} 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
             {currentArticles.length > 0 ? (
               currentArticles.map((article, index) => (

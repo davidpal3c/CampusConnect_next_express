@@ -41,7 +41,7 @@ export default function UserHeader() {
   }
 
   return (
-    <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-10 w-full">
+    <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-10 w-full mb-6">
       <div>
         <img
           src="/sait-logo.png"
@@ -88,11 +88,16 @@ export default function UserHeader() {
           MenuListProps={{
             "aria-labelledby": "basic-button",
           }}
-          sx={{
-            "& .MuiMenuItem-root": {
-              fontFamily: "Sans-serif",
-              fontSize: "1rem",
-            },
+          PaperProps={{
+            sx: {
+                backgroundColor: "#f7f7f7",
+                borderRadius: "10px",
+                border: "1px solid #005795",
+                boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
+                marginTop: "0.6rem",
+                marginRight: "0.7rem",
+                width: "10rem",
+            }
           }}
         >
           <MenuItem onClick={handleClose}>Profile</MenuItem>

@@ -1,6 +1,6 @@
-"use client"
 
-import React, {useEffect, useState} from 'react';
+
+import React, { useState } from 'react';
 
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,65 +9,14 @@ import { Tooltip } from '@mui/material';
 
 type ArticleOptionsBtnProps = {
     title?: string;
-    onClick?: any;
-
     icon?: any;
-    // optional props for styling
-    textColor?: string;
-    fontWeight?: string;
-    bgColor?: string;
-    borderColor?: string;
-
-    hoverTextColor?: string;
-    hoverBgColor?: string;
-    hoverBorderColor?: string;
+    optionHandlers?: any;
 };
 
-const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ 
-    title, 
-    icon,
-    onClick, 
-
-    textColor, 
-    fontWeight,
-    bgColor, 
-    borderColor,
-
-    hoverTextColor,
-    hoverBgColor,
-    hoverBorderColor,
-    
-}) => {
-    
-    const [buttonStyle, setButtonStyle] = useState("");
-    // const [ iconBtn, setIconBtn ] = useState(icon);
-
-    const buttonStyles = {
-        color: textColor || 'text-saitGray',
-        fontWeight: fontWeight || 'font-normal',
-        backgroundColor: bgColor || 'bg-white',
-        borderColor: borderColor || 'border-saitGray',
-    };
-
-    const hoverStyles = {
-        textColor: hoverTextColor || 'text-saitWhite',
-        borderColor: hoverBorderColor || 'border-saitPurple',
-        backgroundColor: hoverBgColor || 'bg-saitPurple',
-    }
-
-    const finalClassName = `${buttonStyles.color} border ${buttonStyles.borderColor} ${buttonStyles.backgroundColor}
-    font-normal h-9 flex ${buttonStyles.fontWeight} items-center py-2 px-4 rounded-lg 
-    hover:${hoverStyles.textColor} hover:${hoverStyles.borderColor} hover:${hoverStyles.backgroundColor} 
-    hover:shadow-2xl transition ease-in delay-75 transition-colors duration-300`;
-
-    useEffect(() => {
-        setButtonStyle(finalClassName);
-    }, [])
-    
-
+const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, optionHandlers }) => {
+        
     const [anchorExportOpt, setAnchorExportOpt] = useState<null | HTMLElement>(null);
     const openExportOptions = Boolean(anchorExportOpt);
-    
     
     const handleClickOptions = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorExportOpt(event.currentTarget);
@@ -77,7 +26,6 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({
         setAnchorExportOpt(null);
     };
 
-    // open={isTooltipOpen} onClose={() => setIsTooltipOpen(false)}
     return (
         <div>
             {/* <button
@@ -87,7 +35,8 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({
             <Tooltip title="Options" arrow>
                 <button
                     onClick={handleClickOptions}
-                    className={buttonStyle}
+                    className="h-9 flex text-saitGray border border-saitPurple bg-white font-normal hover:text-saitWhite hover:border-saitPurple
+                    hover:bg-saitPurple items-center py-2 px-4 rounded-lg hover:shadow-2xl transition ease-in delay-75 transition-colors duration-300 "
                 >
                     {title || icon }
                 </button>

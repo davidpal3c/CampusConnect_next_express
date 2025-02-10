@@ -10,6 +10,7 @@ export default function UserPageMenu({
     for (let item of menuItems) {
       allMenuItems.push(
         <div
+          key={item.title}
           onClick={item.onClick}
           className=" hover:text-saitLighterBlue underline decoration-inherit"
         >

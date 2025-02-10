@@ -41,7 +41,10 @@ export default {
         "red-gradient": `linear-gradient(to top, #ca3929, #932728)`,
       },
       screens: {
+        '2xs': '320px',
         'xs': '375px',
+        'xl': '1440px',
+        '2xl': '1536px',
         '955': '955px',
       }
     },
