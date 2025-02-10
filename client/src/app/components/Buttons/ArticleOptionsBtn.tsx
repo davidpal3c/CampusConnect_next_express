@@ -35,8 +35,8 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, opti
             <Tooltip title="Options" arrow>
                 <button
                     onClick={handleClickOptions}
-                    className="h-9 flex text-saitGray border border-saitPurple bg-white font-normal hover:text-saitWhite hover:border-saitPurple
-                    hover:bg-saitPurple items-center py-2 px-4 rounded-lg hover:shadow-2xl transition ease-in delay-75 transition-colors duration-300 "
+                    className="h-9 w-10 flex justify-center items-center text-saitGray border border-saitPurple bg-white font-normal hover:text-saitWhite hover:border-saitPurple
+                    hover:bg-saitPurple py-2 px-4 rounded-full hover:shadow-2xl active:scale-75 transition-transform transition-colors duration-300 ease-in-out delay-75"
                 >
                     {title || icon }
                 </button>

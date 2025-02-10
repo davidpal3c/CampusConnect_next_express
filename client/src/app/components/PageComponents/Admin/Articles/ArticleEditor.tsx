@@ -1,7 +1,9 @@
+"use client"
+
 import React, { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import ActionButton from "@/app/components/Buttons/ActionButton";
-import { getTodayDate } from "@/app/_utils/dateUtils";
+import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
 
 import { toast } from "react-toastify";
@@ -9,6 +11,9 @@ import { toast } from "react-toastify";
 //mui
 import CloseIcon from '@mui/icons-material/Close';
 import { Tooltip } from '@mui/material';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+
 
 type CreateArticleProps = { 
     closeOnClick: any,
@@ -24,17 +29,38 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
     const { userData } = useUserData();
     const [ userFullName, setUserFullName ] = useState("");
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const handleDeleteModalOpen = () => setOpenDeleteModal(true);
+    const handleDeleteModalClose = () => setOpenDeleteModal(false);
+
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
-            title: action === "Create" ? "" : articleObject?.title || "",
-            date: action === "Create" ? getTodayDate() : articleObject?.date || "",
-            type: action === "Create" ? "" : articleObject?.type || "",
-            audience: action === "Create" ? "" : articleObject?.audience || "",
-            tags: action === "Create" ? "" : articleObject?.tags || "",
-            content: action === "Create" ? "" : articleObject?.content || "",
-            author: action === "Create" ? "" : articleObject?.author || userFullName,
+            title: "",
+            datePublished: getTodayDate(),
+            type: "",
+            audience: "",
+            tags: "",
+            content: "",
+            author: userFullName,
+            status: "",
         },
     });
+    
+    useEffect(() => {
+        if (action === "Edit" && articleObject) {
+            reset({
+                title: articleObject.title || "",
+                datePublished: formatToDateOnly(articleObject.datePublished) || getTodayDate(),
+                type: articleObject.type || "",
+                audience: articleObject.audience || "",
+                tags: articleObject.tags || "",
+                content: articleObject.content || "",
+                author: articleObject.author || userFullName,
+                status: articleObject.status || "",
+            });
+        }
+    }, [action, articleObject, reset, userFullName]);
+
 
     // const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -48,23 +74,31 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
     // };
 
    
-    const submitForm = async (data: any, type: "publish" | "save-preview") => {
+    const submitForm = async (data: any, type:  "publish" | "save-preview" | "update" | "delete") => {
 
         //set loader to true
 
+        if (!articleObject?.article_id){
+            toast.error("Article ID not found. Please refresh the page and try again.");
+            return;
+        }
+
         const authorName = data.author.trim() || userFullName;
+
+        const selectedDate = data.datePublished || getTodayDate();
+        const formattedDate = new Date(selectedDate).toISOString();
 
         const articleData = {
             title: data.title,
             // thumbnail: data.thumbnail,
-            date: data?.date || getTodayDate(),
+            datePublished: formattedDate,
             type: data.type,
             audience: data.audience,
             tags: data.tags,
             content: data.content,
-            status: type === "publish" ? "Published" : "Draft",
+            status: type === "update" ? data.status : type === "publish" ? "Published" : "Draft",
             author: authorName,
-            // images: data.images
+            // imageURL: data.imageURL
         }
 
         console.log("Entered Article Data: ", articleData);
@@ -73,7 +107,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
             processCreateArticle(articleData);
         } else {
             console.log("Update article request");
-            // processUpdateArticle(articleData);
+            processUpdateArticle(articleData);
         }
     }
 
@@ -114,14 +148,91 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
         }
     }
 
+    const processUpdateArticle = async (articleData: any) => {
+        try {
+            const articleId = articleObject.article_id;
 
-    // const processUpdateArticle = async (articleData: any) => {
-    //     try {
+            if (!articleId) {
+                console.log("Article ID not found. Please refresh the page and try again.");
+                return;
+            }
 
-    //     } catch (error) {
-            
-    //     }
-    // };
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/${articleId}`, {
+                method: "PATCH",
+                headers: {
+                    "content-type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify(articleData),
+            });
+
+            const data = await response.json();
+            console.log("response: ", data);
+
+            if (!response.ok) {
+                const errorData = data;
+                toast.error(errorData.message || "An Error occurred updating article.");
+                return;
+            }
+
+            toast.success(data.message);
+            closeArticleEditor();
+        } catch (error) {
+            toast.error(`Unknown error occurred ${action === "Create" ? "creating" : "updating"} article! : ` + error, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
+        }
+    };
+
+    const processDeleteArticle = async () => {
+        try {
+            const articleId = articleObject.article_id;
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/${articleId}`, {
+                method: "DELETE",
+                headers: {
+                    "content-type": "application/json",
+                },
+                credentials: "include",
+            });
+
+            const data = await response.json();
+            console.log("response: ", data);
+
+            if (!response.ok) {
+                const errorData = data;
+                toast.error(errorData.message || "An Error occurred deleting article.");
+                return;
+            }
+
+            toast.success(data.message);
+            closeArticleEditor();
+
+        } catch (error) {
+            toast.error(`Unknown error occurred deleting article! : ` + error, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                });
+        }
+    };    
+
+
+    const handleDelete = () => {
+        handleDeleteModalOpen();
+    };
+
+    const submitDelete = async () => {
+        processDeleteArticle();
+    };
 
 
     // if (type === "save-preview") {
@@ -130,12 +241,11 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
 
     useEffect(() => {
         setUserFullName(`${userData?.first_name || ""} ${userData?.last_name || ""}`.trim());
-        
     }, []);
 
     return(
-        <main className="">
-            <header className="flex justify-between items-center bg-white p-4 rounded-lg mb-6 shadow-md">
+        <main className="h-full w-full">
+            <header className="flex justify-between items-center bg-white p-5 rounded-lg mb-6 shadow-md">
                 {action === "Create" ? 
                     <h1 className="font-semibold">Create Article</h1> 
                     : <h1 className="font-semibold">Edit Article</h1>
@@ -146,7 +256,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                     </button>
                 </Tooltip>
             </header>
-            <section className="flex items-center bg-white p-4 rounded-lg mb-6 shadow-md">
+            <section className="relative flex items-center bg-white p-4 rounded-lg mb-6 shadow-md">
                 {/* <form onSubmit={handleSubmit(action === "Create" ? handleCreate : handleUpdate) } className="flex flex-row flex-wrap w-full"> */}
                 <form onSubmit={handleSubmit((data) => submitForm(data, ))} className="flex flex-row flex-wrap w-full">
                     <div className="grid grid-cols-2 gap-4">
@@ -187,12 +297,14 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             {/* {errors.thumbnail && <p className={formStyling.errorStyle}>{errors.thumbnail.message}</p>} */}
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-4 ">
                             {/* date, type */}
                             <div>
-                                <label className={formStyling.labelStyling} htmlFor="date">Date Published</label>
+                                <label className={formStyling.labelStyling} htmlFor="datePublished">Date Published</label>
                                 {/* default to current date */}
-                                <input className={formStyling.inputStyling} type="date" id="date"
+                                <input className={formStyling.inputStyling} type="date" id="datePublished"
+                                {...register("datePublished")}
+                                // defaultValue={articleObject?.datePublished || getTodayDate()}
                                 />
                             </div>
 
@@ -214,12 +326,33 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                         </div>
 
                         {/* author name */}
-                        <div>
-                            <label className={formStyling.labelStyling} htmlFor="author">Author</label>
-                            <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
-                                {...register("author")}
-                            />
-                        </div>
+                        {action === "Create" ? (
+                            <div>
+                                <label className={formStyling.labelStyling} htmlFor="author">Author</label>
+                                <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
+                                    {...register("author")}
+                                />
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className={formStyling.labelStyling} htmlFor="author">Author</label>
+                                    <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
+                                        {...register("author")}
+                                    />
+                                </div>
+                                <div>
+                                    <label className={formStyling.labelStyling} htmlFor="status">Status</label>
+                                    <select className={formStyling.inputStyling} id="status"
+                                        {...register("status", { required: 'Status is Required' })}
+                                    >
+                                        <option value="Published">Published</option>
+                                        <option value="Draft">Draft</option>
+                                    </select>
+                                    {errors.status && <p className={formStyling.errorStyle}>{errors.status.message}</p>}
+                                </div>
+                            </div>    
+                        )}
 
                         {/* audience and tags */}
                         <div>
@@ -232,9 +365,9 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                         <div>
                             <label className={formStyling.labelStyling} htmlFor="tags">Tags</label>
                             <input className={formStyling.inputStyling} type="text" id="tags"
-                                // {...register("content", { required: 'Tags are Required' })}
+                                {...register("tags", { required: false })}
                             />
-                            {/* {errors.tags && <p className={formStyling.errorStyle}>{errors.tags.message}</p>} */}
+                            {errors.tags && <p className={formStyling.errorStyle}>{errors.tags.message}</p>}
                         </div>
                     </div>
 
@@ -251,15 +384,44 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             {errors.content && <p className={formStyling.errorStyle}>{errors.content.message}</p>}
                             
                         </div>
-                    </div>
-                    <div className="flex flex-row items-center justify-center w-full space-x-5">
-                        <ActionButton title="Publish" onClick={handleSubmit((data) => submitForm(data, "publish"))}    
-                            textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
-                        <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
-                            textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitRed" hoverTextColor="text-saitWhite"/>
-                              
-                    </div>
-                </form>
+                    </div>                    
+                        {action === "Create" ? (
+                            <div className="flex flex-row items-center justify-center w-full space-x-5">
+                                <ActionButton title="Publish" onClick={handleSubmit((data) => submitForm(data, "publish"))}    
+                                textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
+                                <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
+                                    textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitRed" hoverTextColor="text-saitWhite"/>  
+                            </div>
+                        ) : (
+                            <div className="flex flex-row items-center justify-center w-full space-x-4">
+                                <ActionButton title="Submit Update" onClick={handleSubmit((data) => submitForm(data, "update"))}
+                                    textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
+                                <ActionButton title="Delete" onClick={handleDelete} type="button"
+                                    textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
+
+                            </div>
+                        )}                                 
+                </form>      
+                <Modal 
+                    open={openDeleteModal} 
+                    onClose={handleDeleteModalClose} 
+                    aria-labelledby="delete-article-modal" 
+                    aria-describedby="delete-article-modal-description"
+                    id="delete-article-modal"
+                >
+                    <Box sx={modalStyle}>
+                        <div className="flex flex-col items-center justify-center p-4 my-2">    
+                            <p className="text-center">Are you sure you want to delete this article?</p>
+                            <p className="text-center italic text-sm">This operation can't be undone!</p>            
+                            <div className="flex items-center justify-center w-full space-x-5 mt-4">
+                            <ActionButton title="Delete" onClick={submitDelete}
+                                        textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
+                            <ActionButton title="Cancel" onClick={handleDeleteModalClose}
+                                        textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                                                          
+                            </div>
+                        </div>
+                    </Box>   
+                </Modal>    
             </section>
         </main>
     );
@@ -274,3 +436,16 @@ const formStyling = {
     inputStyling: "font-light w-full p-2 mb-3 border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent",
     errorStyle: "text-red-500 text-sm",
 }
+
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '1px solid #000',
+    borderRadius: 8,
+    boxShadow: 24,
+    backgroundColor: "#f7f7f7",
+  };

@@ -11,10 +11,18 @@ export const adjustDateOnlyNumerical = (dateTime: string) => {
 };
 
 export const adjustDateLetters = (dateFull: string) => {
-    const date = new Date(dateFull);
+    const dateOnly = dateFull.split('T')[0]; // Extract just "YYYY-MM-DD"
+
+
+    const date = new Date(dateOnly);
     const month = date.toLocaleString('default', { month: 'long' });
-    const day = date.getDate();
+    const day = date.getDate() + 1;
     const year = date.getFullYear();
 
     return `${month} ${day}, ${year}`;
 }    
+
+// format date to "MM/DD/YYYY" (without the time)
+export const formatToDateOnly = (isoString: string) => {
+    return isoString ? isoString.split("T")[0] : getTodayDate();    
+}

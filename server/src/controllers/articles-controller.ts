@@ -21,7 +21,6 @@ export const getAllArticles = async (req: Request, res: Response) => {
     }
 }
 
-
 // GET /api/articles/categories - Get article categories
 export const getArticleCategories = async (req: Request, res: Response) => {
     try {
@@ -94,24 +93,57 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
 
 
 // PATCH /api/articles/:id - Update an article by ID. This is a partial update
-// export const updateArticle = async (req: Request, res: Response) => {};
+export const updateArticle = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const { title, datePublished, content, 
+            imageURL, audience, status, author_id, author, type } = req.body;
+
+        const updateArticleData: any = {};
+
+        if (title) updateArticleData.title = title;
+        if (datePublished) updateArticleData.datePublished = datePublished;
+        if (content) updateArticleData.content = content;
+        if (imageURL) updateArticleData.imageURL = imageURL;
+        if (audience) updateArticleData.audience = audience;
+        if (status) updateArticleData.status = status;
+        if (author_id) updateArticleData.author_id = author_id;
+        if (author) updateArticleData.author = author;
+        if (type) updateArticleData.type = type;
+
+        await prisma.article.update({
+            where: { article_id: id },
+            data: updateArticleData
+        })
+
+        res.status(200).json({ message: 'Article updated successfully' });
+    } catch (error) {
+        console.log('Error updating article:', error);
+        res.status(500).json({ message: 'Server Error: error updating article', error: error });
+    }
+};
 
 
 // PUT /api/articles/:id - Update an article by ID. This is a full update
-export const updateArticle = async (req: Request, res: Response) => {
+export const updateArticleWhole = async (req: Request, res: Response) => {
     try {
-        const { article_id } = req.params;
-        const { title, content, author_id, imageURL, audience, status } = req.body;
+        const { id } = req.params;
+        const { title, datePublished, content, 
+            imageURL, audience, status, author_id, author, type } = req.body;
 
         const updatedArticle = await prisma.article.update({
-            where: { article_id: article_id },
+            where: { article_id: id },
             data: {
                 title: title,
+                datePublished: datePublished,
                 content: content,
                 author_id: author_id,
                 imageUrl: imageURL,
                 audience: audience,
                 status: status,
+                author: author,
+                type: type
             }
         }); 
 
@@ -127,10 +159,10 @@ export const updateArticle = async (req: Request, res: Response) => {
 // DELETE /api/articles/:id - Delete an article by ID
 export const deleteArticle = async (req: Request, res: Response) => {
     try {
-        const { article_id } = req.params;
+        const { id } = req.params;
 
         await prisma.article.delete({
-            where: { article_id: article_id }
+            where: { article_id: id }
         });
 
         res.status(200).json({ message: 'Article deleted successfully' });
