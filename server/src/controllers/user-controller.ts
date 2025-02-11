@@ -42,7 +42,20 @@ export const getUserById = async (req: Request, res: Response) : Promise<void> =
         }
 
         let user = await prisma.user.findUnique({
-            where: { user_id: id }, 
+            where: { user_id: id },
+            include: {
+                Student: {  
+                    include: {
+                        Program: {
+                            include: {
+                                Department: true
+                            }
+                        }
+                    }
+                },
+                Admin: true,  
+                Alumni: true,
+            }
         });
 
         if (!user) {

@@ -44,7 +44,7 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
 
         res.status(200).json({
             status: 'success',
-            message: 'Welcome to Campus Connect Admin Portal!',
+            message: `Welcome to Campus Connect Admin Portal! ${dbUser.first_name} ${dbUser.last_name}`,
             data: enrichedUser,
         });
 

@@ -9,7 +9,7 @@ export const UserDataProvider = ({ children }) => {
 
     const updateUserData = (userData) => { 
         setUserData(userData);
-        console.log("User admin updated in context: ", userData);        
+        // console.log("User admin updated in context: ", userData);        
     };
 
     return (

@@ -20,7 +20,7 @@ router.get('/me', verifySession, getMyEvents);
 // GET /api/events/host/ - Get all events by host
 router.get('/host/', verifySession, getEventsByHost);
 
-// GET /api/events/:id/attendees - Get all attendees for an event
+// GET /api/events/:id/attendees - Get all attendees(data) for an event
 router.get('/:id/attendees', verifySession, adminRoute, getEventAttendees);
 
 // POST: /api/events/ - Create a new event
@@ -30,7 +30,7 @@ router.post('/', verifySession, adminRoute, validatePermissions(['Read-Write', '
 router.post('/:id/attendees', verifySession, registerForEvent);
 
 // PATCH /api/events/:id - Update an event by ID. This is a partial update
-// router.patch('/:id', verifySession, adminRoute, validatePermissions(['Read-Write', 'Full Access']), updateEvent);
+router.patch('/:id', verifySession, adminRoute, validatePermissions(['Read-Write', 'Full Access']), updateEvent);
 
 // PUT /api/events/:id - Update an event by ID. This is a full update
 router.put('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), updateEventFull);
@@ -38,7 +38,7 @@ router.put('/:id', verifySession, adminRoute, validatePermissions(['Full Access'
 // DELETE /api/events/:id - Delete an event by ID
 router.delete('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), deleteEvent);
 
-// DELETE /api/events/:id/attendee - Delete an attendee from an event
+// DELETE /api/events/:id/attendee - Unregister attendee from an event
 router.delete('/:id/attendee', verifySession, unregisterForEvent);
 
 export default router;

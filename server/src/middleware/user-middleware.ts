@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { initializeFirebaseAdmin, getAuth } from '../config/firebase';
+import { prisma } from '../config/prismaClient';
+import { permission } from 'process';
+
 
 export interface AuthenticatedRequest extends Request {
     user?: any; 
@@ -58,10 +61,10 @@ export const validatePermissions = (allowedPermissions: string[]) => {
         try {
             const { decodedClaims } = req.user;   
             
-            const adminPermissions = decodedClaims.permissions;            
+            const adminPermissions = decodedClaims.permissions;   
     
             if (!adminPermissions || !allowedPermissions.includes(adminPermissions)              ) {
-                res.status(403).json({ status: 'error', message: 'Forbidden Access: Insufficient permissions.' });
+                res.status(403).json({ status: 'error', message: 'Forbidden Access: Insufficient permissions.', permissions: adminPermissions });
                 return;
             }   
     
