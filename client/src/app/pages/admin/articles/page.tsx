@@ -157,7 +157,7 @@ export default function Articles() {
             </div>
 
             {articlesView === "Simple" && (
-              <div className="flex flex-row">
+              <div className="flex flex-row space-x-2">
                 <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1">
                   <select
                       className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
@@ -234,7 +234,7 @@ export default function Articles() {
           </div>
         ) : (
           // Extended Article View
-          <ArticlesTableDetailed />
+          <ArticlesTableDetailed articlesData={originalArticles}/>
         )}
 
 

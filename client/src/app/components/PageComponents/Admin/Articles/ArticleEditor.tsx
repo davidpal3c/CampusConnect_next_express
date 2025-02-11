@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
+import ArticleDeleteModal from './ArticleDeleteModal';
 
 import { toast } from "react-toastify";
 
@@ -78,11 +79,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
 
         //set loader to true
 
-        if (!articleObject?.article_id){
-            toast.error("Article ID not found. Please refresh the page and try again.");
-            return;
-        }
-
+        console.log("Type: ", type);
         const authorName = data.author.trim() || userFullName;
 
         const selectedDate = data.datePublished || getTodayDate();
@@ -113,6 +110,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
 
     async function processCreateArticle(articleData: any) {
         try {
+            console.log("Article data: ", articleData);
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/`, {
                 method: "POST",
                 headers: {
@@ -189,51 +187,9 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
         }
     };
 
-    const processDeleteArticle = async () => {
-        try {
-            const articleId = articleObject.article_id;
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/${articleId}`, {
-                method: "DELETE",
-                headers: {
-                    "content-type": "application/json",
-                },
-                credentials: "include",
-            });
-
-            const data = await response.json();
-            console.log("response: ", data);
-
-            if (!response.ok) {
-                const errorData = data;
-                toast.error(errorData.message || "An Error occurred deleting article.");
-                return;
-            }
-
-            toast.success(data.message);
-            closeArticleEditor();
-
-        } catch (error) {
-            toast.error(`Unknown error occurred deleting article! : ` + error, {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                });
-        }
-    };    
-
-
     const handleDelete = () => {
-        handleDeleteModalOpen();
+        handleDeleteModalOpen();        
     };
-
-    const submitDelete = async () => {
-        processDeleteArticle();
-    };
-
 
     // if (type === "save-preview") {
     //     router.push(`/articles/preview?data=${encodeURIComponent(JSON.stringify(articleData))}`);
@@ -402,26 +358,12 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             </div>
                         )}                                 
                 </form>      
-                <Modal 
-                    open={openDeleteModal} 
-                    onClose={handleDeleteModalClose} 
-                    aria-labelledby="delete-article-modal" 
-                    aria-describedby="delete-article-modal-description"
-                    id="delete-article-modal"
-                >
-                    <Box sx={modalStyle}>
-                        <div className="flex flex-col items-center justify-center p-4 my-2">    
-                            <p className="text-center">Are you sure you want to delete this article?</p>
-                            <p className="text-center italic text-sm">This operation can't be undone!</p>            
-                            <div className="flex items-center justify-center w-full space-x-5 mt-4">
-                            <ActionButton title="Delete" onClick={submitDelete}
-                                        textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
-                            <ActionButton title="Cancel" onClick={handleDeleteModalClose}
-                                        textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                                                          
-                            </div>
-                        </div>
-                    </Box>   
-                </Modal>    
+                <ArticleDeleteModal     
+                    articleId={articleObject?.article_id} 
+                    openDeleteModal={openDeleteModal} 
+                    handleDeleteModalClose={handleDeleteModalClose}        
+                    closeArticleEditor={closeArticleEditor}             
+                />
             </section>
         </main>
     );
@@ -436,16 +378,3 @@ const formStyling = {
     inputStyling: "font-light w-full p-2 mb-3 border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent",
     errorStyle: "text-red-500 text-sm",
 }
-
-const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '1px solid #000',
-    borderRadius: 8,
-    boxShadow: 24,
-    backgroundColor: "#f7f7f7",
-  };

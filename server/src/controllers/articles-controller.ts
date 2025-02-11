@@ -69,7 +69,7 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
             select: { user_id: true }
         })
 
-        const newArticle = await prisma.article.create({
+        await prisma.article.create({
             data: {
                 title: title,
                 content: content,
@@ -110,7 +110,11 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (status) updateArticleData.status = status;
         if (author_id) updateArticleData.author_id = author_id;
         if (author) updateArticleData.author = author;
-        if (type) updateArticleData.type = type;
+        
+        if (type && type === 'Pre-Arrivals' ) {
+            updateArticleData.type = 'PreArrivals';
+        } else if (type) updateArticleData.type = type;
+
 
         await prisma.article.update({
             where: { article_id: id },
@@ -123,7 +127,6 @@ export const updateArticle = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Server Error: error updating article', error: error });
     }
 };
-
 
 // PUT /api/articles/:id - Update an article by ID. This is a full update
 export const updateArticleWhole = async (req: Request, res: Response) => {
