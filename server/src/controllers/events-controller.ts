@@ -4,6 +4,9 @@ import { prisma } from '../config/prismaClient';
 import { connect } from 'http2';
 // import validator from 'validator';
 
+export interface AuthenticatedRequest extends Request {
+    user?: any; 
+}
 
 // export type UserEventWhereInput = {
 //     id?: String | string;
@@ -14,6 +17,7 @@ import { connect } from 'http2';
 //   };
 
 // TODO - log operations (user_id, event_id, operation, timestamp)
+
 
 
 // GET /api/events/ - Get all events
@@ -64,7 +68,7 @@ export const getEventById = async (req: Request, res: Response) : Promise<void> 
 }
 
 // GET /api/events/me - Get user rsvp events
-export const getMyEvents = async (req: Request, res: Response) => {
+export const getMyEvents = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { email } = req.user.decodedClaims;
 
@@ -141,7 +145,7 @@ export const getEventAttendees = async (req: Request, res: Response) => {
 };
 
 // POST: /api/events/ - Create new event
-export const createEvent = async (req: Request, res: Response) => {
+export const createEvent = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { name, date, location, 
             audience, host, contact, 
@@ -221,7 +225,7 @@ export const registerForEvent = async (req: Request, res: Response) => {
             return;
         }
 
-        const newUserEvent = await prisma.userEvent.create({
+        await prisma.userEvent.create({
             data: {
                 user_id: user_id,
                 event_id: event_id,

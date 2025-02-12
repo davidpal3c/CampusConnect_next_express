@@ -12,12 +12,13 @@ model User {
   email       String   @unique
   password    String?
   first_name  String
+  middle_name String?
   last_name   String
   role        Role
   imageUrl    String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
- 
+   
   // Relations
   Admin       Admin?
   Student     Student?
@@ -27,6 +28,7 @@ model User {
   UserGroups  UserGroup[]
   Groups      Group[]
   MessagesSent  Message[]
+  Articles    Article[]
  
   //EventsOwned Event[]   
 
@@ -86,12 +88,20 @@ model Department {
 model Article {
   article_id      String    @id @unique @default(uuid())
   title           String
-  datePublished   DateTime  @default(now())
   content         String    @db.Text
-  author          String  
+  type            ArticleType
   imageUrl        String?
-  audience        Json                // stores array of audience types and categories using JSONB
+  datePublished   DateTime? @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  author          String?
+  author_id       String
+  audience        Json?                // stores array of audience types and categories using JSONB
+  status          ArticleStatus
   Categories      ArticleCategory[]
+
+  //Relation  
+  User            User?    @relation(fields: [author_id], references: [user_id], onDelete: SetNull)
 
 }
 
@@ -189,7 +199,7 @@ model UserGroup {
 
 model Notification {
   notification_id String    @id @unique @default(uuid())
-  type            Type    // Type(enum) of notification (Article, Event, Group/Message, etc.)
+  type            NotificationType    // Type(enum) of notification (Article, Event, Group/Message, etc.)
   description     String
   audience        Json      
   created_at      DateTime  @default(now()) 
@@ -215,12 +225,23 @@ enum Role {
 enum Status {
   Active
   Inactive
-  Preapproved
   Prospective
 }
 
-enum Type {
+enum NotificationType {
   Article
   Event
   Group
+}
+
+enum ArticleStatus {
+  Draft
+  Published
+}
+
+enum ArticleType {
+  Campus
+  General
+  News
+  PreArrivals
 }
