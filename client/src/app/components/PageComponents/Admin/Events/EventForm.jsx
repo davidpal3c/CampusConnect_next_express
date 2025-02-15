@@ -56,8 +56,12 @@ const QuestionCard = ({ question, index, onUpdate, onRemove, onMove }) => {
               className="mb-4"
             />
             
+            {/** Working on making it accept input and store the answer */}
             {question.type === 'shortAnswer' && (
-              <Input disabled placeholder="Short answer text" className="bg-gray-50" />
+              <Input 
+              type="text"
+              placeholder="Short answer text" 
+              className="bg-gray-50" />
             )}
 
             {(question.type === 'multipleChoice' || question.type === 'checkbox' || question.type === 'dropdown') && (
@@ -221,4 +225,19 @@ const FormBuilder = () => {
   );
 };
 
+{/**
+    const handleSubmit = async () => {
+  const formData = {
+    title: formTitle,
+    questions: questions,
+    created: new Date()
+  };
+  
+  // Send to your Node.js backend
+  await fetch('/api/forms', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  });
+}; */}
 export default FormBuilder;
