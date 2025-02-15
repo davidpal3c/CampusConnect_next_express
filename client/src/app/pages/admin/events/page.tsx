@@ -1,98 +1,153 @@
-import React from 'react';
-import EventsCalendar from '../../../components/Calendar/EventsCalendar';
+"use client"
 
-const events = [
-  {
-    title: 'Meeting',
-    start: new Date(2025, 0, 25, 10, 0), // Month is 0-indexed
-    end: new Date(2025, 0, 25, 11, 0),
-  },
-  {
-    title: 'Lunch Break',
-    start: new Date(2025, 0, 25, 12, 0),
-    end: new Date(2025, 0, 25, 13, 0),
-  },
-];
+import React, { useState, useEffect } from 'react';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import format from 'date-fns/format';
+import parse from 'date-fns/parse';
+import startOfWeek from 'date-fns/startOfWeek';
+import getDay from 'date-fns/getDay';
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import EventEditor from '@/app/components/PageComponents/Admin/Events/EventEditor';
+import ActionButton from "@/app/components/Buttons/ActionButton";
+import { toast } from "react-toastify";
+
+const locales = {
+  'en-US': require('date-fns/locale/en-US')
+};
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales
+});
 
 const Events = () => {
-  return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="flex flex-col lg:flex-row bg-white shadow-lg rounded-lg p-6 w-full max-w-7xl gap-6">
-        {/* Left Section - Event Details */}
-        <div className="bg-white rounded-lg shadow p-6 flex-1">
-          <h2 className="text-2xl font-bold mb-4">Grad Portraits</h2>
-          <img
-            src="https://via.placeholder.com/400x200" // Replace with whatever image we want will make it dynamic at some point
-            alt="Grad Portrait"
-            className="rounded-lg mb-4"
-          />
-          <div className="space-y-2 text-gray-600">
-            <p>
-              📅 <strong>Date:</strong> Oct 10, 2024
-            </p>
-            <p>
-              ⏰ <strong>Time:</strong> 12:00PM - 1:00PM
-            </p>
-            <p>
-              📍 <strong>Location:</strong> Stan Grad
-            </p>
-            <p>
-              🎯 <strong>Target Department(s):</strong> All
-            </p>
-            <p>
-              📋 <strong>Spots Available:</strong> 500
-            </p>
-            <p>
-              🎙 <strong>Host:</strong> SAIT
-            </p>
-          </div>
-          <p className="mt-4 text-gray-500">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua...
-          </p>
-          <p className="mt-4 text-black">
-            Register <a href="#" className="text-blue-500 font-bold">Here!</a>
-          </p>
-        </div>
+  const [events, setEvents] = useState([]);
+  const [showEventEditor, setShowEventEditor] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [action, setAction] = useState("Create");
 
-        {/* Right Section - Event Analytics */}
-        <div className="w-full lg:w-1/3 bg-white rounded-lg shadow p-6 flex flex-col gap-6">
-          <div>
-            <h3 className="font-bold mb-4">Event Analytics</h3>
-            {/* Placeholder Pie Chart */}
-            <div className="flex justify-center">
-              <img
-                src="https://via.placeholder.com/150x150" // Replace with chart image
-                alt="Analytics Chart"
-                className="mb-4"
-              />
-            </div>
-            <div className="space-y-2 text-gray-600">
-              <p>
-                🔵 <strong>60%</strong> Current Students
-              </p>
-              <p>
-                🔹 <strong>25%</strong> Not Viewed
-              </p>
-              <p>
-                🔷 <strong>15%</strong> Alumni
-              </p>
-            </div>
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events`, {
+        method: "GET",
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.message || "An Error occurred fetching events.");
+        return;
+      }
+
+      // Transform events for calendar
+      const formattedEvents = data.map(event => ({
+        title: event.name,
+        start: new Date(event.date),
+        end: new Date(event.date),
+        resource: event
+      }));
+
+      setEvents(formattedEvents);
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Error fetching events: " + error);
+    }
+  };
+
+  const handleEventSelect = (event) => {
+    setSelectedEvent(event.resource);
+    setAction("Edit");
+    setShowEventEditor(true);
+  };
+
+  const handleCreateEvent = () => {
+    setSelectedEvent(null);
+    setAction("Create");
+    setShowEventEditor(true);
+  };
+
+  return (
+    <div className="grid md:grid-cols-2 gap-4 p-6 bg-gray-100 min-h-screen">
+      {(
+        <div className="bg-white p-4 shadow-md rounded-md">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Events</h2>
+            <ActionButton
+              title="Create Event"
+              onClick={handleCreateEvent}
+              textColor="text-saitBlue"
+              borderColor="border-saitBlue"
+              hoverBgColor="bg-saitBlue"
+              hoverTextColor="text-white"
+            />
           </div>
-          {/* Buttons */}
-          <button className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-2 rounded-lg font-semibold">
-            View More Notification Analytics
-          </button>
-          <button className="w-full bg-orange-400 text-white py-2 rounded-lg font-semibold">
-            View Form
-          </button>
-          <button className="w-full bg-red-500 text-white py-2 rounded-lg font-semibold">
-            Delete Event
-          </button>
+
+          <div className="space-y-4">
+            {events.map((event, index) => (
+              <div key={index} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                <h3 className="font-semibold">{event.title}</h3>
+                <p className="text-sm text-gray-600">
+                  {format(event.start, 'PPpp')}
+                </p>
+                <p className="text-sm">{event.resource.location}</p>
+              </div>
+            ))}
+          </div>
         </div>
+      )}
+
+      <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 500 }}
+          onSelectEvent={handleEventSelect}
+        />
       </div>
+
+      {showEventEditor && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <EventEditor
+              closeOnClick={() => setShowEventEditor(false)}
+              action={action}
+              eventObject={selectedEvent}
+              closeEventEditor={() => {
+                setShowEventEditor(false);
+                fetchEvents();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Events;
+const events = [
+  {
+    title: "Meeting",
+    start: new Date(2025, 0, 25, 10, 0),
+    end: new Date(2025, 0, 25, 11, 0),
+  },
+  {
+    title: "Lunch Break",
+    start: new Date(2025, 0, 25, 12, 0),
+    end: new Date(2025, 0, 25, 13, 0),
+  },
+];

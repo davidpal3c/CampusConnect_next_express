@@ -27,14 +27,9 @@ interface Event {
 }
 
 const EventsCalendar: React.FC<{ events: Event[] }> = ({ events }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const handleExpandClick = () => {
-    setIsExpanded((prev) => !prev);
-  };
 
   return (
-    <div className={isExpanded ? 'h-full w-full' : 'h-64 w-64'}>
+    <div className={'h-full w-full'}>
       <Calendar
         localizer={localizer}
         events={events}
@@ -42,12 +37,6 @@ const EventsCalendar: React.FC<{ events: Event[] }> = ({ events }) => {
         endAccessor="end"
         style={{ height: '100%', width: '100%' }}
       />
-      <button
-        className="mt-2 p-2 bg-blue-500 text-white rounded"
-        onClick={handleExpandClick}
-      >
-        {isExpanded ? 'Shrink Calendar' : 'Expand Calendar'}
-      </button>
     </div>
   );
 };
