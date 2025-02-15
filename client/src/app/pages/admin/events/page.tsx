@@ -8,6 +8,7 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import EventEditor from '@/app/components/PageComponents/Admin/Events/EventEditor';
+import EventForm from '@/app/components/PageComponents/Admin/Events/EventForm';
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { toast } from "react-toastify";
 
@@ -118,6 +119,11 @@ const Events = () => {
         </div>
       )}
 
+      {/** Testing the Event form */}
+      <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
+        <EventForm/>
+      </div>
+{/**  just for testing purposes
       <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
         <Calendar
           localizer={localizer}
@@ -128,7 +134,7 @@ const Events = () => {
           onSelectEvent={handleEventSelect}
         />
       </div>
-
+*/}
       {showEventEditor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">

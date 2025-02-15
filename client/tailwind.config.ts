@@ -1,7 +1,8 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  content: [
+    darkMode: ["class"],
+    content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -20,34 +21,77 @@ export default {
     // Add any other classes you want to safelist
 ],
   theme: {
-    extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        saitBlack: "#06222b",
-        saitWhite: "#f7f7f7",
-        saitRed: "#ca3929",
-        saitDarkRed: "#932728",
-        saitLighterBlueOg: "#449dde", 
-        saitLighterBlue: "#449dde",        // original : out of contrast with white
-        saitLightBlue: "#2b64ae",
-        saitBlue: "#005795",
-        saitBlueOg: "#2b64ae",
-        saitPurple: "#5c2876",
-        saitGray: "#666666",
-      },
-      backgroundImage: {
-        "blue-gradient": `linear-gradient(to top, #2b64ae, #449dde)`,
-        "red-gradient": `linear-gradient(to top, #ca3929, #932728)`,
-      },
-      screens: {
-        '2xs': '320px',
-        'xs': '375px',
-        'xl': '1440px',
-        '2xl': '1536px',
-        '955': '955px',
-      }
-    },
+  	extend: {
+  		colors: {
+  			background: 'hsl(var(--background))',
+  			foreground: 'hsl(var(--foreground))',
+  			saitBlack: '#06222b',
+  			saitWhite: '#f7f7f7',
+  			saitRed: '#ca3929',
+  			saitDarkRed: '#932728',
+  			saitLighterBlueOg: '#449dde',
+  			saitLighterBlue: '#449dde',
+  			saitLightBlue: '#2b64ae',
+  			saitBlue: '#005795',
+  			saitBlueOg: '#2b64ae',
+  			saitPurple: '#5c2876',
+  			saitGray: '#666666',
+  			card: {
+  				DEFAULT: 'hsl(var(--card))',
+  				foreground: 'hsl(var(--card-foreground))'
+  			},
+  			popover: {
+  				DEFAULT: 'hsl(var(--popover))',
+  				foreground: 'hsl(var(--popover-foreground))'
+  			},
+  			primary: {
+  				DEFAULT: 'hsl(var(--primary))',
+  				foreground: 'hsl(var(--primary-foreground))'
+  			},
+  			secondary: {
+  				DEFAULT: 'hsl(var(--secondary))',
+  				foreground: 'hsl(var(--secondary-foreground))'
+  			},
+  			muted: {
+  				DEFAULT: 'hsl(var(--muted))',
+  				foreground: 'hsl(var(--muted-foreground))'
+  			},
+  			accent: {
+  				DEFAULT: 'hsl(var(--accent))',
+  				foreground: 'hsl(var(--accent-foreground))'
+  			},
+  			destructive: {
+  				DEFAULT: 'hsl(var(--destructive))',
+  				foreground: 'hsl(var(--destructive-foreground))'
+  			},
+  			border: 'hsl(var(--border))',
+  			input: 'hsl(var(--input))',
+  			ring: 'hsl(var(--ring))',
+  			chart: {
+  				'1': 'hsl(var(--chart-1))',
+  				'2': 'hsl(var(--chart-2))',
+  				'3': 'hsl(var(--chart-3))',
+  				'4': 'hsl(var(--chart-4))',
+  				'5': 'hsl(var(--chart-5))'
+  			}
+  		},
+  		backgroundImage: {
+  			'blue-gradient': '`linear-gradient(to top, #2b64ae, #449dde)`',
+  			'red-gradient': '`linear-gradient(to top, #ca3929, #932728)`'
+  		},
+  		screens: {
+  			'955': '955px',
+  			'2xs': '320px',
+  			xs: '375px',
+  			xl: '1440px',
+  			'2xl': '1536px'
+  		},
+  		borderRadius: {
+  			lg: 'var(--radius)',
+  			md: 'calc(var(--radius) - 2px)',
+  			sm: 'calc(var(--radius) - 4px)'
+  		}
+  	}
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;
