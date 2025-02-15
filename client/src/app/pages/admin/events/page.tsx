@@ -33,6 +33,8 @@ const Events = () => {
     fetchEvents();
   }, []);
 
+
+  //Fetch the data from events API
   const fetchEvents = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events`, {
@@ -102,6 +104,14 @@ const Events = () => {
                   {format(event.start, 'PPpp')}
                 </p>
                 <p className="text-sm">{event.resource.location}</p>
+                <ActionButton
+                title="Edit"
+                onClick={() => handleEventSelect(event)} 
+                textColor="text-saitBlue"
+                borderColor="border-saitBlue"
+                hoverBgColor="bg-saitBlue"
+                hoverTextColor="text-white"
+                />
               </div>
             ))}
           </div>

@@ -158,6 +158,8 @@ const EventEditor: React.FC<CreateEventProps> = ({
       </header>
       
       <section className="bg-white p-4 rounded-lg shadow-md">
+        
+        {/**Form for event creation */}
         <form onSubmit={handleSubmit(submitForm)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
