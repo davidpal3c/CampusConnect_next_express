@@ -23,17 +23,14 @@ export default function AdminLayout({
     };
 
     return (
-        <main className="flex min-h-screen bg-white w-screen overflow-x-hidden">
+        <main className="flex min-h-screen bg-white">
             {/* Sidebar - Hidden on small screens */}
             <aside className={`fixed md:relative md:block ${isOpen ? "block" : "hidden"} z-50`}>
-                <div className="">
-                    <Sidebar />
-                </div>
-                
+                <Sidebar />
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex flex-col bg-saitWhite w-full h-full overflow-x-hidden">
+            <div className="flex flex-col bg-gray-100 w-full h-screen">
                 {/* Header */}
                 <header className="flex justify-between h-[3.5rem] md:h-16 p-2">
                     <AdminHeader shouldShowButton={shouldShowButton} handleSidebarToggle={handleSidebarToggle}/>
@@ -45,5 +42,6 @@ export default function AdminLayout({
                 </section>
             </div>
         </main>
+
     );
 }

@@ -130,30 +130,33 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
 // POST: /api/users/ - Create a new user
 export const createUser = async (req: Request, res: Response) : Promise<void> => {
     try {
-        const { userId, firstName, lastName, email, role, imageUrl } = req.body;
+        console.log(req.body);
+        const { user_id, first_name, last_name, email, role, image_url } = req.body;
 
         const user = await prisma.user.create({
             data: {
-                user_id: userId,
-                first_name: firstName,
-                last_name: lastName,
+                user_id: user_id,
+                first_name: first_name,
+                last_name: last_name,
                 email: email,
                 password: 'password',        // TODO: hash password
                 role: role,
-                // imageUrl: imageUrl ? imageUrl || null, 
+                image_url: image_url || null, 
             }
         });
 
         if (role === 'Student') {
-            const { program_id, department_id, intake_year, status } = req.body;
+            const { program_id, department_id, intake_year, intake, status } = req.body;
 
             await prisma.student.create({
                 data: {
-                    user_id: userId,
+                    user_id: user_id,
                     program_id: program_id,
                     department_id: department_id,
                     intake_year: intake_year,
+                    intake: intake,
                     status: status,
+                    
                 }
             });
         } else if (role === 'Alumni') {
@@ -161,11 +164,20 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
 
             await prisma.alumni.create({
                 data: {
-                    user_id: userId,
-                    graduation_year: graduation_year,
+                    user_id: user_id,
+                    graduation_year: parseInt(graduation_year, 10),
                     credentials: credentials,
                     current_position: current_position || null,
                     company: company || null,
+                }
+            });
+        } else if (role === 'Admin') {
+            const { permissions } = req.body;
+
+            await prisma.admin.create({
+                data: {
+                    user_id: user_id,
+                    permissions: permissions,
                 }
             });
         }

@@ -30,7 +30,8 @@ export default function UserItem({ user_id, name, role, email, created_at}: User
                 </div>
                 <div className="text-right">
                     <p className="text-sm">{email}</p>
-                    <p className="text-sm">{createdAtDate.toLocaleDateString()}</p>
+                    <p className="text-sm">{createdAtDate.toLocaleDateString("en-US")
+                    }</p>
                 </div>
             </div>
         </Link>

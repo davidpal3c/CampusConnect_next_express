@@ -98,8 +98,9 @@ export default function UserDetails() {
         setOpenDialog(false); 
     };
     
-    const handleSubmit = async () => {
+    const handleSubmit = async (user) => {
         setOpenDialog(false);
+        console.log(user);
     };
 
     return (
