@@ -10,11 +10,13 @@ import UserListView from "@/app/components/PageComponents/Admin/User/ListView";
 import Loader from "@/app/components/Loader/Loader";
 import TableView from "../../../components/PageComponents/Admin/User/TableView";
 import UserEditor from "@/app/components/PageComponents/Admin/User/UserEditor";
+import ActionButton from "@/app/components/Buttons/ActionButton";
 
 // Icons 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import TableChartIcon from '@mui/icons-material/TableChart';
+import ViewModuleRoundedIcon from '@mui/icons-material/FormatListBulleted';
+import ViewListRoundedIcon from '@mui/icons-material/TableChart';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import AddIcon from '@mui/icons-material/Add';
 
 // libraries
@@ -116,6 +118,7 @@ export default function Users() {
 
     // Handle Users View 
     const handleUsersView = (view: string) => {
+        console.log("View: ", view);
         setUsersView(view);
 
     }
@@ -133,7 +136,7 @@ export default function Users() {
                 <div>               
                     <PageHeader title="Users" 
                         filter={
-                            <div className="grid grid-cols-[1fr_auto] lg:grid-cols-2 w-full gap-4">
+                            <div className="grid grid-cols-[1fr_auto] lg:grid-cols-2 w-full gap-4 ">
                                 {/* Left side container for filters */}
                                 <div className="flex items-center space-x-2">
                                     <FilterInput 
@@ -146,17 +149,17 @@ export default function Users() {
                                         options={["Admin", "Student", "Alumni", "Prospective Student"]}
                                         handleSelect={filterByRole}
                                     />
-                                    <div className="flex flex-row w-20 items-center justify-evenly bg-white border-2 rounded-lg p-1">
+                                    <div className="flex flex-row w-20 h-10 items-center justify-evenly bg-white border-2 rounded-lg p-1">
                                     <Tooltip title="List View">
                                             <button onClick={() => handleUsersView("List")}>
-                                                <FormatListBulletedIcon sx={usersView === "List" ? { color: '#2b64ae', fontSize: 26 } :
+                                                <ViewModuleRoundedIcon sx={usersView === "List" ? { color: '#2b64ae', fontSize: 26 } :
                                                     { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
                                                 />
                                             </button>
                                         </Tooltip>
                                         <Tooltip title="Table View">
                                             <button onClick={() => handleUsersView("Table")}>
-                                                <TableChartIcon sx={usersView === "Table" ? { color: '#2b64ae', fontSize: 26 } :
+                                                <ViewListRoundedIcon sx={usersView === "Table" ? { color: '#2b64ae', fontSize: 26 } :
                                                     { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
                                                 />
                                             </button>
@@ -165,10 +168,18 @@ export default function Users() {
                                 </div>
                         
                                 {/* Right side container for the Add button */}
-                                <div title="Add New User" className="flex justify-end items-end">
-                                    <button onClick={handlePanel} className="bg-white border-2 border-gray-300 rounded-lg p-2 flex items-center justify-center hover:bg-gray-100 hover:border-green-500">
+                                <div className="flex items-center justify-end ml-auto">
+                                    <Tooltip title="Add User">
+                                        <div>
+                                            <ActionButton title="Add" icon={<AddRoundedIcon />} 
+                                                onClick={handlePanel} borderColor="border-saitBlue" textColor="text-saitGray" 
+                                                hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                                            />
+                                        </div>
+                                    </Tooltip>
+                                    {/* <button onClick={handlePanel} className="bg-white border-2 border-gray-300 rounded-lg p-2 flex items-center justify-center hover:bg-gray-100 hover:border-green-500">
                                         <AddIcon className="text-green-500 w-5 h-5" />
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
                         }                                          
