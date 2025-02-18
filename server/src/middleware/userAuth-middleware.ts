@@ -109,7 +109,36 @@ export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, 
         res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
         return;
     }
-}    
+}   
+
+// set user image in db
+export const setUserImage = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const { decodedToken } = req.user;
+        const { picture, email } = decodedToken;
+
+        const storedPicture = await prisma.user.findUnique({
+            where: { email },
+            select: { image_url: true }
+        }); 
+
+        if (storedPicture?.image_url === picture) {
+            // console.log("User image already set:", storedPicture?.image_url);
+            next();
+        }
+        
+        await prisma.user.update({
+            where: { email },
+            data: { image_url: picture }
+        });
+
+        next(); 
+    } catch (error: any) {
+        console.log("Set User Image error:", error);
+        res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
+        return;
+    }
+};
 
 // session request route: verify session cookie and set user object in request
 export const verifySession = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

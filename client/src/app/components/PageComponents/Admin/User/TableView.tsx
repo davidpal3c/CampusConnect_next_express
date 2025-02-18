@@ -79,7 +79,8 @@ export default function TableView({ users, filteredRole }) {
             );
         }},
         { field: "imageUrl", headerName: "Photo", minWidth: 80, renderCell: (params) => {
-            const imageUrl = params.row.imageUrl;
+            const imageUrl = params.row.image_url;
+            console.log(imageUrl);
             return (
                 <div className="flex items-center justify-center w-full h-full">
                     {imageUrl ? (
