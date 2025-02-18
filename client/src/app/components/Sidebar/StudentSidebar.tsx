@@ -56,28 +56,28 @@ export default function StudentSidebar() {
         <UserSidebarButton href={"/user"} icon={HomeIcon}>
           Dashboard
         </UserSidebarButton>
+
         <UserSidebarButton href={"/user/events"} icon={EventIcon}>
           Events
         </UserSidebarButton>
+        
         <UserSidebarButton href={"/user/notifications"} icon={NotificationIcon}>
           Notifications
         </UserSidebarButton>
+
         <UserSidebarButton href={"/user/groups"} icon={GroupIcon}>
           Groups
         </UserSidebarButton>
-        <UserSidebarButton
-          href={"/user/campusInformation"}
-          icon={CampusInformationIcon}
-        >
+
+        <UserSidebarButton href={"/user/campus-information"} icon={CampusInformationIcon}>
           Campus Information
         </UserSidebarButton>
-        <UserSidebarButton
-          href={"/user/generalInformation"}
-          icon={GeneralInformationIcon}
-        >
+
+        <UserSidebarButton href={"/user/general-information"} icon={GeneralInformationIcon}>
           General Information
         </UserSidebarButton>
-        <UserSidebarButton href={"/user/preArrival"} icon={PreArrivalIcon}>
+        
+        <UserSidebarButton href={"/user/pre-arrival"} icon={PreArrivalIcon}>
           Pre-Arrival
         </UserSidebarButton>
       </div>

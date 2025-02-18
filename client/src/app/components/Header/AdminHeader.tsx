@@ -71,7 +71,7 @@ export default function Header({handleSidebarToggle, shouldShowButton}) {
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                         onClick={handleMenuClick}
-                        className="flex items-center mr-3 active:scale-75 transition-transform transition-shadow duration-300 ease-in-out">
+                        className="flex items-center mr-3 active:scale-75 transition-shadow duration-300 ease-in-out">
 
                         <img src={user.photoURL} alt="user-avatar-photo" className="w-[2.6rem] h-[2.6rem] ml-3 mr-2 rounded-full border border-slate-500" />
                         {/* <p className="text-sm text-gray-950">Hello,<span className="ml-1 font-semibold">{user.displayName}!</span></p> */}

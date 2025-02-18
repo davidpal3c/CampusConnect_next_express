@@ -1,7 +1,6 @@
 interface PageHeaderProps {
     title: string;
     filter?: React.ReactElement | null;
-    subfilter?: React.ReactElement | null;
 }
 
 export default function UserPageHeader({ title, filter = null }: PageHeaderProps) {
