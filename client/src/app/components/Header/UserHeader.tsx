@@ -41,7 +41,7 @@ export default function UserHeader() {
   }
 
   return (
-    <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-10 w-full mb-6">
+    <header className="flex justify-between items-center h-[3.5rem] p-5 w-full">
       <div>
         <img
           src="/sait-logo.png"
@@ -90,14 +90,14 @@ export default function UserHeader() {
           }}
           PaperProps={{
             sx: {
-                backgroundColor: "#f7f7f7",
-                borderRadius: "10px",
-                border: "1px solid #005795",
-                boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
-                marginTop: "0.6rem",
-                marginRight: "0.7rem",
-                width: "10rem",
-            }
+              backgroundColor: "#f7f7f7",
+              borderRadius: "10px",
+              border: "1px solid #005795",
+              boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
+              marginTop: "0.6rem",
+              marginRight: "0.7rem",
+              width: "10rem",
+            },
           }}
         >
           <MenuItem onClick={handleClose}>Profile</MenuItem>

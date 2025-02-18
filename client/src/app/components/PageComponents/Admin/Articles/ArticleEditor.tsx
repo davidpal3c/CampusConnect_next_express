@@ -215,7 +215,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
             <section className="relative flex items-center bg-white p-4 rounded-lg mb-6 shadow-md">
                 {/* <form onSubmit={handleSubmit(action === "Create" ? handleCreate : handleUpdate) } className="flex flex-row flex-wrap w-full"> */}
                 <form onSubmit={handleSubmit((data) => submitForm(data, ))} className="flex flex-row flex-wrap w-full">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
 
                         {/* title */}
                         <div>
