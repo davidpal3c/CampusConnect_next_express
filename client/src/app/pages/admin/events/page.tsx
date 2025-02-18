@@ -48,21 +48,29 @@ const Events = () => {
 
       const data = await response.json();
 
+      console.log("Data: ", data);
+
       if (!response.ok) {
         toast.error(data.message || "An Error occurred fetching events.");
         return;
       }
 
-      // Transform events for calendar
+      if (data.events?.length === 0) {
+        toast.info("No events found");
+        setEvents([]);
+        return;
+      }
+
       const formattedEvents = data.map(event => ({
         title: event.name,
         start: new Date(event.date),
         end: new Date(event.date),
         resource: event
       }));
-
+        
       setEvents(formattedEvents);
-
+  
+      // Transform events for calendar
     } catch (error) {
       console.error(error);
       toast.error("Error fetching events: " + error);

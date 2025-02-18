@@ -12,7 +12,6 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate } from "@/app/_utils/dateUtils";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useUserData } from '@/app/_utils/userData-context';
 import CloseIcon from '@mui/icons-material/Close';
 import { Tooltip } from '@mui/material';
 
@@ -41,7 +40,6 @@ const EventEditor: React.FC<CreateEventProps> = ({
   eventObject, 
   closeEventEditor 
 }) => {
-  const { userData } = useUserData();
   const [userFullName, setUserFullName] = useState("");
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -83,6 +81,8 @@ const EventEditor: React.FC<CreateEventProps> = ({
       capacity: parseInt(data.capacity),
       current_attendees: parseInt(data.current_attendees)
     };
+    
+    console.log("Event Data: ", eventData);
 
     if (action === "Create") {
       await processCreateEvent(eventData);
@@ -93,6 +93,7 @@ const EventEditor: React.FC<CreateEventProps> = ({
 
   const processCreateEvent = async (eventData: any) => {
     try {
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`, {
         method: "POST",
         headers: {
@@ -248,7 +249,7 @@ const EventEditor: React.FC<CreateEventProps> = ({
               textColor="text-saitBlue"
               borderColor="border-saitBlue"
               hoverBgColor="bg-saitBlue"
-              hoverTextColor="text-white"
+              hoverTextColor="text-saitWhite"
             />
           </div>
         </form>

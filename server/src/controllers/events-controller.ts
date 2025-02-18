@@ -25,13 +25,8 @@ export const getAllEvents = async (req: Request, res: Response) => {
     try {
         const events = await prisma.event.findMany(); 
 
-        if(events.length === 0) {
-            res.status(404).json({ error: 'No events found in the database (array)' });
-            return;
-        }
-
-        if (!events) {
-            res.status(404).json({ error: 'No events found in the database' });
+        if (!events || events.length === 0) {
+            res.status(200).json({ message: 'No events found in the database', events: [] });
             return;
         }
 
@@ -147,17 +142,30 @@ export const getEventAttendees = async (req: Request, res: Response) => {
 // POST: /api/events/ - Create new event
 export const createEvent = async (req: AuthenticatedRequest, res: Response) => {
     try {
+
+        // console.log("Request body: ", req.body);
+
         const { name, date, location, 
             audience, host, contact, 
-            capacity, current_attendees, userId } = req.body;
+            capacity, current_attendees } = req.body;
 
         const { email } = req.user.decodedClaims;
-        // const { userId } = await prisma.user.findUnique({
-        //     where: { email: email },
-        //     select: {
-        //         user_id: true
-        //     } 
-        // }) as any;
+        console.log("Email: ", email);
+
+        const { user } = await prisma.user.findUnique({
+            where: { email: email.toLowerCase() },
+            select: {
+                user_id: true
+            } 
+        }) as any;
+
+        if (!user) {
+            console.error("User not found for email:", email);
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+
+        const userId = user.user_id;
 
         const newEvent = await prisma.event.create({
             data: {

@@ -74,12 +74,12 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
                 title: title,
                 content: content,
                 author_id: authorId?.user_id,
-                imageUrl: imageURL ? imageURL : '',
+                image_url: imageURL ? imageURL : '',
                 audience: audience,
                 status: status,
                 type: type,
                 author: author,
-            }
+            } as any
         });
 
         res.status(201).json({ message: 'Article created successfully' });
