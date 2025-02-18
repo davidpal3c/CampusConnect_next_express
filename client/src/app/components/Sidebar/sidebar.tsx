@@ -16,7 +16,7 @@ export default function Sidebar(props: SidebarProps) {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="flex flex-col w-64 items-center bg-white shadow-md">
+      <div className="flex flex-col w-64 items-center bg-slate-800 shadow-md">
         <div className="size-20 my-10">
           <img
             src="/sait-logo.png"
