@@ -7,6 +7,29 @@ export interface AuthenticatedRequest extends Request {
     user?: any; 
 }
 
+export const getUserId = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.user.decodedClaims;
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { user_id: true }
+        });
+
+        if (!user?.user_id || !email ) {
+            res.status(404).json({ status: 'error', message: 'User not found.' });
+            return;
+        }
+        
+        req.user.userId = user?.user_id;
+        next(); 
+    } catch (error: any) {
+        res.status(500).json({ status: 'error', message: 'Error getting user ID', error: error.message });
+        return;
+    }
+};
+
+
 // export const verifyUserOwnership = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 //     try {
 //         const { decodedClaims } = req.user;  

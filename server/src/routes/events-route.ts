@@ -2,6 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { verifySession, validatePermissions } from '../middleware/user-middleware';
 import { adminRoute } from '../middleware/user-middleware';
+import { getUserId } from '../middleware/events-middleware';
 import { getAllEvents, getEventById, getMyEvents, getEventsByHost, getEventAttendees, 
     createEvent, registerForEvent, updateEvent, updateEventFull, deleteEvent, 
     unregisterForEvent } from '../controllers/events-controller';
@@ -24,7 +25,7 @@ router.get('/host/', verifySession, getEventsByHost);
 router.get('/:id/attendees', verifySession, adminRoute, getEventAttendees);
 
 // POST: /api/events/ - Create a new event
-router.post('/', verifySession, adminRoute, validatePermissions(['Read-Write', 'Full Access']), createEvent);
+router.post('/', verifySession, adminRoute, validatePermissions(['Read-Write', 'Full Access']), getUserId, createEvent);
 
 // POST: /api/events/:id/attendees - Register user for an event
 router.post('/:id/attendees', verifySession, registerForEvent);

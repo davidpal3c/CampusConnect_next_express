@@ -7,7 +7,6 @@ import { connect } from 'http2';
 export interface AuthenticatedRequest extends Request {
     user?: any; 
 }
-
 // export type UserEventWhereInput = {
 //     id?: String | string;
 //     user_id?: String | string;
@@ -16,9 +15,9 @@ export interface AuthenticatedRequest extends Request {
 //     rsvp?: Boolean | boolean;
 //   };
 
+// TODO - email confirmations / notification middleware post event creation
 // TODO - log operations (user_id, event_id, operation, timestamp)
-
-
+// TODO - complete validation on all routes
 
 // GET /api/events/ - Get all events
 export const getAllEvents = async (req: Request, res: Response) => {
@@ -149,15 +148,10 @@ export const createEvent = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { name, date, location, 
             audience, host, contact, 
-            capacity, current_attendees, userId } = req.body;
+            capacity, current_attendees } = req.body;
 
         const { email } = req.user.decodedClaims;
-        // const { userId } = await prisma.user.findUnique({
-        //     where: { email: email },
-        //     select: {
-        //         user_id: true
-        //     } 
-        // }) as any;
+        const { userId } = req.user;
 
         const newEvent = await prisma.event.create({
             data: {
@@ -184,7 +178,7 @@ export const createEvent = async (req: AuthenticatedRequest, res: Response) => {
 
         // send email to user confirming event creation (ownership)
 
-        res.status(201).json(newEvent);
+        res.status(201).json({ message: 'Event created successfully' });
     } catch (error) {
         console.error('Server: event creation route. ', error);
         res.status(500).json({ error: 'Internal server error: Event could not be created' });

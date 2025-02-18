@@ -56,7 +56,7 @@ export default function StudentSidebar() {
         <UserSidebarButton href={"/user"} icon={HomeIcon}>
           Dashboard
         </UserSidebarButton>
-
+        
         <UserSidebarButton href={"/user/events"} icon={EventIcon}>
           Events
         </UserSidebarButton>

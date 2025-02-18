@@ -141,7 +141,7 @@ export default function TableView({ users, filteredRole }) {
     const columns = roleColumnsMap[filteredRole as UserRole] || baseColumns;
 
     return (
-        <div className="bg-saitWhite h-screen flex flex-col items-center p-8">
+        <div className="bg-saitWhite h-screen flex flex-col items-center p-4 -mt-4">
 
             {/* User Table */}
             <div className="w-full max-w-6xl">
