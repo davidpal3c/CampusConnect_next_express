@@ -6,6 +6,7 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
 import ArticleDeleteModal from './ArticleDeleteModal';
+import RichTextEditor from './RichTextEditor';
 
 import { toast } from "react-toastify";
 
@@ -33,6 +34,12 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const handleDeleteModalOpen = () => setOpenDeleteModal(true);
     const handleDeleteModalClose = () => setOpenDeleteModal(false);
+
+    const [contentMode, setContentMode] = useState("simplified");   
+    
+    const toggleContentMode = () => {
+        setContentMode(contentMode === "simplified" ? "richText" : "simplified");
+    }
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
@@ -215,7 +222,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
             <section className="relative flex items-center bg-white p-4 rounded-lg mb-6 shadow-md">
                 {/* <form onSubmit={handleSubmit(action === "Create" ? handleCreate : handleUpdate) } className="flex flex-row flex-wrap w-full"> */}
                 <form onSubmit={handleSubmit((data) => submitForm(data, ))} className="flex flex-row flex-wrap w-full">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
 
                         {/* title */}
                         <div>
@@ -327,10 +334,15 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                         </div>
                     </div>
 
-                    {/* toggle content editor: simplified and TinyMCE*/}
-                    <div>
-                        <div>
-                            <label className={formStyling.labelStyling} htmlFor="content">Content</label>
+                    {/* toggle content editor: simplified and richText*/}
+                    {contentMode === "simplified" ? (   
+                        <div className="w-full mt-6">
+                            <div className="flex justify-between">
+                                <label className={formStyling.labelStyling} htmlFor="content">Content</label>
+                                <button onClick={toggleContentMode} className="text-saitBlue">Switch to Rich Text Editor
+                                </button>
+                            </div>
+
                             <textarea className={formStyling.inputStyling} id="content" cols={200} rows={10}
                                 {...register("content", { 
                                     required: 'Content is Required',
@@ -339,24 +351,27 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             />
                             {errors.content && <p className={formStyling.errorStyle}>{errors.content.message}</p>}
                             
-                        </div>
-                    </div>                    
-                        {action === "Create" ? (
-                            <div className="flex flex-row items-center justify-center w-full space-x-5">
-                                <ActionButton title="Publish" onClick={handleSubmit((data) => submitForm(data, "publish"))}    
-                                textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
-                                <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
-                                    textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitRed" hoverTextColor="text-saitWhite"/>  
-                            </div>
-                        ) : (
-                            <div className="flex flex-row items-center justify-center w-full space-x-4">
-                                <ActionButton title="Submit Update" onClick={handleSubmit((data) => submitForm(data, "update"))}
-                                    textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
-                                <ActionButton title="Delete" onClick={handleDelete} type="button"
-                                    textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
+                        </div>                            
+                    ) : (
+                        null 
+                    )}
 
-                            </div>
-                        )}                                 
+                    {action === "Create" ? (
+                        <div className="flex flex-row items-center justify-center w-full space-x-5">
+                            <ActionButton title="Publish" onClick={handleSubmit((data) => submitForm(data, "publish"))}    
+                            textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
+                            <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
+                                textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitRed" hoverTextColor="text-saitWhite"/>  
+                        </div>
+                    ) : (
+                        <div className="flex flex-row items-center justify-center w-full space-x-4">
+                            <ActionButton title="Submit Update" onClick={handleSubmit((data) => submitForm(data, "update"))}
+                                textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
+                            <ActionButton title="Delete" onClick={handleDelete} type="button"
+                                textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
+
+                        </div>
+                    )}                                 
                 </form>      
                 <ArticleDeleteModal     
                     articleId={articleObject?.article_id} 
@@ -365,6 +380,17 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                     closeArticleEditor={closeArticleEditor}             
                 />
             </section>
+            {contentMode === "richText" ? (
+                <div>
+                    <div className="flex justify-end">
+                        <button onClick={toggleContentMode} className="text-saitBlue"> Switch to Simple Text Editor
+                        </button>
+                    </div>
+                    <RichTextEditor />
+                </div>
+            ) : (
+                null
+            )}  
         </main>
     );
 }

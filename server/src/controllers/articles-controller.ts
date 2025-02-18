@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/prismaClient';
+import { ArticleType } from '@prisma/client'; // Import the enum from Prisma
 
 export interface AuthenticatedRequest extends Request {
     user?: any; 
@@ -30,6 +31,25 @@ export const getArticleCategories = async (req: Request, res: Response) => {
     } catch (error) {
         console.log('Error fetching article categories:', error);
         res.status(500).json({ message: 'Server Error: error fetching article categories', error: error });    
+    }
+};
+
+// GET /api/articles/type/:typeName - Get all articles of a specific type
+export const getArticlesByType = async (req: Request, res: Response) => {
+    try {
+        let { typeName } = req.params;
+
+        // typeName = typeName.charAt(0).toUpperCase() + typeName.slice(1).toLowerCase(); TO DO: Change Enum to lowercase
+
+
+        const articles = await prisma.article.findMany({
+            where: { type: typeName as ArticleType }
+        });
+
+        res.status(200).json(articles);
+    } catch (error) {
+        console.log('Error fetching articles by type:', error);
+        res.status(500).json({ message: 'Server Error: error fetching articles by type', error: error });
     }
 };
 
