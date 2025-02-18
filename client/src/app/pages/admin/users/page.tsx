@@ -1,33 +1,37 @@
 "use client";   
 
 // React
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
 
 // Components
 import PageHeader from "@/app/components/PageHeader/PageHeader";
 import {FilterDropdown, FilterInput} from "@/app/components/Buttons/FilterButton/FilterButton";
-import UserItem from "@/app/components/PageComponents/User/UserItem";
+import UserListView from "@/app/components/PageComponents/Admin/User/ListView";
 import Loader from "@/app/components/Loader/Loader";
 import TableView from "../../../components/PageComponents/Admin/User/TableView";
+import UserEditor from "@/app/components/PageComponents/Admin/User/UserEditor";
 
-// Icons for filters
+// Icons 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import AddIcon from '@mui/icons-material/Add';
 
 // libraries
 import { toast } from "react-toastify";
-import Articles from "../articles/page";
-
+import { Tooltip } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 export default function Users() {
 
     // State Management
     const [users, setUsers] = useState([]);
+    const [roleToFilter, setRoleToFilter] = useState("");
     const [originalUsers, setOriginalUsers] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [usersPerPage] = useState(10); 
+    const [usersView, setUsersView] = useState("List");
+    const [isPanelVisible, setIsPanelVisible] = useState(false);
+    const userEditorRef = useRef(null);
     
     useEffect(() => {
        fetchUserData();
@@ -76,7 +80,7 @@ export default function Users() {
               });
         }
     };
-
+    
 
     // Search and filter functions
     const searchByName = (searchValue: string) => {
@@ -105,23 +109,20 @@ export default function Users() {
                 user.role.toLowerCase().includes(role.toLowerCase())
             );
             setUsers(filteredUsers);
+            setRoleToFilter(role);
         }
     }
 
 
-    // Pagination
-    const indexOfLastUser = currentPage * usersPerPage;
-    const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+    // Handle Users View 
+    const handleUsersView = (view: string) => {
+        setUsersView(view);
 
-    const totalPages = Math.ceil(users.length / usersPerPage);
+    }
 
-    const handlePrevious = () => {
-        if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-    };
-
-    const handleNext = () => {
-        if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+    // Create User Panel
+    const handlePanel = () => {
+        setIsPanelVisible(!isPanelVisible);
     };
     
     return (
@@ -132,60 +133,75 @@ export default function Users() {
                 <div>               
                     <PageHeader title="Users" 
                         filter={
-                            <div className="flex space-x-2">
-                                <FilterInput 
-                                    title="Name" 
-                                    icon={<SearchOutlinedIcon className="text-saitGray" fontSize="small" />} 
-                                    handleChange={searchByName}
-                                />
+                            <div className="grid grid-cols-[1fr_auto] lg:grid-cols-2 w-full gap-4">
+                                {/* Left side container for filters */}
+                                <div className="flex items-center space-x-2">
+                                    <FilterInput 
+                                        title="Name" 
+                                        icon={<SearchOutlinedIcon className="text-saitGray" fontSize="small" />} 
+                                        handleChange={searchByName}
+                                    />
+                                    <FilterDropdown 
+                                        title="Role" 
+                                        options={["Admin", "Student", "Alumni", "Prospective Student"]}
+                                        handleSelect={filterByRole}
+                                    />
+                                    <div className="flex flex-row w-20 items-center justify-evenly bg-white border-2 rounded-lg p-1">
+                                    <Tooltip title="List View">
+                                            <button onClick={() => handleUsersView("List")}>
+                                                <FormatListBulletedIcon sx={usersView === "List" ? { color: '#2b64ae', fontSize: 26 } :
+                                                    { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
+                                                />
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip title="Table View">
+                                            <button onClick={() => handleUsersView("Table")}>
+                                                <TableChartIcon sx={usersView === "Table" ? { color: '#2b64ae', fontSize: 26 } :
+                                                    { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
+                                                />
+                                            </button>
+                                        </Tooltip>
+                                    </div>
+                                </div>
+                        
+                                {/* Right side container for the Add button */}
+                                <div title="Add New User" className="flex justify-end items-end">
+                                    <button onClick={handlePanel} className="bg-white border-2 border-gray-300 rounded-lg p-2 flex items-center justify-center hover:bg-gray-100 hover:border-green-500">
+                                        <AddIcon className="text-green-500 w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
-                        }
-                        subfilter={
-                            <div className="flex space-x-2">
-                                <FilterDropdown 
-                                    title="Role" 
-                                    options={["Admin", "Student", "Alumni", "Prospective Student"]}
-                                    handleSelect={filterByRole}
-                                    
-                                />
-                                
-                        </div>
-                    } />
-                    <ul>
-                        {currentUsers.map((user, index) => {
-                            return (
-                                    <UserItem 
-                                        key={user.user_id}
-                                        user_id={user.user_id}
-                                        name={`${user.first_name} ${user.last_name}`}
-                                        role={user.role}
-                                        email={user.email}
-                                        created_at={user.created_at}
-                                    />  
-                            )
-                        })}
-                    </ul>
+                        }                                          
+                                     
+                     />
 
-                    <div className="flex justify-between items-center m-4">
-                        <button 
-                            onClick={handlePrevious} 
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 bg-gray-200 shadow-md rounded-md disabled:opacity-50"
+                    {/* Display Users */}
+ 
+                    {usersView === "List" ? (
+                            <UserListView users={users}/>
+                        ) : (
+                            <TableView users={users} filteredRole={roleToFilter}/>
+                        )}
+
+                    {/* Create New User */}
+
+                    <AnimatePresence>
+                        {isPanelVisible &&
+                        <motion.div
+                            ref={userEditorRef}
+                            initial={{ x: "100vh" }}
+                            animate={{ x: 0 }}                                                        //final state of animation
+                            exit={{ x: "100vh" }}                                                      // exit animation
+                            transition={{ duration: 0.7, ease: "easeInOut" }}
+                            className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                         >
-                            Previous
-                        </button>
-                        <span>
-                            Page {currentPage} of {totalPages}
-                        </span>
-                        <button 
-                            onClick={handleNext} 
-                            disabled={currentPage === totalPages}
-                            className="px-4 py-2 bg-gray-200 shadow-md rounded-md disabled:opacity-50"
-                        >
-                            Next
-                        </button>
-                    </div>
-                    <TableView/>
+                            <div className="">
+                                <UserEditor closeOnClick={handlePanel}/>
+                            </div>
+                        </motion.div>
+                        }
+                    </AnimatePresence>
+                    
                 </div>
             )}
         </div>
