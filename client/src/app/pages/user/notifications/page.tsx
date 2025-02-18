@@ -1,8 +1,8 @@
 "use client";
 
 import { useUserAuth } from "@/app/_utils/auth-context";
-import UserPageItem from "@/app/components/PageComponents/Admin/User/UserPageItem";
-import UserPageMenu from "@/app/components/PageComponents/Admin/User/UserPageMenu";
+import UserPageItem from "@/app/components/PageComponents/User/UserPageItem";
+import UserPageMenu from "@/app/components/PageComponents/User/UserPageMenu";
 import { useEffect } from "react";
 
 export default function Notifications() {

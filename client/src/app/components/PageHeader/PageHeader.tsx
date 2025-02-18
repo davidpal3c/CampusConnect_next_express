@@ -4,7 +4,7 @@ interface PageHeaderProps {
     subfilter?: React.ReactElement | null;
 }
 
-export default function UserPageHeader({ title, filter = null, subfilter = null }: PageHeaderProps) {
+export default function UserPageHeader({ title, filter = null }: PageHeaderProps) {
     return (
         <div className="m-4">
             <header className="flex items-center justify-start border-b-2 border-saitBlack pb-6">
@@ -15,11 +15,6 @@ export default function UserPageHeader({ title, filter = null, subfilter = null 
                     </div>
                 )}
             </header>
-            {subfilter && (
-                    <div className="flex items-center my-4">
-                        {subfilter}
-                    </div>
-                )}
         </div>
     );
 }

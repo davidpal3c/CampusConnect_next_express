@@ -15,7 +15,7 @@ model User {
   middle_name String?
   last_name   String
   role        Role
-  imageUrl    String?
+  image_url   String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
    
@@ -48,6 +48,7 @@ model Student {
   program_id  String?       // if null, reflect student status  
   department_id   String           
   intake_year Int     
+  intake      String?
   status      Status
  
   // Relations
