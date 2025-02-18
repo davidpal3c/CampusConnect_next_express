@@ -35,7 +35,7 @@ export default function Articles() {
 
   const articleEditorRef = useRef(null);
 
-  const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "Pre-Arrivals"]);
+  const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
 
   const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);
   const [ panelTask, setPanelTask ] = useState("Create");
@@ -214,52 +214,53 @@ export default function Articles() {
                 
         {articlesView === "Simple" ? (
           //* Simplified Article View */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
-            {currentArticles.length > 0 ? (
-              currentArticles.map((article) => (
-                <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
-                  <button className="absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
-                    <Tooltip title="Edit Article">    
-                      <EditRoundedIcon sx={{ fontSize: 21 }} />
-                    </Tooltip>
-                  </button>
-                  <button>
-                    <ArticleCard article={article} />
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p className="text-black">Loading.....</p>
-            )}
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+              {currentArticles.length > 0 ? (
+                currentArticles.map((article) => (
+                  <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
+                    <button className="absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
+                      <Tooltip title="Edit Article">    
+                        <EditRoundedIcon sx={{ fontSize: 21 }} />
+                      </Tooltip>
+                    </button>
+                    <button>
+                      <ArticleCard article={article} />
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-black">Loading.....</p>
+              )}
+            </div>
+            
+             {/* pagination */}
+            <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
+              <button 
+                  onClick={handlePrevious} 
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              >
+                  Previous
+              </button>
+              <span>
+                  Page {currentPage} of {totalPages}
+              </span>
+              <button 
+                  onClick={handleNext} 
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              >
+                  Next
+              </button>
+            </div>
+
           </div>
+          
         ) : (
           // Extended Article View
           <ArticlesTableDetailed articlesData={originalArticles}/>
         )}
-
-
-          {/* pagination */}
-          <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
-            <button 
-                onClick={handlePrevious} 
-                disabled={currentPage === 1}
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            >
-                Previous
-            </button>
-            <span>
-                Page {currentPage} of {totalPages}
-            </span>
-            <button 
-                onClick={handleNext} 
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            >
-                Next
-            </button>
-          </div>
-          
-
 
           {/* Create Article Panel */}
           <AnimatePresence>

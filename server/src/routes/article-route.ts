@@ -27,3 +27,4 @@ router.delete('/:id', verifySession, adminRoute, validatePermissions(['Full Acce
 
 
 export default router;
+
