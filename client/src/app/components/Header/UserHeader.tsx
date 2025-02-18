@@ -7,13 +7,14 @@ import { useRouter } from "next/navigation";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import MenuIcon from '@mui/icons-material/Menu';
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
-export default function UserHeader() {
+export default function UserHeader({handleSidebarToggle, shouldShowButton}) {
   const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
   const router = useRouter();
 
@@ -41,7 +42,7 @@ export default function UserHeader() {
   }
 
   return (
-    <header className="flex justify-between items-center h-[3.5rem] p-5 w-full">
+    <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-2 -mt-2 w-full bg-saitWhite">
       <div>
         <img
           src="/sait-logo.png"
@@ -61,6 +62,12 @@ export default function UserHeader() {
             sx={{ color: "#4c4c4c", fontSize: 25, ":hover": { color: "#fff" } }}
           />
         </div>
+
+        { shouldShowButton && (
+                    <div className="grid place-items-center rounded-lg bg-slate-300 w-8 h-8 ml-auto hover:bg-saitLightBlue hover:stroke-saitWhite transition-colors duration-300" onClick={handleSidebarToggle}>
+                        <MenuIcon sx={{ color: "#4c4c4c", fontSize: 22, ":hover": { color: '#fff' } }} />
+                    </div>
+            )}
 
         <button
           id="basic-button"

@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifySession, adminRoute, validatePermissions } from '../middleware/user-middleware';
-import { getAllArticles, getArticleCategories, getArticleById, createArticle, updateArticle, updateArticleWhole, deleteArticle } from '../controllers/articles-controller';
+import { getAllArticles, getArticleCategories, getArticlesByType, getArticleById, createArticle, updateArticle, updateArticleWhole, deleteArticle } from '../controllers/articles-controller';
 
 const router = express.Router();
 
@@ -9,6 +9,9 @@ router.get('/', verifySession, getAllArticles);
 
 // GET /api/articles/categories - Get article categories
 router.get('/categories', verifySession, getArticleCategories);
+
+// GET /api/articles/type/:typeName - Get all articles of a specific type
+router.get('/type/:typeName', verifySession, getArticlesByType);
 
 // GET /api/articles/:id - Get a single article by ID
 router.get('/:id', verifySession, getArticleById);
