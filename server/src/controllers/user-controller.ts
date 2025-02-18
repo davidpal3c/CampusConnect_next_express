@@ -130,7 +130,7 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
 // POST: /api/users/ - Create a new user
 export const createUser = async (req: Request, res: Response) : Promise<void> => {
     try {
-        console.log(req.body);
+        // console.log(req.body);
         const { user_id, first_name, last_name, email, role, image_url } = req.body;
 
         const user = await prisma.user.create({
