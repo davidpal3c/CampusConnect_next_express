@@ -7,8 +7,8 @@ import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import EventEditor from '@/app/components/PageComponents/Events/EventEditor';
-import EventForm from '@/app/components/PageComponents/Events/EventForm';
+import EventEditor from '@/app/components/PageComponents/Admin/Events/EventEditor';
+import EventForm from '@/app/components/PageComponents/Admin/Events/EventForm';
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { toast } from "react-toastify";
 
@@ -48,7 +48,7 @@ const Events = () => {
 
       const data = await response.json();
 
-      console.log("Data: ", data);
+      console.log("Current Events: ", data);
 
       if (!response.ok) {
         toast.error(data.message || "An Error occurred fetching events.");
