@@ -18,7 +18,7 @@ interface FilterDropdownProps {
 export function FilterInput({ title, icon, handleChange }: FilterInputProps) {
 
     return (
-        <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1">
+        <div className="flex flex-row h-10 items-center bg-white border-2 rounded-lg p-1">
             <input 
                 onChange={(event) => handleChange(event.target.value)}
                 type="text" 
@@ -39,7 +39,7 @@ export function FilterDropdown({ title, options, handleSelect }: FilterDropdownP
     };
 
     return (
-        <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1">
+        <div className="flex flex-row h-10 items-center bg-white border-2 rounded-lg p-1">
             <select
                 value={selectedOption}
                 onChange={handleChange}

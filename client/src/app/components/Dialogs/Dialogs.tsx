@@ -53,7 +53,6 @@ export function UpdateDialog ({
   const [permissions, setPermissions] = useState(
     initialData.role === "Admin" ? initialData.Admin.permissions : []
   );
-  console.log(initialData);
 
   const rolesArray = ["Admin", "Alumni", "Student"];
   const permissionsArray = ["Full Access", "Read-Write", "Read-Only"];
@@ -87,6 +86,16 @@ export function UpdateDialog ({
           fullWidth
           margin="dense"
         />
+
+        <TextField
+          label="Middle Name"
+          name="middle_name"
+          value={user.middle_name || ""} // OR an empty string only because can be null in the database
+          onChange={handleChange}
+          fullWidth
+          margin="dense"
+        />
+
         <TextField
           label="Last Name"
           name="last_name"
@@ -190,6 +199,7 @@ export function UpdateDialog ({
               onChange={handleChange}
               fullWidth
               margin="dense"
+              required
             />
 
             <TextField

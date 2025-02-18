@@ -2,54 +2,28 @@
 
 // React & Next
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 // Components
-import Loader from "@/app/components/Loader/Loader";
 import { ViewButton, DeleteButton } from "@/app/components/Buttons/Buttons";
 import { DeleteDialog } from "@/app/components/Dialogs/Dialogs";
 
 // MUI Components
 import { DataGrid } from "@mui/x-data-grid";
-import { TextField, InputAdornment } from "@mui/material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-// Icons
-import SearchIcon from "@mui/icons-material/Search";
 
-export default function TableView() {
+
+export default function TableView({ users, filteredRole }) {
     // State Management
-    const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
     const [userId, setUserId] = useState(null);
 
-    // Fetch user data from API
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    const fetchUsers = async () => {
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-            });
-            const userData = await response.json();
-            setUsers(userData);
-            setFilteredUsers(userData);
-            setIsLoading(false);
-        } catch (error) {
-            console.error("Error fetching users:", error);
-            setIsLoading(false);
-        }
-    };
 
     // Delete function for users
-    const deleteUser = async (userId) => {
+    const deleteUser = async (userId: string) => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
                 method: "DELETE",
@@ -62,7 +36,6 @@ export default function TableView() {
             }
     
             console.log(`User ${userId} deleted successfully`);
-            fetchUsers(); // Refresh user list
         } catch (error) {
             console.error("Error deleting user:", error);
         }
@@ -92,9 +65,20 @@ export default function TableView() {
         setOpenDialog(false);
     };
 
-    // Define table columns
-    const columns = [
-        { field: "imageUrl", headerName: "Photo", width: 80, renderCell: (params) => {
+    // TABLE COLUMNS
+
+    // Base columns for the table (All users)
+    const baseColumns = [
+        { field: "actions", headerName: "Actions", type: "actions", minWidth: 120, flex: 1, renderCell: (params) => {
+            const userId = params.row.user_id;
+            return (
+                <div className="flex items-center justify-center w-full h-full">
+                    <ViewButton href={`/admin/users/${userId}`} />
+                    <DeleteButton onClick={() => handleOnDelete(userId)} />
+                </div>
+            );
+        }},
+        { field: "imageUrl", headerName: "Photo", minWidth: 80, renderCell: (params) => {
             const imageUrl = params.row.imageUrl;
             return (
                 <div className="flex items-center justify-center w-full h-full">
@@ -106,10 +90,11 @@ export default function TableView() {
                 </div>
             );
         } },
-        { field: "first_name", headerName: "First Name", width: 150 },
-        { field: "last_name", headerName: "Last Name", width: 150 },
-        { field: "email", headerName: "Email", width: 200 },
-        { field: "role", headerName: "Role", width: 130, renderCell: (params) => {
+        { field: "user_id", headerName: "SAIT ID", minWidth: 100 },
+        { field: "first_name", headerName: "First Name", minWidth: 150 },
+        { field: "last_name", headerName: "Last Name", minWidth: 150 },
+        { field: "email", headerName: "Email", minWidth: 200 },
+        { field: "role", headerName: "Role", minWidth: 90, renderCell: (params) => {
             const role = params.row.role;
             let className = "bg-saitBlack"; 
       
@@ -119,39 +104,44 @@ export default function TableView() {
       
             return <span className={`${className} font-bold text-saitWhite p-1 rounded-md`}>{role}</span>;
         }},
-        { field: "created_at", headerName: "Created At", width: 180, renderCell: (params) => new Date(params.row.created_at).toLocaleString() },
-        { field: "actions", headerName: "Actions", type: "actions", minWidth: 120, flex: 1, renderCell: (params) => {
-            const userId = params.row.user_id;
-            return (
-                <div className="flex items-center justify-center w-full h-full">
-                    <ViewButton href={`/admin/users/${userId}`} />
-                    <DeleteButton onClick={() => handleOnDelete(userId)} />
-                </div>
-            );
-        }}
+        { field: "created_at", headerName: "Created At", minWidth: 100, renderCell: (params) => 
+            new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(new Date(params.row.created_at))
+        },
     ];
 
-    if (isLoading) return <Loader isLoading={true} />;
+    const roleColumnsMap = {
+        // Admin columns for the table
+        "Admin": [
+            ...baseColumns,
+            { field: "permissions", headerName: "Permissions", width: 150 },
+        ],
+
+        // Student columns for the table
+        "Student": [
+            ...baseColumns,
+            { field: "program_id", headerName: "Program", width: 150 },
+            { field: "department_id", headerName: "Department", width: 150 },
+            { field: "intake_year", headerName: "Intake Year", width: 120 },
+            { field: "status", headerName: "Status", width: 100 },
+        ],
+
+        // Alumni columns for the table
+        "Alumni": [
+            ...baseColumns,
+            { field: "graduation_year", headerName: "Graduation Year", width: 120 },
+            { field: "credentials", headerName: "Credentials", width: 150 },
+            { field: "current_position", headerName: "Position", width: 150 },
+            { field: "company", headerName: "Company", width: 150 },
+        ],
+
+    };
+
+    type UserRole = "Admin" | "Student" | "Alumni";
+
+    const columns = roleColumnsMap[filteredRole as UserRole] || baseColumns;
 
     return (
-        <div className="bg-saitWhite h-screen flex flex-col items-center justify-center p-8">
-            <h1 className="text-3xl font-bold text-saitBlack mb-4">User List</h1>
-
-            {/* Search Bar */}
-            <TextField
-                variant="outlined"
-                placeholder="Search by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="mb-4 w-96"
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon />
-                        </InputAdornment>
-                    ),
-                }}
-            />
+        <div className="bg-saitWhite h-screen flex flex-col items-center p-4 -mt-4">
 
             {/* User Table */}
             <div className="w-full max-w-6xl">
@@ -173,4 +163,6 @@ export default function TableView() {
             />
         </div>
     );
+
+    
 }
