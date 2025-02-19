@@ -35,6 +35,7 @@ export default function Articles() {
 
   const articleEditorRef = useRef(null);
 
+  // TODO : fetch current article types from backend and set them here
   const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
 
   const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);

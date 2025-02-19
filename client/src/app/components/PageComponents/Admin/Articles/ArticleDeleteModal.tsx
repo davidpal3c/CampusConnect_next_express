@@ -67,6 +67,9 @@ export default function ArticleDeleteModal({ articleId, openDeleteModal, handleD
             aria-labelledby="delete-article-modal" 
             aria-describedby="delete-article-modal-description"
             id="delete-article-modal"
+            BackdropProps={{
+                sx: { backgroundColor: noEditor ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.5)" }  
+            }}
         >
             <Box sx={modalStyle}>
                 <div className="flex flex-col items-center justify-center p-4 my-2">    
@@ -91,9 +94,9 @@ const modalStyle = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
-    bgcolor: 'background.paper',
+    bgcolor: 'background.paper',    // default value set by theme in the Modal component
     border: '1px solid #000',
     borderRadius: 8,
-    boxShadow: 24,
+    boxShadow: 2,
     backgroundColor: "#f7f7f7",
   };
