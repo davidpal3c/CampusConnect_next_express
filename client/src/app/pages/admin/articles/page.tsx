@@ -220,11 +220,23 @@ export default function Articles() {
               {currentArticles.length > 0 ? (
                 currentArticles.map((article) => (
                   <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
-                    <button className="absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
+                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:bg-saitLighterPurple hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
                       <Tooltip title="Edit Article">    
-                        <EditRoundedIcon sx={{ fontSize: 21 }} />
+                        <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#e9d5ff] transition-colors duration-300" />
                       </Tooltip>
                     </button>
+                    {article.status === "Draft" ? (
+                      // <div className="absolute top-[0.9rem] -rotate-45 left-0 z-10 shadow-md bg-purple-200 border px-3 py-1 relative before:absolute before:-left-2 before:top-0 before:w-2 before:h-full before:bg-purple-200 before:transform before:skew-y-45 after:absolute after:-right-2 after:top-0 after:w-2 after:h-full after:bg-purple-200 after:transform after:-skew-y-45">
+                      //   <p className="text-purple-600 text-sm">Draft</p>
+                      // </div>
+                      <div className="absolute top-2 left-2 z-10 shadow-md bg-purple-200 border px-3 py-1 rounded-full">
+                        <p className="text-purple-600 text-sm">Draft</p>
+                      </div>
+                    ) : (
+                      <div className="absolute top-2 left-2 z-10 shadow-lg bg-blue-100 border text-blue-600 px-3 py-1 rounded-full">
+                        <p className="text-blue-600 text-sm">Published</p>
+                      </div>
+                    )}
                     <button>
                       <ArticleCard article={article} />
                     </button>
