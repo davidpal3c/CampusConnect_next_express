@@ -1,11 +1,15 @@
-import React from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useState } from "react";
 import { formatToDateOnly } from "@/app/_utils/dateUtils";
+import { useRouter } from "next/navigation";
+import ArticleDeleteModal from "./ArticleDeleteModal";
+
+import { DataGrid } from "@mui/x-data-grid";
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useRouter } from "next/router";
+import { Tooltip } from "@mui/material";
+
 
 
 type Article = {
@@ -29,12 +33,31 @@ type ArticleDetailedProps = {
 const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData }) => {
        
     const columns = [
-        { field: 'actions', headerName: 'Actions', type: 'actions', width: 120, renderCell: (params) => {  
+        { field: 'actions', headerName: 'Actions', type: 'actions', width: 150, renderCell: (params) => {  
             const articleId = params.row.article_id;
             return(
-                <div className="flex items-center justify-center w-full h-full space-x-2">
-                    <EditIcon />
-                    <DeleteIcon />
+                <div className="flex items-center justify-center w-full h-full space-x-1">
+                    <Tooltip title="Delete Article" arrow>
+                        <IconButton onClick={() => handleDeleteModalOpen(articleId)}>
+                            <DeleteIcon sx={{ fontSize: 22, color: '#666666', '&:hover': {color: '#932728'} }}/>
+                        </IconButton>
+                    </Tooltip>
+                    <ArticleDeleteModal     
+                        articleId={selectedArticleId ?? ""} 
+                        openDeleteModal={openDeleteModal} 
+                        handleDeleteModalClose={handleDeleteModalClose} 
+                        noEditor={true}                  
+                    />
+                    <Tooltip title="Edit Article" arrow>
+                        <IconButton onClick={() => { console.log("Edit Article: ", articleId); }}>
+                            <EditIcon sx={{ fontSize: 22, color: '#666666', '&:hover': { color: '#5c2876' } }} />   
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="View Article" arrow>
+                        <IconButton onClick={() => handleViewArticle(articleId)}>
+                            <VisibilityIcon sx={{ fontSize: 22, color: '#666666', '&:hover': { color: '#2b64ae' } }} />
+                        </IconButton>
+                    </Tooltip>
                 </div>
             );
         }},
@@ -70,10 +93,25 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
         { field: 'imageURL', headerName: 'Image URL', width: 200 },
         { field: 'content', headerName: 'Content', width: 200 }
     ];
+
+    const [ selectedArticleId, setSelectedArticleId ] = useState("");
+    const router = useRouter();
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const handleDeleteModalClose = () => setOpenDeleteModal(false);
+
+    const handleDeleteModalOpen = (articleId: string) => {
+        setSelectedArticleId(articleId);
+        setOpenDeleteModal(true);
+    }
+    
+
+    const handleViewArticle = (articleId: string) => {
+        router.push(`/admin/articles/${articleId}`);
+    }  
     
     return(
-        <div className="w-full overflow-x-auto">  {/* Enable horizontal scrolling */}
-            <div className="min-w-[900px]"> {/* Prevent columns from shrinking too much */}
+        <div className="w-full overflow-x-auto">  
+            <div className="min-w-[900px]"> 
             {/* div className="w-full max-w-6xl mt-4 mr-4" */}
                 <DataGrid
                     // rows={articles}              // filtered articles

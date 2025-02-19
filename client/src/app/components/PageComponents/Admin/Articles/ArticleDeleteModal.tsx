@@ -11,10 +11,11 @@ type ArticleDeleteModalProps = {
 
     handleDeleteModalClose: () => void;
     closeArticleEditor?: any;
+    noEditor?: boolean
 };
 
 
-export default function ArticleDeleteModal({ articleId, openDeleteModal, handleDeleteModalClose, closeArticleEditor }: ArticleDeleteModalProps) {
+export default function ArticleDeleteModal({ articleId, openDeleteModal, handleDeleteModalClose, closeArticleEditor, noEditor }: ArticleDeleteModalProps) {
     
     const processDeleteArticle = async (articleId: string) => {
         try {
@@ -53,6 +54,8 @@ export default function ArticleDeleteModal({ articleId, openDeleteModal, handleD
     const submitDelete = async () => {
         await processDeleteArticle(articleId);
         handleDeleteModalClose();
+
+        if(noEditor) return;            // only close editor if noEditor is false (using component with editor)
         closeArticleEditor();
     };
     
@@ -68,6 +71,7 @@ export default function ArticleDeleteModal({ articleId, openDeleteModal, handleD
             <Box sx={modalStyle}>
                 <div className="flex flex-col items-center justify-center p-4 my-2">    
                     <p className="text-center">Are you sure you want to delete this article?</p>
+                    <p className="text-center">Article ID: {articleId}</p>
                     <p className="text-center italic text-sm">This operation can't be undone!</p>            
                     <div className="flex items-center justify-center w-full space-x-5 mt-4">
                     <ActionButton title="Delete" onClick={submitDelete}
