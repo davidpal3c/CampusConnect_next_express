@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useRouter } from "next/navigation";
 import ArticleDeleteModal from "./ArticleDeleteModal";
+import ArticleEditor from "./ArticleEditor";
 
 import { DataGrid } from "@mui/x-data-grid";
 import IconButton from '@mui/material/IconButton';
@@ -9,6 +10,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Tooltip } from "@mui/material";
+import { motion, AnimatePresence } from 'framer-motion';
+
 
 
 
@@ -49,7 +52,7 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                         noEditor={true}                  
                     />
                     <Tooltip title="Edit Article" arrow>
-                        <IconButton onClick={() => { console.log("Edit Article: ", articleId); }}>
+                        <IconButton onClick={() => handleEditArticle(params.row)}>
                             <EditIcon sx={{ fontSize: 22, color: '#666666', '&:hover': { color: '#5c2876' } }} />   
                         </IconButton>
                     </Tooltip>
@@ -99,6 +102,19 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const handleDeleteModalClose = () => setOpenDeleteModal(false);
 
+    const articleEditorRef = useRef(null);
+    const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);
+    const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
+    const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
+
+    const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
+    const [selectedArticle, setSelectedArticle] = useState({});
+
+    const handleEditArticle =  async (article: any) => {
+        setSelectedArticle(article);
+        handleOpenCreatePanel();
+    };
+
     const handleDeleteModalOpen = (articleId: string) => {
         setSelectedArticleId(articleId);
         setOpenDeleteModal(true);
@@ -122,6 +138,25 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                     autoHeight              
                 />
             </div>
+
+            <AnimatePresence>       
+            {isCreatePanelVisible &&
+              <motion.div
+                ref={articleEditorRef}
+                initial={{ x: "100vh" }}
+                animate={{ x: 0 }}                                                        //final state of animation
+                exit={{ x: "100vh" }}                                                      // exit animation
+                transition={{ duration: 0.7, ease: "easeInOut" }}
+                // transition={{ type: "easing", stiffness: 150, damping: 40 }}
+                className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
+              >
+                <div className="">
+                  <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action="Edit" 
+                  closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle}/>
+                </div>
+              </motion.div>
+            }
+          </AnimatePresence>
         </div>
     );
 }
