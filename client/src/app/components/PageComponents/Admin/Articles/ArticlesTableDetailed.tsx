@@ -114,8 +114,18 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
             return(
                 <div className="flex items-center justify-center w-full h-full space-x-1">
                     <Tooltip title="Delete Article" arrow>
-                        <IconButton onClick={() => handleDeleteModalOpen(articleId)}>
-                            <DeleteRoundedIcon sx={{ fontSize: 22, color: '#666666', '&:hover': {color: '#932728'} }}/>
+                        <IconButton onClick={() => handleDeleteModalOpen(articleId)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                  color: '#932728',                                     // Button hover color
+                                  '& .MuiSvgIcon-root': {
+                                color: '#932728',                                       // Icon hover color
+                                  },
+                                },
+                              }}
+                        >
+                            <DeleteRoundedIcon sx={{ fontSize: 23, color: '#666666' }}/>
                         </IconButton>
                     </Tooltip>
                     <ArticleDeleteModal     
@@ -125,13 +135,33 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                         noEditor={true}                  
                     />
                     <Tooltip title="Edit Article" arrow>
-                        <IconButton onClick={() => handleEditArticle(params.row)}>
-                            <EditRoundedIcon sx={{ fontSize: 22, color: '#666666', '&:hover': { color: '#5c2876' } }} />   
+                        <IconButton onClick={() => handleEditArticle(params.row)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                  color: '#722a7a', 
+                                  '& .MuiSvgIcon-root': {
+                                    color: '#722a7a', 
+                                  },
+                                },
+                              }}    
+                        >
+                            <EditRoundedIcon sx={{ fontSize: 23, color: '#666666' }} />   
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="View Article" arrow>
-                        <IconButton onClick={() => handleViewArticle(articleId)}>
-                            <VisibilityIcon sx={{ fontSize: 22, color: '#666666', '&:hover': { color: '#2b64ae' } }} />
+                        <IconButton onClick={() => handleViewArticle(articleId)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                  color: '#2b64ae', 
+                                  '& .MuiSvgIcon-root': {
+                                    color: '#2b64ae', 
+                                  },
+                                },
+                            }}    
+                        >
+                            <VisibilityIcon sx={{ fontSize: 23, color: '#666666' }} />
                         </IconButton>
                     </Tooltip>
                 </div>
