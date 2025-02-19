@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useRouter } from "next/navigation";
 import ArticleDeleteModal from "./ArticleDeleteModal";
@@ -95,13 +95,18 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
         }},
         { field: 'imageURL', headerName: 'Image URL', width: 200 },
         { field: 'content', headerName: 'Content', width: 200 }
+
     ];
 
+    // View Article variables
     const [ selectedArticleId, setSelectedArticleId ] = useState("");
     const router = useRouter();
+    
+    // Article Delete Modal
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const handleDeleteModalClose = () => setOpenDeleteModal(false);
 
+    // Article Editor
     const articleEditorRef = useRef(null);
     const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);
     const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
@@ -124,7 +129,34 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
     const handleViewArticle = (articleId: string) => {
         router.push(`/admin/articles/${articleId}`);
     }  
+
+    // multiple row selection
+    const [selectedRows, setSelectedRows] = useState<string[]>([]);
+    const [showMultipleSelection, setShowMultipleSelection] = useState(false);
+
+    const handleRowSelectionChange = (selectionModel: any) => {
+        const selectedIds = Array.isArray(selectionModel) ? selectionModel : [];
+        setSelectedRows(selectedIds);
+        setShowMultipleSelection(selectedIds.length > 0);        // sets to true if greater 
     
+        // const selectedData = articlesData.filter((row) => 
+        //     selectedIds.includes(row.article_id));
+
+        // console.log("Selected Data: ", selectedData);
+    }
+
+
+    const handleBulkDelete = () => {
+        console.log("Selected Rows: ", selectedRows);
+
+        //multiple deletion logic (server side)
+  
+        setSelectedRows([]);        
+        setShowMultipleSelection(false);
+    };
+
+
+
     return(
         <div className="w-full overflow-x-auto">  
             <div className="min-w-[900px]"> 
@@ -135,9 +167,20 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                     columns={columns}
                     getRowId={(row) => row.article_id}
                     checkboxSelection
-                    autoHeight              
+                    autoHeight   
+                    onRowSelectionModelChange={handleRowSelectionChange}           
                 />
             </div>
+
+            {/* Bulk selection button */}
+            {showMultipleSelection && (
+            <div className="flex justify-end items-center mt-4">
+                <button className="bg-saitPurple text-saitWhite px-4 py-2 rounded-lg mr-4"
+                    onClick={handleBulkDelete}
+                >Delete Selected
+            </button>
+            </div>
+            )}
 
             <AnimatePresence>       
             {isCreatePanelVisible &&
