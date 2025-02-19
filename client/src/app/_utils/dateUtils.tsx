@@ -15,7 +15,7 @@ export const adjustDateLetters = (dateFull: string) => {
 
 
     const date = new Date(dateOnly);
-    const month = date.toLocaleString('default', { month: 'long' });
+    const month = date.toLocaleString('default', { month: 'short' });
     const day = date.getDate() + 1;
     const year = date.getFullYear();
 
