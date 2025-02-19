@@ -72,14 +72,18 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
     ];
     
     return(
-        <div className="w-full max-w-6xl mt-4 mr-4">
-            <DataGrid
-                // rows={articles}              // filtered articles
-                rows={articlesData}
-                columns={columns}
-                getRowId={(row) => row.article_id}
-                checkboxSelection
-            />
+        <div className="w-full overflow-x-auto">  {/* Enable horizontal scrolling */}
+            <div className="min-w-[900px]"> {/* Prevent columns from shrinking too much */}
+            {/* div className="w-full max-w-6xl mt-4 mr-4" */}
+                <DataGrid
+                    // rows={articles}              // filtered articles
+                    rows={articlesData}
+                    columns={columns}
+                    getRowId={(row) => row.article_id}
+                    checkboxSelection
+                    autoHeight              
+                />
+            </div>
         </div>
     );
 }
