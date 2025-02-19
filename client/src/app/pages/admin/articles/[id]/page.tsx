@@ -35,7 +35,7 @@ export default function Article() {
                 toast.error(errorData.message || "An Error occurred fetching articles.");
                 return;
             }
-            console.log(articleData);
+            // console.log(articleData);
             setArticleData(articleData);
 
         } catch (error) {
