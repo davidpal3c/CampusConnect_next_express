@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { formatToDateOnly } from "@/app/_utils/dateUtils";
+import { formatToDateTime } from "@/app/_utils/dateUtils";
 import { useRouter } from "next/navigation";
 import ArticleDeleteModal from "./ArticleDeleteModal";
 import ArticleDeleteMultipleModal from "./ArticleDeleteMultipleModal";
@@ -139,9 +139,9 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                             sx={{
                                 color: '#666666',
                                 '&:hover': {
-                                  color: '#722a7a', 
+                                  color: '#5c2876', 
                                   '& .MuiSvgIcon-root': {
-                                    color: '#722a7a', 
+                                    color: '#5c2876', 
                                   },
                                 },
                               }}    
@@ -169,10 +169,6 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
         }},
         { field: 'article_id', headerName: 'ID', width: 90 },
         { field: 'title', headerName: 'Title', width: 200 },
-        { field: 'datePublished', headerName: 'Date Created/Published', width: 210, renderCell: (params) => { 
-            const datePublished = formatToDateOnly(params.row.datePublished);
-            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateOnly(datePublished)}</span>;
-        }},
         { field: 'status', headerName: 'Status', width: 110, renderCell: (params) => { 
             const status = params.row.status;
             let className = "bg-saitBlack";
@@ -195,6 +191,19 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                     <span className="font-normal text-saitBlack p-2 rounded-xl">{params.row.author_id}</span>
                 </div>
             );
+        }},
+        { field: 'created_at', headerName: 'Date Created', width: 210, renderCell: (params) => { 
+            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.created_at)}</span>;
+        }},
+        { field: 'updated_at', headerName: 'Date Updated', width: 210, renderCell: (params) => { 
+            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.updated_at)}</span>;
+        }},
+        { field: 'datePublished', headerName: 'Date Published', width: 210, renderCell: (params) => { 
+            if(params.row.status === "Draft") {
+                return <span className="font-normal text-saitLightPurple p-2 rounded-xl">Not Published</span>;
+            } else {    
+            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.datePublished)}</span>;
+            }
         }},
         { field: 'imageURL', headerName: 'Image URL', width: 200 },
         { field: 'content', headerName: 'Content', width: 200 }

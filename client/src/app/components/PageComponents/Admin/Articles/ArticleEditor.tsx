@@ -23,10 +23,11 @@ type CreateArticleProps = {
     action: string,
     articleObject?: any,
     closeArticleEditor: any,
+    reFetchArticles?: any,
 };
 
 
-const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleTypes, action, articleObject, closeArticleEditor }) => {
+const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleTypes, action, articleObject, closeArticleEditor, reFetchArticles }) => {
 
     const { userData } = useUserData();
     const [ userFullName, setUserFullName ] = useState("");
@@ -151,6 +152,8 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                 draggable: true,
               });
         }
+
+        reFetchArticles();
     }
 
     const processUpdateArticle = async (articleData: any) => {
@@ -192,6 +195,8 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                 draggable: true,
               });
         }
+
+        reFetchArticles();
     };
 
     const handleDelete = () => {
@@ -265,7 +270,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             <div>
                                 <label className={formStyling.labelStyling} htmlFor="datePublished">Date Published</label>
                                 {/* default to current date */}
-                                <input className={formStyling.inputStyling} type="date" id="datePublished"
+                                <input className={formStyling.inputStyling} type="date" id="datePublished" min={getTodayDate()} 
                                 {...register("datePublished")}
                                 // defaultValue={articleObject?.datePublished || getTodayDate()}
                                 />

@@ -135,7 +135,6 @@ export const updateArticle = async (req: Request, res: Response) => {
             updateArticleData.type = 'PreArrivals';
         } else if (type) updateArticleData.type = type;
 
-
         await prisma.article.update({
             where: { article_id: id },
             data: updateArticleData
