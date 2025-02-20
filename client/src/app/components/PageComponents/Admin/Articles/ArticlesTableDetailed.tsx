@@ -1,16 +1,24 @@
-import React, { useState, useRef } from "react";
-import { formatToDateOnly } from "@/app/_utils/dateUtils";
+import React, { useState, useRef, useEffect } from "react";
+import { formatToDateTime } from "@/app/_utils/dateUtils";
 import { useRouter } from "next/navigation";
 import ArticleDeleteModal from "./ArticleDeleteModal";
+import ArticleDeleteMultipleModal from "./ArticleDeleteMultipleModal";
 import ArticleEditor from "./ArticleEditor";
+import ActionButton from "@/app/components/Buttons/ActionButton";
+import { deleteButton, getButtonClasses } from "@/app/assets/styles/buttonStyles";
+import { toast } from "react-toastify";
+// import { useAppDispatch } from "@/app/hooks";
+// import { setArticles } from "@/app/slices/articlesSlice";
+// import { useAppSelector } from "@/app/hooks";       
 
 import { DataGrid } from "@mui/x-data-grid";
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Tooltip } from "@mui/material";
 import { motion, AnimatePresence } from 'framer-motion';
+import { set } from "react-hook-form";
 
 
 
@@ -35,14 +43,89 @@ type ArticleDetailedProps = {
 
 const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData }) => {
        
+    // View Article variables
+    const [ selectedArticleId, setSelectedArticleId ] = useState("");
+    const [ selectedArticleIds, setSelectedArticleIds ] = useState<string[]>([]);
+    const router = useRouter();
+    
+    // Article Delete Modal
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const handleDeleteModalClose = () => setOpenDeleteModal(false);
+
+    // Article Delete Multiple Modal
+    const [openDeleteMultipleModal, setOpenDeleteMultipleModal] = useState(false);
+    const handleDeleteMultipleModalClose = () => setOpenDeleteMultipleModal(false);
+
+    // Article Editor
+    const articleEditorRef = useRef(null);
+    const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);
+    const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
+    const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
+
+    // TODO - fetch current article types from server
+    const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
+    const [selectedArticle, setSelectedArticle] = useState({});
+
+    const handleEditArticle =  async (article: any) => {
+        setSelectedArticle(article);
+        handleOpenCreatePanel();
+    };
+
+    const handleDeleteModalOpen = (articleId: string) => {
+        setSelectedArticleId(articleId);
+        setOpenDeleteModal(true);
+    }
+
+    const handleViewArticle = (articleId: string) => {
+        router.push(`/admin/articles/${articleId}`);
+    }  
+
+    // multiple row selection
+    const [selectedRows, setSelectedRows] = useState<string[]>([]);
+    const [selectedData, setSelectedData] = useState<Article[]>([]);
+
+    const [showMultipleSelection, setShowMultipleSelection] = useState(false);
+
+    const handleRowSelectionChange = (selectionModel: any) => {
+        const selectedIds = Array.isArray(selectionModel) ? selectionModel : [];
+        setSelectedRows(selectedIds);
+        setShowMultipleSelection(selectedIds.length > 0);        // sets boolean 
+    
+        setSelectedData(articlesData.filter((row) => 
+            selectedIds.includes(row.article_id))
+        );
+        // console.log("Selected Data: ", selectedData);
+    };
+
+    const handleMultipleDeleteModalOpen = () => {
+        setSelectedArticleIds(selectedRows);
+        setOpenDeleteMultipleModal(true);
+    }
+ 
+    const handleBulkDelete = async () => {
+        handleMultipleDeleteModalOpen();
+        setSelectedRows([]);        
+        // setShowMultipleSelection(false);
+    };
+
     const columns = [
         { field: 'actions', headerName: 'Actions', type: 'actions', width: 150, renderCell: (params) => {  
             const articleId = params.row.article_id;
             return(
                 <div className="flex items-center justify-center w-full h-full space-x-1">
                     <Tooltip title="Delete Article" arrow>
-                        <IconButton onClick={() => handleDeleteModalOpen(articleId)}>
-                            <DeleteIcon sx={{ fontSize: 22, color: '#666666', '&:hover': {color: '#932728'} }}/>
+                        <IconButton onClick={() => handleDeleteModalOpen(articleId)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                  color: '#932728',                                     // Button hover color
+                                  '& .MuiSvgIcon-root': {
+                                color: '#932728',                                       // Icon hover color
+                                  },
+                                },
+                              }}
+                        >
+                            <DeleteRoundedIcon sx={{ fontSize: 23, color: '#666666' }}/>
                         </IconButton>
                     </Tooltip>
                     <ArticleDeleteModal     
@@ -52,13 +135,33 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                         noEditor={true}                  
                     />
                     <Tooltip title="Edit Article" arrow>
-                        <IconButton onClick={() => handleEditArticle(params.row)}>
-                            <EditIcon sx={{ fontSize: 22, color: '#666666', '&:hover': { color: '#5c2876' } }} />   
+                        <IconButton onClick={() => handleEditArticle(params.row)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                  color: '#5c2876', 
+                                  '& .MuiSvgIcon-root': {
+                                    color: '#5c2876', 
+                                  },
+                                },
+                              }}    
+                        >
+                            <EditRoundedIcon sx={{ fontSize: 23, color: '#666666' }} />   
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="View Article" arrow>
-                        <IconButton onClick={() => handleViewArticle(articleId)}>
-                            <VisibilityIcon sx={{ fontSize: 22, color: '#666666', '&:hover': { color: '#2b64ae' } }} />
+                        <IconButton onClick={() => handleViewArticle(articleId)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                  color: '#2b64ae', 
+                                  '& .MuiSvgIcon-root': {
+                                    color: '#2b64ae', 
+                                  },
+                                },
+                            }}    
+                        >
+                            <VisibilityIcon sx={{ fontSize: 23, color: '#666666' }} />
                         </IconButton>
                     </Tooltip>
                 </div>
@@ -66,10 +169,6 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
         }},
         { field: 'article_id', headerName: 'ID', width: 90 },
         { field: 'title', headerName: 'Title', width: 200 },
-        { field: 'datePublished', headerName: 'Date Created/Published', width: 210, renderCell: (params) => { 
-            const datePublished = formatToDateOnly(params.row.datePublished);
-            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateOnly(datePublished)}</span>;
-        }},
         { field: 'status', headerName: 'Status', width: 110, renderCell: (params) => { 
             const status = params.row.status;
             let className = "bg-saitBlack";
@@ -93,39 +192,25 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                 </div>
             );
         }},
+        { field: 'created_at', headerName: 'Date Created', width: 210, renderCell: (params) => { 
+            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.created_at)}</span>;
+        }},
+        { field: 'updated_at', headerName: 'Date Updated', width: 210, renderCell: (params) => { 
+            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.updated_at)}</span>;
+        }},
+        { field: 'datePublished', headerName: 'Date Published', width: 210, renderCell: (params) => { 
+            if(params.row.status === "Draft") {
+                return <span className="font-normal text-saitLightPurple p-2 rounded-xl">Not Published</span>;
+            } else {    
+            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.datePublished)}</span>;
+            }
+        }},
         { field: 'imageURL', headerName: 'Image URL', width: 200 },
         { field: 'content', headerName: 'Content', width: 200 }
     ];
+       
 
-    const [ selectedArticleId, setSelectedArticleId ] = useState("");
-    const router = useRouter();
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const handleDeleteModalClose = () => setOpenDeleteModal(false);
-
-    const articleEditorRef = useRef(null);
-    const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);
-    const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
-    const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
-
-    const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
-    const [selectedArticle, setSelectedArticle] = useState({});
-
-    const handleEditArticle =  async (article: any) => {
-        setSelectedArticle(article);
-        handleOpenCreatePanel();
-    };
-
-    const handleDeleteModalOpen = (articleId: string) => {
-        setSelectedArticleId(articleId);
-        setOpenDeleteModal(true);
-    }
-    
-
-    const handleViewArticle = (articleId: string) => {
-        router.push(`/admin/articles/${articleId}`);
-    }  
-    
-    return(
+    return (
         <div className="w-full overflow-x-auto">  
             <div className="min-w-[900px]"> 
             {/* div className="w-full max-w-6xl mt-4 mr-4" */}
@@ -135,31 +220,53 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                     columns={columns}
                     getRowId={(row) => row.article_id}
                     checkboxSelection
-                    autoHeight              
+                    autoHeight   
+                    onRowSelectionModelChange={handleRowSelectionChange}           
                 />
             </div>
 
+            {/* Bulk selection button */}
+            {showMultipleSelection && (
+            <div className="flex justify-end items-center mt-4">
+                {/* <button className={getButtonClasses(deleteButton)} onClick={handleBulkDelete}
+                    >Delete Selected
+                </button> */}
+                <ActionButton title="Delete Selected" textColor="text-saitDarkRed" hoverBgColor="bg-saitDarkRed" bgColor="bg-saitWhite"
+                    borderColor="border-saitDarkRed" hoverTextColor="text-saitWhite" hoverBorderColor="border-saitGray"
+                    onClick={handleBulkDelete}
+                    icon={<DeleteRoundedIcon/>}
+                />
+            </div>
+            )}
+
+            <ArticleDeleteMultipleModal     
+                articlesData={selectedData}
+                articleIds={selectedArticleIds}
+                openDeleteModal={openDeleteMultipleModal} 
+                handleDeleteModalClose={handleDeleteMultipleModalClose} 
+                noEditor={true}                  
+            />
+
             <AnimatePresence>       
-            {isCreatePanelVisible &&
-              <motion.div
-                ref={articleEditorRef}
-                initial={{ x: "100vh" }}
-                animate={{ x: 0 }}                                                        //final state of animation
-                exit={{ x: "100vh" }}                                                      // exit animation
-                transition={{ duration: 0.7, ease: "easeInOut" }}
-                // transition={{ type: "easing", stiffness: 150, damping: 40 }}
-                className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
-              >
-                <div className="">
-                  <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action="Edit" 
-                  closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle}/>
-                </div>
-              </motion.div>
-            }
-          </AnimatePresence>
+                {isCreatePanelVisible &&
+                <motion.div
+                    ref={articleEditorRef}
+                    initial={{ x: "100vh" }}
+                    animate={{ x: 0 }}                                                        //final state of animation
+                    exit={{ x: "100vh" }}                                                      // exit animation
+                    transition={{ duration: 0.7, ease: "easeInOut" }}
+                    // transition={{ type: "easing", stiffness: 150, damping: 40 }}
+                    className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
+                >
+                    <div className="">
+                    <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action="Edit" 
+                    closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle}/>
+                    </div>
+                </motion.div>
+                }
+            </AnimatePresence>
         </div>
     );
 }
-
 
 export default ArticlesTableDetailed;

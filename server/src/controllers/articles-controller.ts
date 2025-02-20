@@ -135,7 +135,6 @@ export const updateArticle = async (req: Request, res: Response) => {
             updateArticleData.type = 'PreArrivals';
         } else if (type) updateArticleData.type = type;
 
-
         await prisma.article.update({
             where: { article_id: id },
             data: updateArticleData
@@ -191,5 +190,33 @@ export const deleteArticle = async (req: Request, res: Response) => {
         res.status(200).json({ message: 'Article deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error deleting article', error: error });
+        return;
+    }
+};
+
+// DELETE /api/articles/ - Delete multiple articles
+export const deleteArticles = async (req: Request, res: Response) => {
+    try {
+        let articleIds = await req.body.articleIds;
+        console.log("Article Ids: ", articleIds);
+
+        articleIds = Object.values(articleIds);
+        console.log("Article Ids2: ", articleIds);
+
+        if (!Array.isArray(articleIds) || articleIds.length === 0) {
+            res.status(400).json({ message: 'Invalid request: articleIds must be an array' });
+            return;
+        }   
+
+        await prisma.article.deleteMany({
+            where: {
+                article_id: { in: articleIds }      // Delete all articles with article_id in the array
+            }   
+        });
+
+        res.status(200).json({ message: `Articles deleted successfully! (${articleIds.length})` });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error: error deleting articles', error: error });   
+        return;
     }
 };

@@ -23,10 +23,11 @@ type CreateArticleProps = {
     action: string,
     articleObject?: any,
     closeArticleEditor: any,
+    reFetchArticles?: any,
 };
 
 
-const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleTypes, action, articleObject, closeArticleEditor }) => {
+const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleTypes, action, articleObject, closeArticleEditor, reFetchArticles }) => {
 
     const { userData } = useUserData();
     const [ userFullName, setUserFullName ] = useState("");
@@ -151,6 +152,8 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                 draggable: true,
               });
         }
+
+        reFetchArticles();
     }
 
     const processUpdateArticle = async (articleData: any) => {
@@ -192,6 +195,8 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                 draggable: true,
               });
         }
+
+        reFetchArticles();
     };
 
     const handleDelete = () => {
@@ -265,7 +270,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             <div>
                                 <label className={formStyling.labelStyling} htmlFor="datePublished">Date Published</label>
                                 {/* default to current date */}
-                                <input className={formStyling.inputStyling} type="date" id="datePublished"
+                                <input className={formStyling.inputStyling} type="date" id="datePublished" min={getTodayDate()} 
                                 {...register("datePublished")}
                                 // defaultValue={articleObject?.datePublished || getTodayDate()}
                                 />
@@ -346,7 +351,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             <textarea className={formStyling.inputStyling} id="content" cols={200} rows={10}
                                 {...register("content", { 
                                     required: 'Content is Required',
-                                    maxLength: { value: 6000, message: 'Content should not exceed 6000 characters' }
+                                    maxLength: { value: 15000, message: 'Content should not exceed 6000 characters' }
                                 })}
                             />
                             {errors.content && <p className={formStyling.errorStyle}>{errors.content.message}</p>}
@@ -361,14 +366,14 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             <ActionButton title="Publish" onClick={handleSubmit((data) => submitForm(data, "publish"))}    
                             textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
                             <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
-                                textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitRed" hoverTextColor="text-saitWhite"/>  
+                                textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
                         </div>
                     ) : (
                         <div className="flex flex-row items-center justify-center w-full space-x-4">
                             <ActionButton title="Submit Update" onClick={handleSubmit((data) => submitForm(data, "update"))}
                                 textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
                             <ActionButton title="Delete" onClick={handleDelete} type="button"
-                                textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
+                                textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>                            
 
                         </div>
                     )}                                 

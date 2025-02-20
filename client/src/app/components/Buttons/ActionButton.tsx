@@ -74,15 +74,15 @@ const ActionButton: React.FC<ActionButtonProps> = ({
                     type={type}
                 >
                     {title}
-                    {icon && React.cloneElement(icon, { className: `ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in-out delay-75 transition-colors duration-300` })}
+                    {icon && React.cloneElement(icon, { className: `text-md ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
                 </button>
-            ) : (
+            ) : (               // type === "option"
                 <button
                 onClick={onClick}
                 className={buttonStyle}
                 >
                     {title}
-                    {icon && React.cloneElement(icon, { className: `ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in-out delay-75 transition-colors duration-300` })}
+                    {icon && React.cloneElement(icon, { className: `ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
                 </button>
             )}
         </div>

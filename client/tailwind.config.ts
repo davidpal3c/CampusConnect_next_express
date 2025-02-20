@@ -34,6 +34,8 @@ export default {
         saitBlue: "#005795",
         saitBlueOg: "#2b64ae",
         saitPurple: "#5c2876",
+        saitLighterPurple: "#722a7a",
+        saitLightPurple: "#8d4990",
         saitGray: "#666666",
       },
       backgroundImage: {
