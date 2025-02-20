@@ -35,6 +35,7 @@ export default function Articles() {
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage] = useState(4); 
   const [sortOption, setSortOption] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); 
 
   const articleEditorRef = useRef(null);
 
@@ -47,7 +48,6 @@ export default function Articles() {
   const [ articlesView, setArticlesView ] = useState("Simple");
   const [ selectedArticle, setSelectedArticle ] = useState({}); 
 
-  const [searchValue, setSearchValue] = useState([]); 
 
   const handleSimpleView = () => {
     setArticlesView("Simple");
@@ -141,15 +141,37 @@ export default function Articles() {
     applySort(filtered, sortOption);
   };
 
-  // re-apply filtering when original articles change
-  useEffect(() => {
+  useEffect(() => { 
+    let filtered = [...originalArticles];
+
     if (filterType) {
-      handleFilterByType(filterType);
-    } else {
-      setFilteredArticles([...originalArticles]);
-      applySort(originalArticles, sortOption);
+      filtered = originalArticles.filter((article) => article.type === filterType);
     }
-  }, [originalArticles]);
+
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter(article =>
+        Object.values(article).some(value =>
+          typeof value === "string" && value.toLowerCase().includes(lowerQuery)
+        )
+      );
+    }
+
+    setFilteredArticles(filtered);
+    applySort(filtered, sortOption);
+  }, [originalArticles, filterType, sortOption, searchQuery]);
+
+
+
+  // re-apply filtering when original articles change
+  // useEffect(() => {
+  //   if (filterType) {
+  //     handleFilterByType(filterType);
+  //   } else {
+  //     setFilteredArticles([...originalArticles]);
+  //     applySort(originalArticles, sortOption);
+  //   }
+  // }, [originalArticles]);
 
 
   // // re-apply sorting when original articles change
@@ -159,6 +181,23 @@ export default function Articles() {
   //   };
   // }, [originalArticles]);
   
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+
+    const lowerQuery = query.toLowerCase();
+    const filtered = originalArticles.filter((article) => {
+      const matchesFilter = filterType ? article.type === filterType : true;
+      const matchesSearch = Object.values(article).some((value) => {
+        typeof value === "string" && value.toLowerCase().includes(lowerQuery);
+      });
+
+      return matchesFilter && matchesSearch;
+    });
+
+    setFilteredArticles(filtered);
+    applySort(filtered, sortOption);      //maintain sorting
+  };
+
 
   const fetchArticleData = async () => {
     try {
@@ -273,6 +312,7 @@ export default function Articles() {
                   type="text" 
                   placeholder="Search"      //Name, Article ID, Author, Date Published 
                   className="flex-1 text-saitGray text-sm bg-transparent w-48 focus:outline-none p-1" 
+                  onChange={(e) => handleSearch(e.target.value)}
               />
               <SearchOutlinedIcon className="text-saitGray" fontSize="small" />
             </div>
@@ -354,7 +394,7 @@ export default function Articles() {
           
         ) : (
           // Extended Article View
-          <ArticlesTableDetailed articlesData={originalArticles}/>
+          <ArticlesTableDetailed articlesData={filteredArticles}/>
         )}
 
           {/* Create Article Panel */}
