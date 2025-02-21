@@ -15,7 +15,7 @@ export default function RichTextEditor() {
     return (
       <div>
         <Editor
-          apiKey="your-api-key" // Replace with your TinyMCE API key
+          apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
           onInit={(evt, editor) => (editorRef.current = editor)}
           initialValue="<p>Start writing your article here...</p>"
           init={{
@@ -29,7 +29,8 @@ export default function RichTextEditor() {
             toolbar:
               'undo redo | formatselect | bold italic backcolor | \
               alignleft aligncenter alignright alignjustify | \
-              bullist numlist outdent indent | removeformat | help'
+              bullist numlist outdent indent | removeformat | help',
+            debugging: true,  
           }}
         />
         <button onClick={handleSubmit}>Submit Article</button>
