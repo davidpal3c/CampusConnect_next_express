@@ -33,7 +33,7 @@ export default function Articles() {
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [filterType, setFilterType] = useState(""); 
   const [currentPage, setCurrentPage] = useState(1);
-  const [articlesPerPage] = useState(4); 
+  const [articlesPerPage] = useState(8); 
   const [sortOption, setSortOption] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); 
 
@@ -65,8 +65,8 @@ export default function Articles() {
   // Scroll to Article Editor
   useEffect(() => {
     if (isCreatePanelVisible && articleEditorRef.current) {
-      const scrollPosition = articleEditorRef.current.offsetTop - 1000;
-      window.scrollTo({ top: scrollPosition, behavior: "smooth" });
+      articleEditorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      // window.scrollTo({ top: scrollPosition, behavior: "smooth" });
     }
   }, [isCreatePanelVisible]);
 
@@ -371,25 +371,12 @@ export default function Articles() {
             
              {/* pagination */}
             <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
-              <button 
-                  onClick={handlePrevious} 
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-              >
-                  Previous
-              </button>
+              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} />
               <span>
-                  Page {currentPage} of {totalPages}
+                Page {currentPage} of {totalPages}
               </span>
-              <button 
-                  onClick={handleNext} 
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-              >
-                  Next
-              </button>
+              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} />
             </div>
-
           </div>
           
         ) : (
