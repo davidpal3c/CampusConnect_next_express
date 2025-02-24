@@ -21,6 +21,7 @@ export default function AdminLogin() {
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    //loader props
     const [loaderBackdrop, setLoaderBackdrop] = useState(false);
     const [authRoleType, setAuthRoleType] = useState("");
     const [userResultProp, setUserResultProp] = useState(false);

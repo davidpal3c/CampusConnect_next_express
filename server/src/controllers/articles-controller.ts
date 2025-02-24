@@ -80,9 +80,8 @@ export const getArticleById = async (req: Request, res: Response) => {
 // POST /api/articles/ - Create a new article
 export const createArticle = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { title, content, imageURL, audience, status, type, author } = req.body;
+        const { title, content, imageUrl, audience, status, type, author } = req.body;
         const email = req.user.decodedClaims.email;
-
 
         const authorId = await prisma.user.findUnique({
             where: { email: email },
@@ -94,7 +93,7 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
                 title: title,
                 content: content,
                 author_id: authorId?.user_id,
-                imageUrl: imageURL ? imageURL : '',
+                imageUrl: imageUrl ? imageUrl : '',
                 audience: audience,
                 status: status,
                 type: type,
@@ -118,14 +117,14 @@ export const updateArticle = async (req: Request, res: Response) => {
         const { id } = req.params;
 
         const { title, datePublished, content, 
-            imageURL, audience, status, author_id, author, type } = req.body;
+            imageUrl, audience, status, author_id, author, type } = req.body;
 
         const updateArticleData: any = {};
 
         if (title) updateArticleData.title = title;
         if (datePublished) updateArticleData.datePublished = datePublished;
         if (content) updateArticleData.content = content;
-        if (imageURL) updateArticleData.imageURL = imageURL;
+        if (imageUrl) updateArticleData.imageUrl = imageUrl;
         if (audience) updateArticleData.audience = audience;
         if (status) updateArticleData.status = status;
         if (author_id) updateArticleData.author_id = author_id;
@@ -134,6 +133,9 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (type && type === 'Pre-Arrivals' ) {
             updateArticleData.type = 'PreArrivals';
         } else if (type) updateArticleData.type = type;
+
+        console.log("Image: ", imageUrl);
+        console.log("Update Article Data: ", updateArticleData);
 
         await prisma.article.update({
             where: { article_id: id },
@@ -198,10 +200,9 @@ export const deleteArticle = async (req: Request, res: Response) => {
 export const deleteArticles = async (req: Request, res: Response) => {
     try {
         let articleIds = await req.body.articleIds;
-        console.log("Article Ids: ", articleIds);
 
         articleIds = Object.values(articleIds);
-        console.log("Article Ids2: ", articleIds);
+        // console.log("Article Ids2: ", articleIds);
 
         if (!Array.isArray(articleIds) || articleIds.length === 0) {
             res.status(400).json({ message: 'Invalid request: articleIds must be an array' });

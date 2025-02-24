@@ -12,10 +12,11 @@ type ArticleDeleteModalProps = {
     handleDeleteModalClose: () => void;
     closeArticleEditor?: any;
     noEditor?: boolean
+    reFetchArticles?: any;
 };
 
 
-export default function ArticleDeleteModal({ articleId, openDeleteModal, handleDeleteModalClose, closeArticleEditor, noEditor }: ArticleDeleteModalProps) {
+export default function ArticleDeleteModal({ articleId, openDeleteModal, handleDeleteModalClose, closeArticleEditor, noEditor, reFetchArticles }: ArticleDeleteModalProps) {
     
     const processDeleteArticle = async (articleId: string) => {
         try {
@@ -37,8 +38,9 @@ export default function ArticleDeleteModal({ articleId, openDeleteModal, handleD
                 return;
             }
 
-            toast.success(data.message);            
-
+            toast.success(data.message);         
+            
+            if(reFetchArticles) reFetchArticles();  
         } catch (error) {
             toast.error(`Unknown error occurred deleting article! : ` + error, {
                 position: "top-center",

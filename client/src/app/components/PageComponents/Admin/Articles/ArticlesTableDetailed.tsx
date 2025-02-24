@@ -18,9 +18,6 @@ import EditRoundedIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Tooltip } from "@mui/material";
 import { motion, AnimatePresence } from 'framer-motion';
-import { set } from "react-hook-form";
-
-
 
 
 type Article = {
@@ -38,10 +35,11 @@ type Article = {
 
 type ArticleDetailedProps = {
     articlesData: Article[];
+    reFetchArticles: any;
 };  
 
 
-const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData }) => {
+const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, reFetchArticles }) => {
        
     // View Article variables
     const [ selectedArticleId, setSelectedArticleId ] = useState("");
@@ -132,7 +130,8 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                         articleId={selectedArticleId ?? ""} 
                         openDeleteModal={openDeleteModal} 
                         handleDeleteModalClose={handleDeleteModalClose} 
-                        noEditor={true}                  
+                        noEditor={true}     
+                        reFetchArticles={reFetchArticles}             
                     />
                     <Tooltip title="Edit Article" arrow>
                         <IconButton onClick={() => handleEditArticle(params.row)}
@@ -205,7 +204,10 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
             return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.datePublished)}</span>;
             }
         }},
-        { field: 'imageURL', headerName: 'Image URL', width: 200 },
+        { field: 'imageUrl', headerName: 'Image URL', width: 200, renderCell: (params) => {
+                return <a href={params.row.imageUrl} target="_blank" className="font-normal text-saitBlack p-2 rounded-xl">{params.row.imageUrl}</a>;
+            }
+        },
         { field: 'content', headerName: 'Content', width: 200 }
     ];
        
@@ -244,7 +246,8 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData })
                 articleIds={selectedArticleIds}
                 openDeleteModal={openDeleteMultipleModal} 
                 handleDeleteModalClose={handleDeleteMultipleModalClose} 
-                noEditor={true}                  
+                noEditor={true}  
+                reFetchArticles={reFetchArticles}                
             />
 
             <AnimatePresence>       
