@@ -1,7 +1,8 @@
-
+"use client";
 // TODO: import ActionButton component
-import { useState } from "react";
-import { adjustDateLetters, adjustDateOnlyNumerical } from "../../../../_utils/dateUtils"
+import { useState, useEffect } from "react";
+import { adjustDateLetters, adjustDateOnlyNumerical } from "@/app/_utils/dateUtils"
+// import { adjustDateLetters, adjustDateOnlyNumerical } from "../../../../_utils/dateUtils"
 import Link from 'next/link';
 
 
@@ -21,7 +22,12 @@ export default function ArticleCard({ article } : { article: any }) {
     const [articleTitleReduced] = useState(truncateText(article.title, 32) || "Title not available");
     const [articleAuthorReduced] = useState(truncateText(article.author, 25) || "Author not available");
 
-    // console.log(article);
+
+    // useEffect(() => {
+    //     if(article.imageUrl) {
+    //         console.log("ArticleCard article", article);
+    //     }
+    // }, []);
 
     return (
         <Link href={`/admin/articles/${article.article_id}`}>
@@ -30,9 +36,9 @@ export default function ArticleCard({ article } : { article: any }) {
                     <div>
                         <div className="rounded-lg overflow-hidden h-36">
                             <img
-                                src={article.imageURL || "/img_placeholder.png"} // Use the correct `imageURL` field
-                                alt={article.title || "Placeholder image"} // Add a fallback for the `alt` attribute
-                                className="object-cover w-full"
+                                src={article.imageUrl ? article.imageUrl : "/img_placeholder.png"} // Use the correct `imageURL` field
+                                alt={`${article.title}-image` || "Placeholder image"} // Add a fallback for the `alt` attribute
+                                className="object-cover w-full h-full overflow-hidden"
                                 onError={(e) => (e.currentTarget.src = "/img_placeholder.png")} // Handle image loading errors
                             />
                         </div>

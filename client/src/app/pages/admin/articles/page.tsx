@@ -62,11 +62,11 @@ export default function Articles() {
   }, []);
 
 
-  // Scroll to Article Editor
+  // sroll to ArticleEditor when it is visible
   useEffect(() => {
     if (isCreatePanelVisible && articleEditorRef.current) {
       articleEditorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-      // window.scrollTo({ top: scrollPosition, behavior: "smooth" });
+
     }
   }, [isCreatePanelVisible]);
 
@@ -101,6 +101,7 @@ export default function Articles() {
 
     switch (option) {
       case "Published ASC":
+        sortedArticles.filter((article) => article.status === "Published");
         sortedArticles.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
         break;
       case "Last Updated":
@@ -123,7 +124,7 @@ export default function Articles() {
     }
 
     setArticles(sortedArticles);
-    console.log("Sorted Articles: ", sortedArticles);
+    // console.log("Sorted Articles: ", sortedArticles);
   };
 
   const handleFilterByType = (type: string) => {
@@ -199,6 +200,7 @@ export default function Articles() {
   };
 
 
+
   const fetchArticleData = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/`, {
@@ -219,6 +221,13 @@ export default function Articles() {
 
       setArticles(articleData);
       setOriginalArticles(articleData);
+
+      // checking for articles with images
+      // for (let i = 0; i < articleData.length; i++){ 
+      //   if(articleData[i].imageUrl !== null) {
+      //     console.log("Article Image: ", articleData[i].imageUrl);
+      //   }
+      // }
 
     } catch (error) {
       console.error(error);
@@ -342,7 +351,7 @@ export default function Articles() {
               {currentArticles.length > 0 ? (
                 currentArticles.map((article) => (
                   <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
-                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
+                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:bg-saitDarkPurple hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
                       <Tooltip title="Edit Article">    
                         <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#e9d5ff] transition-colors duration-300" />
                       </Tooltip>
@@ -381,7 +390,7 @@ export default function Articles() {
           
         ) : (
           // Extended Article View
-          <ArticlesTableDetailed articlesData={filteredArticles}/>
+          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData}/>
         )}
 
           {/* Create Article Panel */}
