@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -8,9 +8,13 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import EventEditor from '@/app/components/PageComponents/Admin/Events/EventEditor';
-import EventForm from '@/app/components/PageComponents/Admin/Events/EventForm';
+import EventForm from '@/app/components/PageComponents/Admin/Events/EventForm.jsx';
 import ActionButton from "@/app/components/Buttons/ActionButton";
+
 import { toast } from "react-toastify";
+
+//mui
+import { motion, AnimatePresence } from 'framer-motion';
 
 const locales = {
   'en-US': require('date-fns/locale/en-US')
@@ -33,6 +37,15 @@ const Events = () => {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  const eventEditorRef = useRef(null);
+
+  useEffect(() => {
+    if (showEventEditor && eventEditorRef.current) {
+      eventEditorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    }
+  }, [showEventEditor]);
 
 
   //Fetch the data from events API
@@ -77,20 +90,42 @@ const Events = () => {
     }
   };
 
+  const handleOpenCreatePanel = () => setShowEventEditor(true);
+  const handleCloseCreatePanel = () => setShowEventEditor(false);  
+
   const handleEventSelect = (event) => {
     setSelectedEvent(event.resource);
     setAction("Edit");
-    setShowEventEditor(true);
+    handleOpenCreatePanel();
   };
 
   const handleCreateEvent = () => {
     setSelectedEvent(null);
     setAction("Create");
-    setShowEventEditor(true);
+    handleOpenCreatePanel();
   };
 
   return (
+
     <div className="grid md:grid-cols-2 gap-4 p-6 bg-gray-100 min-h-screen">
+          {/** Testing the Event form 
+          <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
+            <EventForm/>
+          </div>
+          */}
+          
+
+      <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 500 }}
+          onSelectEvent={handleEventSelect}
+        />
+      </div>
+
       {(
         <div className="bg-white p-4 shadow-md rounded-md">
           <div className="flex justify-between items-center mb-4">
@@ -101,7 +136,7 @@ const Events = () => {
               textColor="text-saitBlue"
               borderColor="border-saitBlue"
               hoverBgColor="bg-saitBlue"
-              hoverTextColor="text-white"
+              hoverTextColor="text-saitWhite"
             />
           </div>
 
@@ -126,60 +161,29 @@ const Events = () => {
           </div>
         </div>
       )}
-
-      {/** Testing the Event form */}
-      <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
-        <EventForm/>
-      </div>
-{/**  just for testing purposes
-      <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 500 }}
-          onSelectEvent={handleEventSelect}
-        />
-      </div>
-*/}
-    {/**Example of what I need to make it like
-     * 
-     *           <AnimatePresence>
-            {isCreatePanelVisible &&
-              <motion.div
-                ref={articleEditorRef}
-                initial={{ x: "100vh" }}
-                animate={{ x: 0 }}                                                        //final state of animation
-                exit={{ x: "100vh" }}                                                      // exit animation
-                transition={{ duration: 0.7, ease: "easeInOut" }}
-                // transition={{ type: "easing", stiffness: 150, damping: 40 }}
-                className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
-              >
-                <div className="">
-                  <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action={panelTask} 
-                  closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle}/>
-                </div>
-              </motion.div>
-            }
-          </AnimatePresence>
-     */}
-     
-      {showEventEditor && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <EventEditor
-              closeOnClick={() => setShowEventEditor(false)}
+  
+     <AnimatePresence>
+      {showEventEditor && 
+        <motion.div ref={eventEditorRef}
+        initial={{ x: "100vh" }}
+        animate={{ x: 0 }}                                                        //final state of animation
+        exit={{ x: "100vh" }}                                                      // exit animation
+        transition={{ duration: 0.7, ease: "easeInOut" }}
+        // transition={{ type: "easing", stiffness: 150, damping: 40 }}
+        className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50">
+          <div>
+            <EventEditor closeOnClick={() => handleCloseCreatePanel()}
               action={action}
               eventObject={selectedEvent}
               closeEventEditor={() => {
-                setShowEventEditor(false);
+                handleCloseCreatePanel;
                 fetchEvents();
-              }}
-            />
+              }}/>
           </div>
-        </div>
-      )}
+        </motion.div>
+      }
+     </AnimatePresence>
+     
     </div>
   );
 };
