@@ -72,7 +72,7 @@ const QuestionCard = ({ question, index, onUpdate, onRemove, onMove }) => {
                       <div className="w-4 h-4 rounded-full border border-gray-300" />
                     )}
                     {question.type === 'checkbox' && (
-                      <Checkbox disabled />
+                      <Checkbox />
                     )}
                     <Input
                       type="text"

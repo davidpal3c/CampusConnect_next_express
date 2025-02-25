@@ -143,6 +143,28 @@ const Events = () => {
         />
       </div>
 */}
+    {/**Example of what I need to make it like
+     * 
+     *           <AnimatePresence>
+            {isCreatePanelVisible &&
+              <motion.div
+                ref={articleEditorRef}
+                initial={{ x: "100vh" }}
+                animate={{ x: 0 }}                                                        //final state of animation
+                exit={{ x: "100vh" }}                                                      // exit animation
+                transition={{ duration: 0.7, ease: "easeInOut" }}
+                // transition={{ type: "easing", stiffness: 150, damping: 40 }}
+                className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
+              >
+                <div className="">
+                  <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action={panelTask} 
+                  closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle}/>
+                </div>
+              </motion.div>
+            }
+          </AnimatePresence>
+     */}
+     
       {showEventEditor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
