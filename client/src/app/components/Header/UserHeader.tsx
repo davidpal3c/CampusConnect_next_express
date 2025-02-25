@@ -7,13 +7,14 @@ import { useRouter } from "next/navigation";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import MenuIcon from '@mui/icons-material/Menu';
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
-export default function UserHeader() {
+export default function UserHeader({handleSidebarToggle, shouldShowButton}) {
   const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
   const router = useRouter();
 
@@ -41,7 +42,7 @@ export default function UserHeader() {
   }
 
   return (
-    <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-10 w-full mb-6">
+    <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-2 -mt-2 w-full bg-saitWhite">
       <div>
         <img
           src="/sait-logo.png"
@@ -61,6 +62,12 @@ export default function UserHeader() {
             sx={{ color: "#4c4c4c", fontSize: 25, ":hover": { color: "#fff" } }}
           />
         </div>
+
+        { shouldShowButton && (
+                    <div className="grid place-items-center rounded-lg bg-slate-300 w-8 h-8 ml-auto hover:bg-saitLightBlue hover:stroke-saitWhite transition-colors duration-300" onClick={handleSidebarToggle}>
+                        <MenuIcon sx={{ color: "#4c4c4c", fontSize: 22, ":hover": { color: '#fff' } }} />
+                    </div>
+            )}
 
         <button
           id="basic-button"
@@ -90,14 +97,14 @@ export default function UserHeader() {
           }}
           PaperProps={{
             sx: {
-                backgroundColor: "#f7f7f7",
-                borderRadius: "10px",
-                border: "1px solid #005795",
-                boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
-                marginTop: "0.6rem",
-                marginRight: "0.7rem",
-                width: "10rem",
-            }
+              backgroundColor: "#f7f7f7",
+              borderRadius: "10px",
+              border: "1px solid #005795",
+              boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
+              marginTop: "0.6rem",
+              marginRight: "0.7rem",
+              width: "10rem",
+            },
           }}
         >
           <MenuItem onClick={handleClose}>Profile</MenuItem>

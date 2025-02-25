@@ -65,6 +65,7 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, opti
                 <MenuItem sx={menuStyles.menuItem}>Articles Data Analytics</MenuItem>
                 <MenuItem sx={menuStyles.menuItem}>Export to Excel</MenuItem>
                 <MenuItem sx={menuStyles.menuItem}>Export to PDF</MenuItem>
+                <MenuItem sx={menuStyles.menuItem}>Manage Article Types</MenuItem>
             </Menu>
         </div>
     );

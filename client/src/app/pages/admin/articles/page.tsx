@@ -28,13 +28,18 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
 export default function Articles() {
 
-  const [articles, setArticles] = useState([]); 
+  const [articles, setArticles] = useState<any[]>([]); 
   const [originalArticles, setOriginalArticles] = useState([]);
+  const [filteredArticles, setFilteredArticles] = useState([]);
+  const [filterType, setFilterType] = useState(""); 
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage] = useState(8); 
+  const [sortOption, setSortOption] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); 
 
   const articleEditorRef = useRef(null);
 
+  // TODO : fetch current article types from backend and set them here
   const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
 
   const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);
@@ -43,7 +48,6 @@ export default function Articles() {
   const [ articlesView, setArticlesView ] = useState("Simple");
   const [ selectedArticle, setSelectedArticle ] = useState({}); 
 
-  const [searchValue, setSearchValue] = useState([]); 
 
   const handleSimpleView = () => {
     setArticlesView("Simple");
@@ -55,31 +59,146 @@ export default function Articles() {
 
   useEffect(() => {
     fetchArticleData();
-  }, [originalArticles]);
+  }, []);
 
+
+  // sroll to ArticleEditor when it is visible
   useEffect(() => {
     if (isCreatePanelVisible && articleEditorRef.current) {
-      const scrollPosition = articleEditorRef.current.offsetTop - 1000;
-      window.scrollTo({ top: scrollPosition, behavior: "smooth" });
+      articleEditorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+
     }
   }, [isCreatePanelVisible]);
 
 
-   // Pagination
-   const indexOfLastArticle = currentPage * articlesPerPage;
-   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-   const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+  // Pagination
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
 
-   const totalPages = Math.ceil(articles.length / articlesPerPage);
-  
-   const handlePrevious = () => {
-       if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-   };
+  const totalPages = Math.ceil(articles.length / articlesPerPage);
 
-   const handleNext = () => {
-       if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-   };
+  const handlePrevious = () => {
+      if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+      if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
    
+  const handleSort = (option: any) => {
+    setSortOption(option);
+    setCurrentPage(1);
+
+    console.log("Sorting by: ", option);
+
+    // applySort(filteredArticles, option); 
+    applySort(filteredArticles.length > 0 ? filteredArticles : originalArticles, option); 
+  }
+
+  const applySort = (articlesToSort: any[], option: string) => {
+    let sortedArticles = [...articlesToSort];
+
+    switch (option) {
+      case "Published ASC":
+        sortedArticles.filter((article) => article.status === "Published");
+        sortedArticles.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+        break;
+      case "Last Updated":
+        sortedArticles.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+        break;
+      case "Date ASC":
+        sortedArticles.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      case "Date DSC":
+        sortedArticles.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        break;
+      case "Title ASC": 
+        sortedArticles.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));  
+        break;
+      case "Title DSC":
+        sortedArticles.sort((a, b) => b.title.toLowerCase().localeCompare(a.title.toLowerCase()));
+        break;
+      default:
+        sortedArticles = [...articlesToSort];   
+    }
+
+    setArticles(sortedArticles);
+    // console.log("Sorted Articles: ", sortedArticles);
+  };
+
+  const handleFilterByType = (type: string) => {
+    console.log("Filtering by type: ", type);
+    setCurrentPage(1);
+    setFilterType(type);  
+
+    const filtered = type ? originalArticles.filter((article) => article.type === type) : [...originalArticles];
+    // if (!type) {
+    //   setArticles([...originalArticles]);
+    //   return;
+    // }
+
+    setFilteredArticles(filtered);
+    applySort(filtered, sortOption);
+  };
+
+  useEffect(() => { 
+    let filtered = [...originalArticles];
+
+    if (filterType) {
+      filtered = originalArticles.filter((article) => article.type === filterType);
+    }
+
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter(article =>
+        Object.values(article).some(value =>
+          typeof value === "string" && value.toLowerCase().includes(lowerQuery)
+        )
+      );
+    }
+
+    setFilteredArticles(filtered);
+    applySort(filtered, sortOption);
+  }, [originalArticles, filterType, sortOption, searchQuery]);
+
+
+
+  // re-apply filtering when original articles change
+  // useEffect(() => {
+  //   if (filterType) {
+  //     handleFilterByType(filterType);
+  //   } else {
+  //     setFilteredArticles([...originalArticles]);
+  //     applySort(originalArticles, sortOption);
+  //   }
+  // }, [originalArticles]);
+
+
+  // // re-apply sorting when original articles change
+  // useEffect(() => {
+  //   if(sortOption) {
+  //     handleSort(sortOption);
+  //   };
+  // }, [originalArticles]);
+  
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+
+    const lowerQuery = query.toLowerCase();
+    const filtered = originalArticles.filter((article) => {
+      const matchesFilter = filterType ? article.type === filterType : true;
+      const matchesSearch = Object.values(article).some((value) => {
+        typeof value === "string" && value.toLowerCase().includes(lowerQuery);
+      });
+
+      return matchesFilter && matchesSearch;
+    });
+
+    setFilteredArticles(filtered);
+    applySort(filtered, sortOption);      //maintain sorting
+  };
+
 
 
   const fetchArticleData = async () => {
@@ -102,6 +221,13 @@ export default function Articles() {
 
       setArticles(articleData);
       setOriginalArticles(articleData);
+
+      // checking for articles with images
+      // for (let i = 0; i < articleData.length; i++){ 
+      //   if(articleData[i].imageUrl !== null) {
+      //     console.log("Article Image: ", articleData[i].imageUrl);
+      //   }
+      // }
 
     } catch (error) {
       console.error(error);
@@ -158,11 +284,12 @@ export default function Articles() {
 
             {articlesView === "Simple" && (
               <div className="flex flex-row space-x-2">
-                <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1">
+                <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 w-32">
                   <select
                       className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
+                      onChange={(e) => handleFilterByType(e.target.value)}
                   >
-                    <option value="">Filter By</option>
+                    <option value="">Filter By Type</option>
                     {articleTypes.map((type, index) => (
                       <option key={index} value={type}>
                         {type}
@@ -171,25 +298,30 @@ export default function Articles() {
                   </select>
                 </div>
               
-                <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1">
+                <div className="flex flex-row w-[9.2rem] items-center bg-white border-2 rounded-lg p-1">
                   <select
                       className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
+                      value={sortOption}
+                      onChange={(e) => handleSort(e.target.value)}
                   >
                     <option value="">Sort By</option>  
-                    <option value="Author">Author</option>   
-                    <option value="Date">Date</option>
-                    <option value="Title">Title</option> 
-                    <option value="Date">Type</option>
+                    <option value="Published ASC">Last Published</option>
+                    <option value="Last Updated">Last Updated</option>
+                    <option value="Date DCS">Least Recent (created)</option>
+                    <option value="Date ASC">Most Recent (created)</option>   
+                    <option value="Title ASC">Title (A to Z)</option> 
+                    <option value="Title DSC">Title (Z to A)</option> 
                   </select>
                 </div>
               </div>
             )}
 
-            <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1">
+            <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 w-48">
               <input 
                   type="text" 
                   placeholder="Search"      //Name, Article ID, Author, Date Published 
-                  className="flex-1 text-saitGray text-sm bg-transparent w-64 focus:outline-none p-1" 
+                  className="flex-1 text-saitGray text-sm bg-transparent w-48 focus:outline-none p-1" 
+                  onChange={(e) => handleSearch(e.target.value)}
               />
               <SearchOutlinedIcon className="text-saitGray" fontSize="small" />
             </div>
@@ -219,11 +351,23 @@ export default function Articles() {
               {currentArticles.length > 0 ? (
                 currentArticles.map((article) => (
                   <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
-                    <button className="absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
+                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:bg-saitDarkPurple hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
                       <Tooltip title="Edit Article">    
-                        <EditRoundedIcon sx={{ fontSize: 21 }} />
+                        <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#e9d5ff] transition-colors duration-300" />
                       </Tooltip>
                     </button>
+                    {article.status === "Draft" ? (
+                      // <div className="absolute top-[0.9rem] -rotate-45 left-0 z-10 shadow-md bg-purple-200 border px-3 py-1 relative before:absolute before:-left-2 before:top-0 before:w-2 before:h-full before:bg-purple-200 before:transform before:skew-y-45 after:absolute after:-right-2 after:top-0 after:w-2 after:h-full after:bg-purple-200 after:transform after:-skew-y-45">
+                      //   <p className="text-purple-600 text-sm">Draft</p>
+                      // </div>
+                      <div className="absolute top-2 left-2 z-10 shadow-md bg-purple-200 border px-3 py-1 rounded-full">
+                        <p className="text-purple-600 text-sm">Draft</p>
+                      </div>
+                    ) : (
+                      <div className="absolute top-2 left-2 z-10 shadow-lg bg-blue-100 border text-blue-600 px-3 py-1 rounded-full">
+                        <p className="text-blue-600 text-sm">Published</p>
+                      </div>
+                    )}
                     <button>
                       <ArticleCard article={article} />
                     </button>
@@ -236,30 +380,17 @@ export default function Articles() {
             
              {/* pagination */}
             <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
-              <button 
-                  onClick={handlePrevious} 
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-              >
-                  Previous
-              </button>
+              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} />
               <span>
-                  Page {currentPage} of {totalPages}
+                Page {currentPage} of {totalPages}
               </span>
-              <button 
-                  onClick={handleNext} 
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-              >
-                  Next
-              </button>
+              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} />
             </div>
-
           </div>
           
         ) : (
           // Extended Article View
-          <ArticlesTableDetailed articlesData={originalArticles}/>
+          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData}/>
         )}
 
           {/* Create Article Panel */}
@@ -276,7 +407,7 @@ export default function Articles() {
               >
                 <div className="">
                   <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action={panelTask} 
-                  closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle}/>
+                  closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle} reFetchArticles={fetchArticleData} />
                 </div>
               </motion.div>
             }
