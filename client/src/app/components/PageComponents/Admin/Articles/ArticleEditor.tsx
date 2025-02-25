@@ -18,7 +18,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { Value } from '@radix-ui/react-select';
+
 
 type CreateArticleProps = { 
     closeOnClick: any,
@@ -492,7 +492,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             <div className="flex flex-row items-center space-x-4">
                                 <ActionButton title="Submit Update" onClick={handleSubmit((data) => submitForm(data, "update"))}
                                     textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
-                                <ActionButton title="Cancel" onClick={closeOnClick} type="button" 
+                                <ActionButton title="Cancel" onClick={closeOnClick} type="button"       // type button to prevent form submission
                                     textColor="text-slate-800" borderColor="border-slate-800" hoverBgColor="bg-saitBlack" hoverTextColor="text-saitDarkRed"/>
                             </div>
 

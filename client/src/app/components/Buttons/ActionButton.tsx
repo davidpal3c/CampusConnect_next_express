@@ -8,6 +8,7 @@ type ActionButtonProps = {
     type?: string;
     onClick: () => void;
     disabled?: boolean;
+    iconFirst?: boolean;
 
     // optional props for styling
     textColor?: string;
@@ -26,6 +27,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     onClick, 
     type,
     disabled,
+    iconFirst,
 
     textColor, 
     fontWeight,
@@ -69,15 +71,25 @@ const ActionButton: React.FC<ActionButtonProps> = ({
                 className="bg-white border-2 border-saitGray text-green-700 font-semibold h-9 flex items-center py-2 px-4 rounded-lg hover:text-orange-500 hover:bg-saitRed hover:border-saitPurple hover:shadow-2xl transition-colors duration-300"
             > */}
 
-            {type === "button" ? (
+            {type === "button" ? (              // preventing form submission
                 <button
                     onClick={onClick}
                     className={buttonStyle}
                     type={type}
                     disabled={disabled}
                 >
-                    {title}
-                    {icon && React.cloneElement(icon, { className: `text-md ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
+                    {iconFirst ? (
+                        <div>
+                            {icon && React.cloneElement(icon, { className: `text-md ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
+                            {title}
+                        </div>
+                        
+                    ) : (
+                        <div>
+                            {title}
+                            {icon && React.cloneElement(icon, { className: `text-md ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
+                        </div>                        
+                    )}
                 </button>
             ) : (               // type === "option"
                 <button
@@ -85,8 +97,18 @@ const ActionButton: React.FC<ActionButtonProps> = ({
                 className={buttonStyle}
                 disabled={disabled}
                 >
-                    {title}
-                    {icon && React.cloneElement(icon, { className: `ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
+                    {iconFirst ? (
+                        <div className="flex items-center justify-evenly">
+                            {icon && React.cloneElement(icon, { className: `text-md -ml-1 group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
+                            {title}
+                        </div>
+                        
+                    ) : (
+                        <div className="flex items-center">
+                            {title}
+                            {icon && React.cloneElement(icon, { className: `text-md mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
+                        </div>                        
+                    )}
                 </button>
             )}
         </div>

@@ -8,13 +8,13 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { Tooltip } from '@mui/material';
 
 
-type ArticleOptionsBtnProps = {
+type ArticlesPageOptionsBtnProps = {
     title?: string;
     icon?: any;
     optionHandler?: any;
 };
 
-const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, optionHandler }) => {
+const ArticlesPageOptionsBtn: React.FC<ArticlesPageOptionsBtnProps> = ({ title, icon, optionHandler }) => {
         
     const [anchorExportOpt, setAnchorExportOpt] = useState<null | HTMLElement>(null);
     const openExportOptions = Boolean(anchorExportOpt);
@@ -59,9 +59,7 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, opti
                         boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
                         marginTop: "0.4rem",
                         marginLeft: "0.4rem",
-                        width: "auto",
-                        maxWidth: "12rem", 
-                        whiteSpace: "nowrap", 
+                        width: "14rem",
                     }
                 }}
             >
@@ -84,7 +82,7 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, opti
     );
 };
 
-export default ArticleOptionsBtn;
+export default ArticlesPageOptionsBtn;
 
 
 const menuStyles = {

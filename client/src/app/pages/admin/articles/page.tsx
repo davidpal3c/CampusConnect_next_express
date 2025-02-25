@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 // import {FilterDropdown, FilterInput} from "@/app/components/Buttons/FilterButton/FilterButton";
 import ArticleCard from "@/app/components/PageComponents/Admin/Articles/ArticleCard";
 import ActionButton from "@/app/components/Buttons/ActionButton";
-import ArticleOptionsBtn from "@/app/components/Buttons/ArticleOptionsBtn";
+import OptionsButton from "@/app/components/Buttons/OptionsButton";
 import ArticleEditor from "@/app/components/PageComponents/Admin/Articles/ArticleEditor";
 import ArticlesTableDetailed from "@/app/components/PageComponents/Admin/Articles/ArticlesTableDetailed";
 
@@ -15,16 +15,17 @@ import { toast } from "react-toastify";
 import { Tooltip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 
-
-//icons
 import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
 import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import ArrowLeftRoundedIcon from '@mui/icons-material/ArrowLeftRounded';
+import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 
-
+import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
+import { BsFiletypePdf } from "react-icons/bs";
 
 export default function Articles() {
 
@@ -255,6 +256,12 @@ export default function Articles() {
     handleOpenCreatePanel();
   };
 
+  const [articlesPageOptionHandlers] = useState([
+    { title: "Articles Data Analytics", handler: () => console.log("Articles Data Analytics"), icon: null, },
+    { title: "Export to Excel", handler: () => console.log("Export to Excel"), icon: <PiMicrosoftExcelLogoFill style={{ color: "#005795", fontSize: 20}} /> },
+    { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
+    { title: "Manage Article Types", handler: () => console.log("Manage Article Types"), icon: null },
+  ]);
 
   return(
     <main className="bg-saitWhite h-screen p-4 xl:pr-8">
@@ -337,7 +344,7 @@ export default function Articles() {
               </div>
             </Tooltip>
             <div>
-              <ArticleOptionsBtn icon={<MoreVertRoundedIcon />} />
+              <OptionsButton icon={<MoreVertRoundedIcon />} optionHandler={articlesPageOptionHandlers} />
             </div>
           </div>
         </header>
@@ -353,7 +360,7 @@ export default function Articles() {
                   <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
                     <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:bg-saitDarkPurple hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
                       <Tooltip title="Edit Article">    
-                        <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#e9d5ff] transition-colors duration-300" />
+                        <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#f7f7f7] transition-colors duration-300" />
                       </Tooltip>
                     </button>
                     {article.status === "Draft" ? (
@@ -380,11 +387,11 @@ export default function Articles() {
             
              {/* pagination */}
             <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
-              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} />
+              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<ArrowLeftRoundedIcon />} iconFirst={true} />
               <span>
                 Page {currentPage} of {totalPages}
               </span>
-              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} />
+              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<ArrowRightRoundedIcon />}/>
             </div>
           </div>
           
