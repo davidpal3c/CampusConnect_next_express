@@ -7,6 +7,7 @@ type ActionButtonProps = {
     icon?: React.ReactElement;
     type?: string;
     onClick: () => void;
+    disabled?: boolean;
 
     // optional props for styling
     textColor?: string;
@@ -24,6 +25,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     icon,
     onClick, 
     type,
+    disabled,
 
     textColor, 
     fontWeight,
@@ -72,17 +74,19 @@ const ActionButton: React.FC<ActionButtonProps> = ({
                     onClick={onClick}
                     className={buttonStyle}
                     type={type}
+                    disabled={disabled}
                 >
                     {title}
-                    {icon && React.cloneElement(icon, { className: `ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in-out delay-75 transition-colors duration-300` })}
+                    {icon && React.cloneElement(icon, { className: `text-md ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
                 </button>
-            ) : (
+            ) : (               // type === "option"
                 <button
                 onClick={onClick}
                 className={buttonStyle}
+                disabled={disabled}
                 >
                     {title}
-                    {icon && React.cloneElement(icon, { className: `ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in-out delay-75 transition-colors duration-300` })}
+                    {icon && React.cloneElement(icon, { className: `ml-1 mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
                 </button>
             )}
         </div>

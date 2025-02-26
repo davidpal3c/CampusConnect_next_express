@@ -1,39 +1,58 @@
-import React, { useState, useRef } from "react";
-import { Editor } from "@tinymce/tinymce-react";
+"use client"; 
+import React, { useState, useRef, useEffect } from "react";
+import { Editor } from '@tinymce/tinymce-react';
 
-export default function RichTextEditor() {
+
+type RichTextEditorProps = {
+    article?: any,
+    setContent?: any,
+}
+
+const RichTextEditor: React.FC<RichTextEditorProps> = ({ article, setContent }) => {
     // const [ content, setContent ] = useState("");
     const editorRef = useRef(null);
+    const [tinyMceAPIKey] = useState(process.env.NEXT_PUBLIC_TINYMCE_API_KEY);
+    const [editorValue, setEditorValue] = useState(article?.content || "");
   
-    const handleSubmit = () => {
-      if (editorRef.current) {
-        console.log(editorRef.current.getContent());
-        // You can now send the content to your backend API
-      }
+    const handleContentChange = (newValue: string) => {
+      setEditorValue(newValue);
+      setContent(newValue);
+      // if (editorRef.current) {
+      //   console.log(newValue);
+      //   setContent(newValue);
+      // }
     };
+
+    useEffect(() => {
+        setEditorValue(article?.content || "");
+    }, [article?.content]); 
   
     return (
-      <div>
+      <div className="w-full">
         <Editor
-          apiKey="your-api-key" // Replace with your TinyMCE API key
-          onInit={(evt, editor) => (editorRef.current = editor)}
-          initialValue="<p>Start writing your article here...</p>"
+          apiKey={tinyMceAPIKey}
           init={{
-            height: 500,
-            menubar: true,
-            plugins: [
-              'advlist autolink lists link image charmap print preview anchor',
-              'searchreplace visualblocks code fullscreen',
-              'insertdatetime media table paste code help wordcount'
-            ],
+            height: 600,
+            width: "100%",
+            selectors: "textarea",
             toolbar:
-              'undo redo | formatselect | bold italic backcolor | \
+              "undo redo | formatselect | bold italic fontsizeselect backcolor | \
               alignleft aligncenter alignright alignjustify | \
-              bullist numlist outdent indent | removeformat | help'
+              bullist numlist outdent indent | emoticons | removeformat | image | link | fullscreen | \
+              wordcount", 
+            plugins: ['lists', 'emoticons', 'fullscreen', 'link', 'image', 'wordcount'],
+            fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt',
+            skin: "oxide", 
+            content_css: "default", 
+            debug: true, 
           }}
+          value={editorValue}
+          onEditorChange={(newValue) => handleContentChange(newValue)}
+          ref={editorRef}
         />
-        <button onClick={handleSubmit}>Submit Article</button>
+        {/* <button onClick={handleSubmit}>Submit Article</button> */}
       </div>
     );
   };
 
+  export default RichTextEditor;

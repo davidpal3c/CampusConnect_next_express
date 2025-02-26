@@ -15,7 +15,7 @@ export const adjustDateLetters = (dateFull: string) => {
 
 
     const date = new Date(dateOnly);
-    const month = date.toLocaleString('default', { month: 'long' });
+    const month = date.toLocaleString('default', { month: 'short' });
     const day = date.getDate() + 1;
     const year = date.getFullYear();
 
@@ -26,3 +26,14 @@ export const adjustDateLetters = (dateFull: string) => {
 export const formatToDateOnly = (isoString: string) => {
     return isoString ? isoString.split("T")[0] : getTodayDate();    
 }
+
+
+export const formatToDateTime = (isoString: string) => {
+    const date = new Date(isoString);
+    const month = date.toLocaleString('default', { month: 'short' });
+    const day = date.getDate() + 1;
+    const year = date.getFullYear();
+    const time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    return `${month} ${day}, ${year} ${time}`; 
+}   

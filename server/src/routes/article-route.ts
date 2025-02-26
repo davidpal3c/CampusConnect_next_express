@@ -1,6 +1,7 @@
 import express from 'express';
 import { verifySession, adminRoute, validatePermissions } from '../middleware/user-middleware';
-import { getAllArticles, getArticleCategories, getArticlesByType, getArticleById, createArticle, updateArticle, updateArticleWhole, deleteArticle } from '../controllers/articles-controller';
+import { getAllArticles, getArticleCategories, getArticlesByType, getArticleById, 
+    createArticle, updateArticle, updateArticleWhole, deleteArticle, deleteArticles } from '../controllers/articles-controller';
 
 const router = express.Router();
 
@@ -28,6 +29,8 @@ router.put('/:id', verifySession, adminRoute, validatePermissions(['Full Access'
 // DELETE /api/articles/:id - Delete an article by ID
 router.delete('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), deleteArticle);
 
+// DELETE /api/articles/ - Delete multiple articles
+router.delete('/', verifySession, adminRoute, validatePermissions(['Full Access']), deleteArticles);
 
 export default router;
 

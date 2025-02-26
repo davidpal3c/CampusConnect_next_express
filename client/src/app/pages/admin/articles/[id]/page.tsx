@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-
-
+import { containsHTML } from "@/app/_utils/text-service";
 
 import { toast } from "react-toastify";
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
@@ -35,7 +34,7 @@ export default function Article() {
                 toast.error(errorData.message || "An Error occurred fetching articles.");
                 return;
             }
-            console.log(articleData);
+            // console.log(articleData);
             setArticleData(articleData);
 
         } catch (error) {
@@ -56,24 +55,34 @@ export default function Article() {
 
     return(
         <div className="p-4">
-            <Tooltip title="Back to Articles" arrow>
-                <button onClick={() => router.push("/admin/articles")} className="flex items-center mb-6">
-                    <ArrowBackIosRoundedIcon className="mr-4"/>
-                </button>
-            </Tooltip>
-
-            <h1>Article Page</h1>
-            <div>
+            <div className="flex justify-between items-center">
+                <Tooltip title="Back to Articles" arrow>
+                    <button onClick={() => router.push("/admin/articles")} className="flex items-center mb-6">
+                        <ArrowBackIosRoundedIcon className="mr-4"/>
+                    </button>
+                </Tooltip>
+                <h1>Edit, Share, Export to PDF</h1>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg shadow-md">
                 {articleData ? (
                     <div>
-                        <img src={articleData.imageURL} alt={articleData.title} />
                         <h2>{articleData.title}</h2>
-                        <p>{articleData.content}</p>
-                        
                         <p>{articleData.audience}</p>
                         <p>{articleData.status}</p>
                         <p>{articleData.type}</p>
                         <p>{articleData.author}</p>
+                        <div className="w-1/2">
+                            <img src={articleData?.imageUrl || null} alt={articleData.title} />
+                        </div>
+                        <p>{articleData.datePublished}</p>
+
+                        {containsHTML(articleData.content) ? (
+                            <div dangerouslySetInnerHTML={{__html: articleData.content}}></div>
+                        ) : (
+                            <p>{articleData.content}</p> 
+                        )}
+                        
                     </div>
                 ) : (
                     <p>Loading...</p>

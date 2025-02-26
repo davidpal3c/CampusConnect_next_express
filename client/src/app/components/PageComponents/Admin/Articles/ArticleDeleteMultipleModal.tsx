@@ -1,12 +1,13 @@
-
-import React, { useState } from 'react';    
+import React, { useState, useEffect, use } from 'react';    
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { toast } from "react-toastify";
+import { set } from 'react-hook-form';
 
 type ArticleDeleteModalProps = {
-    articleId: string;
+    articleIds: string[];
+    articlesData: any;
     openDeleteModal: boolean;
 
     handleDeleteModalClose: () => void;
@@ -16,31 +17,38 @@ type ArticleDeleteModalProps = {
 };
 
 
-export default function ArticleDeleteModal({ articleId, openDeleteModal, handleDeleteModalClose, closeArticleEditor, noEditor, reFetchArticles }: ArticleDeleteModalProps) {
-    
-    const processDeleteArticle = async (articleId: string) => {
+export default function ArticleDeleteMultipleModal({ articlesData, articleIds, openDeleteModal, handleDeleteModalClose, closeArticleEditor, noEditor, reFetchArticles }: ArticleDeleteModalProps) {
+
+    const processDeleteArticle = async (articleIds: string[]) => {
         try {
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/${articleId}`, {
-                method: "DELETE",
-                headers: {
-                    "content-type": "application/json",
-                },
-                credentials: "include",
-            });
-
-            const data = await response.json();
-            console.log("response: ", data);
-
-            if (!response.ok) {
-                const errorData = data;
-                toast.error(errorData.message || "An Error occurred deleting article.");
+            console.log("Article Ids - pre-Fetch: ", articleIds);
+            
+            if (articleIds.length === 0) {
+                toast.error("No articles selected for deletion.");
                 return;
             }
 
-            toast.success(data.message);         
-            
-            if(reFetchArticles) reFetchArticles();  
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+                body: JSON.stringify({ articleIds: articleIds }),
+                
+            });       
+
+            const data = await response.json();
+            console.log("Data: ", data);
+
+            if (!response.ok) {
+                const errorData = data;
+                toast.error(errorData.message || "An error occurred deleting articles.");
+                return;
+            }
+
+            toast.success(data.message);      
+            if(reFetchArticles) reFetchArticles();
         } catch (error) {
             toast.error(`Unknown error occurred deleting article! : ` + error, {
                 position: "top-center",
@@ -49,12 +57,12 @@ export default function ArticleDeleteModal({ articleId, openDeleteModal, handleD
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                });
+            });
         }
     };    
 
     const submitDelete = async () => {
-        await processDeleteArticle(articleId);
+        await processDeleteArticle(articleIds);
         handleDeleteModalClose();
 
         if(noEditor) return;            // only close editor if noEditor is false (using component with editor)
@@ -70,17 +78,26 @@ export default function ArticleDeleteModal({ articleId, openDeleteModal, handleD
             aria-describedby="delete-article-modal-description"
             id="delete-article-modal"
             BackdropProps={{
-                sx: { backgroundColor: noEditor ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.5)" }  
+                sx: { backgroundColor: noEditor ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.5)" }  
             }}
         >
             <Box sx={modalStyle}>
                 <div className="flex flex-col items-center justify-center p-4 my-2">    
-                    <p className="text-center">Are you sure you want to delete this article?</p>
-                    <p className="text-center">Article ID: {articleId}</p>
-                    <p className="text-center italic text-sm">This operation can't be undone!</p>            
+                    <p className="text-center">Are you sure you want to delete {articleIds.length > 1 ? ('these articles?') : ('this article?')}</p>
+                    <div className="flex flex-col items-center justify-center w-full mt-4">
+                        {articleIds.length > 1 ? <p className="text-center font-semibold italic text-sm mb-2">You are about to delete <span className='text-lg text-red-500'>{articleIds.length}</span> articles.</p> : null}    
+                        {articlesData.map((data, index) => {
+                            return (
+                                <p key={index} className="text-center italic text-sm text-color-500">
+                                    {`Article Title: ${data.title}`}
+                                </p>
+                            );
+                        })}
+                    </div>
+                    <p className="text-center italic text-sm text-red-600 mt-2">( This operation can't be undone!! )</p>            
                     <div className="flex items-center justify-center w-full space-x-5 mt-4">
                     <ActionButton title="Delete" onClick={submitDelete}
-                                textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>                            
+                                textColor="text-saitRed" borderColor="border-saitRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>                            
                     <ActionButton title="Cancel" onClick={handleDeleteModalClose}
                                 textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                                                          
                     </div>
