@@ -106,6 +106,16 @@ model Article {
 
 }
 
+model ArticleType {
+  type_id    String    @id @unique @default(uuid())
+  name       String    @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relation
+  articles   Article[]
+}
+
 model ArticleCategory {
   id           String    @id @unique @default(uuid())
   article_id   String

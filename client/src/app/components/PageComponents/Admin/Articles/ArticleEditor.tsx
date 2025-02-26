@@ -189,7 +189,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
             imageUrl: imageUrl,
         }
 
-        console.log("Entered Article Data: ", articleData);
+        // console.log("Entered Article Data: ", articleData);
 
         if (action === "Create") {
             processCreateArticle(articleData);

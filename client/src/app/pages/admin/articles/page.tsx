@@ -358,7 +358,7 @@ export default function Articles() {
               {currentArticles.length > 0 ? (
                 currentArticles.map((article) => (
                   <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
-                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:bg-saitDarkPurple hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
+                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitBlue p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
                       <Tooltip title="Edit Article">    
                         <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#f7f7f7] transition-colors duration-300" />
                       </Tooltip>
@@ -387,11 +387,15 @@ export default function Articles() {
             
              {/* pagination */}
             <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
-              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<ArrowLeftRoundedIcon />} iconFirst={true} />
+              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<ArrowLeftRoundedIcon />} iconFirst={true}
+                borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+              />
               <span>
                 Page {currentPage} of {totalPages}
               </span>
-              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<ArrowRightRoundedIcon />}/>
+              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<ArrowRightRoundedIcon />} 
+                borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+              />
             </div>
           </div>
           

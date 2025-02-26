@@ -144,9 +144,7 @@ export const setUserImage = async (req: AuthenticatedRequest, res: Response, nex
 // session request route: verify session cookie and set user object in request
 export const verifySession = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-            
         initializeFirebaseAdmin(); 
-
         const sessionCookie = req.cookies['session'];
 
         if (!sessionCookie) {
