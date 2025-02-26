@@ -51,7 +51,7 @@ export default function ArticleCard({ article } : { article: any }) {
    
                         <div className="flex flex-col justify-end mt-1">
                             <p className="text-sm text-gray-600 flex justify-start"><span className="font-semibold mr-4">Author:</span>{articleAuthorReduced}</p>        
-                            <p className="text-sm text-gray-600 flex justify-start"><span className="font-semibold mr-4">Category:</span>{article.type}</p>        
+                            <p className="text-sm text-gray-600 flex justify-start"><span className="font-semibold mr-4">Category:</span>{article.type.name}</p>        
                             {/* <div className="flex flex-wrap relative">
                                 <p className="text-sm text-gray-600">{`${contentReduced}...`}</p>
                             </div> */}

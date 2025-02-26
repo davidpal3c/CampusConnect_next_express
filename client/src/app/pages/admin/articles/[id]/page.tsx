@@ -100,7 +100,7 @@ export default function Article() {
                                 {articleData.status === "Published" ? 
                                     (<p className="font-semibold text-lg">Status:<span className="text-saitBlue font-semibold font-serif text-md"> {articleData.status}</span></p>)
                                     : (<p className="font-semibold text-lg">Status:<span className="text-saitPurple font-semibold"> {articleData.status}</span></p>)}
-                                <p className="font-semibold text-lg">Article Type: <span className="font-normal font-serif text-md">{articleData.type} </span></p>
+                                <p className="font-semibold text-lg">Article Type: <span className="font-normal font-serif text-md">{articleData.type?.name || ""} </span></p>
                             </div>
 
                             <div className="w-full flex max-w-full h-auto object-contain mb-4 mt-6">

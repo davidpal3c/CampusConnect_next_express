@@ -124,7 +124,7 @@ export const setUserImage = async (req: AuthenticatedRequest, res: Response, nex
 
         if (storedPicture?.image_url === picture || storedPicture?.image_url !== null) {
             // console.log("User image already set:", storedPicture?.image_url);
-            next();
+            return next();
         }
         
         await prisma.user.update({

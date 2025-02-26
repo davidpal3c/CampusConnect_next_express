@@ -40,8 +40,13 @@ export default function Articles() {
 
   const articleEditorRef = useRef(null);
 
-  // TODO : fetch current article types from backend and set them here
-  const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
+
+
+  const [articleTypes, setArticleTypes] = useState([]);
+  const [articleTypesData, setArticleTypesData] = useState([]);         // for the Article Types Modal/ Create-Edit Article
+  // const [selectedArticleType, setSelectedArticleType] = useState("");
+  // const [selectedArticleTypeData, setSelectedArticleTypeData] = useState({});
+  // const [isArticleTypeModalVisible, setIsArticleTypeModalVisible] = useState(false);
 
   const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);
   const [ panelTask, setPanelTask ] = useState("Create");
@@ -49,6 +54,85 @@ export default function Articles() {
   const [ articlesView, setArticlesView ] = useState("Simple");
   const [ selectedArticle, setSelectedArticle ] = useState({}); 
 
+
+  const fetchArticleData = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/`, {
+        method: "GET",
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",   
+      });
+
+      const articleData = await response.json();
+
+      if (!response.ok) {
+        const errorData = articleData;
+        toast.error(errorData.message || "An Error occurred fetching articles.");
+        return;
+      } 
+      
+      setArticles(articleData);
+      setOriginalArticles(articleData);
+
+      // checking for articles with images
+      // for (let i = 0; i < articleData.length; i++){ 
+      //   if(articleData[i].imageUrl !== null) {
+      //     console.log("Article Image: ", articleData[i].imageUrl);
+      //   }
+      // }
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Unknown error occurred fetching articles! : " + error, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    }
+  }
+
+  const fetchArticleTypes = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/type`, {
+        method: "GET",
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",   
+      });
+
+      const articleTypesData = await response.json();
+
+      if (!response.ok) {
+        const errorData = articleTypesData;
+        toast.error(errorData.message || "An Error occurred fetching article types.");
+        return;
+      }
+
+      setArticleTypesData(articleTypesData);
+      setArticleTypes(articleTypesData.map((type: any) => type.name));   
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Unknown error occurred fetching article types! : " + error, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    }
+  }
+
+  useEffect(() => {
+    fetchArticleData();
+    fetchArticleTypes();
+
+  }, []);
 
   const handleSimpleView = () => {
     setArticlesView("Simple");
@@ -58,34 +142,27 @@ export default function Articles() {
     setArticlesView("Extended"); 
   };
 
-  useEffect(() => {
-    fetchArticleData();
-  }, []);
+  const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
+  const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
+  
+  const handleCreateArticle = () => {
+    setPanelTask("Create");
+    handleOpenCreatePanel();
+  };
 
+  const handleEditArticle =  async (article: any) => {
+    setPanelTask("Edit");
+    setSelectedArticle(article);
+    handleOpenCreatePanel();
+  };
 
-  // sroll to ArticleEditor when it is visible
+   // scroll to ArticleEditor when it is visible
   useEffect(() => {
     if (isCreatePanelVisible && articleEditorRef.current) {
       articleEditorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
 
     }
   }, [isCreatePanelVisible]);
-
-
-  // Pagination
-  const indexOfLastArticle = currentPage * articlesPerPage;
-  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
-
-  const totalPages = Math.ceil(articles.length / articlesPerPage);
-
-  const handlePrevious = () => {
-      if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-  };
-
-  const handleNext = () => {
-      if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-  };
    
   const handleSort = (option: any) => {
     setSortOption(option);
@@ -133,7 +210,7 @@ export default function Articles() {
     setCurrentPage(1);
     setFilterType(type);  
 
-    const filtered = type ? originalArticles.filter((article) => article.type === type) : [...originalArticles];
+    const filtered = type ? originalArticles.filter((article) => article.type?.name === type) : [...originalArticles];
     // if (!type) {
     //   setArticles([...originalArticles]);
     //   return;
@@ -147,7 +224,7 @@ export default function Articles() {
     let filtered = [...originalArticles];
 
     if (filterType) {
-      filtered = originalArticles.filter((article) => article.type === filterType);
+      filtered = originalArticles.filter((article) => article.type?.name === filterType);
     }
 
     if (searchQuery) {
@@ -162,7 +239,6 @@ export default function Articles() {
     setFilteredArticles(filtered);
     applySort(filtered, sortOption);
   }, [originalArticles, filterType, sortOption, searchQuery]);
-
 
 
   // re-apply filtering when original articles change
@@ -201,59 +277,19 @@ export default function Articles() {
   };
 
 
+  // Pagination
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
 
-  const fetchArticleData = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/`, {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-        },
-        credentials: "include",   
-      });
+  const totalPages = Math.ceil(articles.length / articlesPerPage);
 
-      const articleData = await response.json();
-
-      if (!response.ok) {
-        const errorData = articleData;
-        toast.error(errorData.message || "An Error occurred fetching articles.");
-        return;
-      } 
-
-      setArticles(articleData);
-      setOriginalArticles(articleData);
-
-      // checking for articles with images
-      // for (let i = 0; i < articleData.length; i++){ 
-      //   if(articleData[i].imageUrl !== null) {
-      //     console.log("Article Image: ", articleData[i].imageUrl);
-      //   }
-      // }
-
-    } catch (error) {
-      console.error(error);
-      toast.error("Unknown error occurred fetching articles! : " + error, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-    }
-  }
-
-  const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
-  const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
-  
-  const handleCreateArticle = () => {
-    setPanelTask("Create");
-    handleOpenCreatePanel();
+  const handlePrevious = () => {
+      if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
-  const handleEditArticle =  async (article: any) => {
-    setPanelTask("Edit");
-    setSelectedArticle(article);
-    handleOpenCreatePanel();
+  const handleNext = () => {
+      if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
   const [articlesPageOptionHandlers] = useState([
@@ -262,6 +298,19 @@ export default function Articles() {
     { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
     { title: "Manage Article Types", handler: () => console.log("Manage Article Types"), icon: null },
   ]);
+
+
+  // Article Types Modal
+  const [openArticleTypesModal, setOpenArticleTypesModal] = useState(false);
+  const handleArticleTypesModalOpen = () => setOpenArticleTypesModal(true);
+  const handleArticleTypesModalClose = () => setOpenArticleTypesModal(false); 
+
+
+
+  useEffect(() => {
+    fetchArticleTypes();
+  }, []);
+
 
   return(
     <main className="bg-saitWhite h-screen p-4 xl:pr-8">
@@ -401,7 +450,7 @@ export default function Articles() {
           
         ) : (
           // Extended Article View
-          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData}/>
+          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData} articleTypesData={articleTypesData}/>
         )}
 
           {/* Create Article Panel */}
@@ -417,7 +466,7 @@ export default function Articles() {
                 className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
               >
                 <div className="">
-                  <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action={panelTask} 
+                  <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypesData={articleTypesData} action={panelTask} 
                   closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle} reFetchArticles={fetchArticleData} />
                 </div>
               </motion.div>
