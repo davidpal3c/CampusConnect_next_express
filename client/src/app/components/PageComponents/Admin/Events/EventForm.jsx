@@ -30,7 +30,8 @@ const QuestionCard = ({ question, index, onUpdate, onRemove, onMove }) => {
   };
 
   // Handle adding new option
-  const handleAddOption = () => {
+  const handleAddOption = (e) => {
+    e.preventDefault();
     const newOptions = [...options, `Option ${options.length + 1}`];
     setOptions(newOptions);
     onUpdate(question.id, { options: newOptions });
@@ -147,7 +148,7 @@ const FormBuilder = () => {
 
   const addQuestion = (type) => {
     const newQuestion = {
-      id: Date.now(),
+      id: Math.random(), //Might be causing the error I get on the page
       type,
       question: '',
       options: type === 'shortAnswer' ? [] : ['Option 1'],
