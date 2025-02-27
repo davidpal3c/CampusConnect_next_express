@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 
 //mui
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@mui/material';
 
 const locales = {
   'en-US': require('date-fns/locale/en-US')
@@ -106,16 +107,15 @@ const Events = () => {
   };
 
   return (
-
     <div className="grid md:grid-cols-2 gap-4 p-6 bg-gray-100 min-h-screen">
-          {/** Testing the Event form 
+          {/* * Testing the Event form */} 
           <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
             <EventForm/>
           </div>
-          */}
+         
           
 
-      <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
+{/*       <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
         <Calendar
           localizer={localizer}
           events={events}
@@ -124,7 +124,7 @@ const Events = () => {
           style={{ height: 500 }}
           onSelectEvent={handleEventSelect}
         />
-      </div>
+      </div> */}
 
       {(
         <div className="bg-white p-4 shadow-md rounded-md">
@@ -154,7 +154,7 @@ const Events = () => {
                 textColor="text-saitBlue"
                 borderColor="border-saitBlue"
                 hoverBgColor="bg-saitBlue"
-                hoverTextColor="text-white"
+                hoverTextColor="text-saitWhite"
                 />
               </div>
             ))}

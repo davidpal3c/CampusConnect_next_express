@@ -14,7 +14,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CloseIcon from '@mui/icons-material/Close';
 import { Tooltip } from '@mui/material';
-import EventForm from './EventForm'
 
 const locales = {
   'en-US': require('date-fns/locale/en-US')
@@ -247,7 +246,7 @@ const EventEditor: React.FC<CreateEventProps> = ({
           
           </div>
 
-          {/**Submits event */}
+          {/** Submits event */}
           <div className="flex justify-center space-x-4 mt-6">
             <ActionButton 
               title={action === "Create" ? "Create Event" : "Update Event"}

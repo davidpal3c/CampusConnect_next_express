@@ -56,7 +56,7 @@ const QuestionCard = ({ question, index, onUpdate, onRemove, onMove }) => {
               className="mb-4"
             />
             
-            {/** Working on making it accept input and store the answer */}
+            
             {question.type === 'shortAnswer' && (
               <Input 
               type="text"
@@ -179,49 +179,72 @@ const FormBuilder = () => {
       [newQuestions[currentIndex + 1], newQuestions[currentIndex]];
       setQuestions(newQuestions);
     }
+
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent default form submission
+  
+    const formData = {
+      title: formTitle,
+      questions: questions,
+      created: new Date()
+    };
+  
+    console.log("Submitting Form:", formData);
+};
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>
-            <Input
-              type="text"
-              value={formTitle}
-              onChange={(e) => setFormTitle(e.target.value)}
-              className="text-xl font-bold"
-            />
-          </CardTitle>
-        </CardHeader>
-      </Card>
-
-      {questions.map((question, index) => (
-        <QuestionCard
-          key={question.id}
-          question={question}
-          index={index}
-          onUpdate={updateQuestion}
-          onRemove={removeQuestion}
-          onMove={moveQuestion}
+    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6">
+  <Card className="mb-6">
+    <CardHeader>
+      <CardTitle>
+        <Input
+          type="text"
+          value={formTitle}
+          onChange={(e) => setFormTitle(e.target.value)}
+          className="text-xl font-bold"
         />
-      ))}
+      </CardTitle>
+    </CardHeader>
+  </Card>
 
-      <div className="mt-6">
-        <Select onValueChange={addQuestion}>
-          <SelectTrigger>
-            <SelectValue placeholder="Add question" />
-          </SelectTrigger>
-          <SelectContent>
-            {questionTypes.map(type => (
-              <SelectItem key={type.id} value={type.id}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
+  {questions.map((question, index) => (
+    <QuestionCard
+      key={question.id}
+      question={question}
+      index={index}
+      onUpdate={updateQuestion}
+      onRemove={removeQuestion}
+      onMove={moveQuestion}
+    />
+  ))}
+
+  <div className="mt-6">
+    <Select onValueChange={addQuestion}>
+      <SelectTrigger>
+        <SelectValue placeholder="Add question" />
+      </SelectTrigger>
+      <SelectContent>
+        {questionTypes.map(type => (
+          <SelectItem key={type.id} value={type.id}>
+            {type.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+
+  <Button type="submit" 
+  className="mt-6 bg-transparent
+   text-saitBlue border
+   border-saitBlue
+   hover:bg-saitLightBlue
+  hover:text-saitWhite rounded-full"
+  >
+    Save Form
+  </Button>
+</form>
+
   );
 };
 
