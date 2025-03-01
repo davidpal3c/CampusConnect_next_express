@@ -5,6 +5,7 @@ import { set, useForm } from "react-hook-form";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
+import { useArticleTypes } from "@/app/_utils/articleTypes-context";
 import ArticleDeleteModal from './ArticleDeleteModal';
 import RichTextEditor from './RichTextEditor';
 
@@ -22,7 +23,6 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 type CreateArticleProps = { 
     closeOnClick: any,
-    articleTypesData: any, 
     action: string,
     articleObject?: any,
     closeArticleEditor: any,
@@ -30,7 +30,9 @@ type CreateArticleProps = {
 };
 
 
-const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleTypesData, action, articleObject, closeArticleEditor, reFetchArticles }) => {
+const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, articleObject, closeArticleEditor, reFetchArticles }) => {
+
+    const { articleTypesData } = useArticleTypes();
 
     const { userData } = useUserData();
     const [ userFullName, setUserFullName ] = useState("");
@@ -39,7 +41,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
     const [articleTypes, setArticleTypes] = useState<string[]>([]);
 
     useEffect(() => {
-        setArticleTypes(articleTypesData.map((type: any) => type.name));
+        if(articleTypesData) setArticleTypes(articleTypesData.map((type: any) => type.name));
     }, [articleTypesData]);
 
     // image upload
@@ -105,7 +107,8 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
     // sets preview image
     const handleImageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (file) {
+        if (file && file.size > 5 * 1024 * 1024 * 4) {    
+            toast.error("File size must not exceed 20 MB");
             setPreviewUrl(URL.createObjectURL(file));
         } else {
             setPreviewUrl(null);
@@ -150,7 +153,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                 return;
             }
 
-            // console.log("Image upload response: ", responseData)
+            console.log("Image upload response: ", responseData)
             if (responseData.success) {
                 return responseData.data.url; // Return the image URL
             } else {
@@ -171,7 +174,9 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
 
     const submitForm = async (data: any, type:  "publish" | "save-preview" | "update" ) => {
         handleLoaderOpen();
-        // console.log("Type: ", type);
+        console.log("Form Data (loader open): ", data);
+
+
         const authorName = data.author.trim() || userFullName;
         const selectedDate = data.datePublished || getTodayDate();
         const formattedDate = new Date(selectedDate).toISOString();
@@ -354,7 +359,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
 
                                         const file = value[0];
                                          // if (!file) return 'Please select a file';
-                                        return file.size <= 5 * 1024 * 1024 * 6 || 'File size must not exceed 32 MB';
+                                        return file.size <= 5 * 1024 * 1024 * 4 || 'File size must not exceed 20MB';
                                     },
                                     },
                                 })}

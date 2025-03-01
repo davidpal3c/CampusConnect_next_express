@@ -36,12 +36,11 @@ type Article = {
 type ArticleDetailedProps = {
     articlesData: Article[];
     reFetchArticles: any;
-    articleTypesData: any;
 };  
 
 
-const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, reFetchArticles, articleTypesData }) => {
-       
+const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, reFetchArticles }) => {
+
     // View Article variables
     const [ selectedArticleId, setSelectedArticleId ] = useState("");
     const [ selectedArticleIds, setSelectedArticleIds ] = useState<string[]>([]);
@@ -279,7 +278,7 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
                     className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                 >
                     <div className="">
-                    <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypesData={articleTypesData} action="Edit" 
+                    <ArticleEditor closeOnClick={handleCloseCreatePanel} action="Edit" 
                     closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle}/>
                     </div>
                 </motion.div>

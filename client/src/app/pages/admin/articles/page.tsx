@@ -8,7 +8,8 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 import OptionsButton from "@/app/components/Buttons/OptionsButton";
 import ArticleEditor from "@/app/components/PageComponents/Admin/Articles/ArticleEditor";
 import ArticlesTableDetailed from "@/app/components/PageComponents/Admin/Articles/ArticlesTableDetailed";
-
+import { useArticleTypes } from "@/app/_utils/articleTypes-context";
+import ArticleTypesModal from "@/app/components/PageComponents/Admin/Articles/ArticleTypesModal";
 import { toast } from "react-toastify";
 
 // mui 
@@ -41,9 +42,7 @@ export default function Articles() {
   const articleEditorRef = useRef(null);
 
 
-
-  const [articleTypes, setArticleTypes] = useState([]);
-  const [articleTypesData, setArticleTypesData] = useState([]);         // for the Article Types Modal/ Create-Edit Article
+  const { articleTypes, articleTypesData, fetchArticleTypes } = useArticleTypes();
   // const [selectedArticleType, setSelectedArticleType] = useState("");
   // const [selectedArticleTypeData, setSelectedArticleTypeData] = useState({});
   // const [isArticleTypeModalVisible, setIsArticleTypeModalVisible] = useState(false);
@@ -95,43 +94,8 @@ export default function Articles() {
     }
   }
 
-  const fetchArticleTypes = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/type`, {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-        },
-        credentials: "include",   
-      });
-
-      const articleTypesData = await response.json();
-
-      if (!response.ok) {
-        const errorData = articleTypesData;
-        toast.error(errorData.message || "An Error occurred fetching article types.");
-        return;
-      }
-
-      setArticleTypesData(articleTypesData);
-      setArticleTypes(articleTypesData.map((type: any) => type.name));   
-
-    } catch (error) {
-      console.error(error);
-      toast.error("Unknown error occurred fetching article types! : " + error, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-    }
-  }
-
   useEffect(() => {
     fetchArticleData();
-    fetchArticleTypes();
-
   }, []);
 
   const handleSimpleView = () => {
@@ -296,15 +260,15 @@ export default function Articles() {
     { title: "Articles Data Analytics", handler: () => console.log("Articles Data Analytics"), icon: null, },
     { title: "Export to Excel", handler: () => console.log("Export to Excel"), icon: <PiMicrosoftExcelLogoFill style={{ color: "#005795", fontSize: 20}} /> },
     { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
-    { title: "Manage Article Types", handler: () => console.log("Manage Article Types"), icon: null },
+    { title: "Manage Article Types", handler: () => handleArticleTypesModalOpen(), icon: null },
   ]);
+
 
 
   // Article Types Modal
   const [openArticleTypesModal, setOpenArticleTypesModal] = useState(false);
   const handleArticleTypesModalOpen = () => setOpenArticleTypesModal(true);
-  const handleArticleTypesModalClose = () => setOpenArticleTypesModal(false); 
-
+  
 
 
   useEffect(() => {
@@ -396,6 +360,7 @@ export default function Articles() {
               <OptionsButton icon={<MoreVertRoundedIcon />} optionHandler={articlesPageOptionHandlers} />
             </div>
           </div>
+          <ArticleTypesModal openArticleTypesModal={openArticleTypesModal} setOpenArticleTypesModal={setOpenArticleTypesModal} />
         </header>
 
 
@@ -450,7 +415,7 @@ export default function Articles() {
           
         ) : (
           // Extended Article View
-          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData} articleTypesData={articleTypesData}/>
+          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData} />
         )}
 
           {/* Create Article Panel */}
@@ -466,7 +431,7 @@ export default function Articles() {
                 className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
               >
                 <div className="">
-                  <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypesData={articleTypesData} action={panelTask} 
+                  <ArticleEditor closeOnClick={handleCloseCreatePanel} action={panelTask} 
                   closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle} reFetchArticles={fetchArticleData} />
                 </div>
               </motion.div>

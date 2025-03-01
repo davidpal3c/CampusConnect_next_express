@@ -106,7 +106,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
                     ) : (
                         <div className="flex items-center">
                             {title}
-                            {icon && React.cloneElement(icon, { className: `text-md mr-[-0.3rem] group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
+                            {icon && React.cloneElement(icon, { className: `text-md mr-[-0.3rem] ml-1 group-hover:${hoverStyles.textColor} transition ease-in delay-75 transition-colors duration-300` })}
                         </div>                        
                     )}
                 </button>
