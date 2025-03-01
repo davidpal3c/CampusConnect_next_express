@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/_utils/adminUser-context.js", "src/app/_utils/user-context.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/_utils/adminUser-context.js", "src/app/_utils/user-context.js", "src/app/_utils/articleTypes-context.js"],
   "exclude": ["node_modules"]
 }

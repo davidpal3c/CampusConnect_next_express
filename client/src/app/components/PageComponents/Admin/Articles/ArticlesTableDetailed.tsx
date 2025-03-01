@@ -40,12 +40,12 @@ type ArticleDetailedProps = {
 
 
 const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, reFetchArticles }) => {
-       
+
     // View Article variables
     const [ selectedArticleId, setSelectedArticleId ] = useState("");
     const [ selectedArticleIds, setSelectedArticleIds ] = useState<string[]>([]);
     const router = useRouter();
-    
+
     // Article Delete Modal
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const handleDeleteModalClose = () => setOpenDeleteModal(false);
@@ -60,8 +60,6 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
     const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
     const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
 
-    // TODO - fetch current article types from server
-    const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
     const [selectedArticle, setSelectedArticle] = useState({});
 
     const handleEditArticle =  async (article: any) => {
@@ -181,7 +179,9 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
                 return <span className={`${className} font-normal text-saitWhite p-2 rounded-xl`}>{status}</span>;             
             }
         }},
-        { field: 'type', headerName: 'Type', width: 108 },
+        { field: 'type', headerName: 'Type', width: 108, renderCell: (params) => {
+            return <span>{params.row.type?.name || "Unknown"}</span>;
+        }},
         { field: 'audience', headerName: 'Audience', width: 110 },
         { field: 'author', headerName: 'Author', width: 125 },
         { field: 'author_id', headerName: 'Author ID', width: 90, renderCell: (params) => { 
@@ -210,6 +210,22 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
         },
         { field: 'content', headerName: 'Content', width: 200 }
     ];
+
+    useEffect(() => {
+        // Fix scrollbars: this function adds the inert attribute to the scrollbars containing the data grid.
+        // It prevents the scrollbars from being focused when the user interacts with the data grid. 
+        // This is a temporary fix until the issue is resolved in the mui-datagrid library.
+        // the issue with the aria-hidden attribute on the scrollbar is that it hides the scrollbar 
+        // from screen readers and keyboard users, creating accessibility issues.
+
+        const fixScrollbars = () => {
+          document
+            .querySelectorAll(".MuiDataGrid-scrollbar")
+            .forEach((el) => el.setAttribute("inert", ""));
+        };
+      
+        fixScrollbars();
+      }, []);
        
 
     return (
@@ -262,7 +278,7 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
                     className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                 >
                     <div className="">
-                    <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action="Edit" 
+                    <ArticleEditor closeOnClick={handleCloseCreatePanel} action="Edit" 
                     closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle}/>
                     </div>
                 </motion.div>

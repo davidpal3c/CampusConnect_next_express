@@ -1,13 +1,11 @@
 "use client";
-// TODO: import ActionButton component
 import { useState, useEffect } from "react";
 import { adjustDateLetters, adjustDateOnlyNumerical } from "@/app/_utils/dateUtils"
-// import { adjustDateLetters, adjustDateOnlyNumerical } from "../../../../_utils/dateUtils"
 import Link from 'next/link';
+import { useLazyLoad } from "@/app/hooks/useLazyLoad";
 
 
 export default function ArticleCard({ article } : { article: any }) {
-
     const [dateReadable ] = useState(adjustDateLetters(article.datePublished) || "");   
     // const [contentReduced] = useState(article.content.substring(0, 54) || "Content not available");
 
@@ -21,13 +19,7 @@ export default function ArticleCard({ article } : { article: any }) {
 
     const [articleTitleReduced] = useState(truncateText(article.title, 32) || "Title not available");
     const [articleAuthorReduced] = useState(truncateText(article.author, 25) || "Author not available");
-
-
-    // useEffect(() => {
-    //     if(article.imageUrl) {
-    //         console.log("ArticleCard article", article);
-    //     }
-    // }, []);
+    const [ref, isVisible] = useLazyLoad(); 
 
     return (
         <Link href={`/admin/articles/${article.article_id}`}>
@@ -36,11 +28,19 @@ export default function ArticleCard({ article } : { article: any }) {
                     <div>
                         <div className="rounded-lg overflow-hidden h-36">
                             <img
-                                src={article.imageUrl ? article.imageUrl : "/img_placeholder.png"} // Use the correct `imageURL` field
-                                alt={`${article.title}-image` || "Placeholder image"} // Add a fallback for the `alt` attribute
+                                ref={ref}
+                                src={isVisible ? (article.imageUrl ? article.imageUrl : "/img_placeholder.png") : "/img_placeholder.png"}
+                                alt={`${article.title}-image` || "Placeholder image"}
                                 className="object-cover w-full h-full overflow-hidden"
-                                onError={(e) => (e.currentTarget.src = "/img_placeholder.png")} // Handle image loading errors
+                                onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
                             />
+                            {/* <img
+                                src={article.imageUrl ? article.imageUrl : "/img_placeholder.png"}
+                                alt={`${article.title}-image` || "Placeholder image"} 
+                                className="object-cover w-full h-full overflow-hidden"
+                                onError={(e) => (e.currentTarget.src = "/img_placeholder.png")} 
+                                loading="lazy"
+                            /> */}
                         </div>
                         <div className="flex flex-col h-16 ">
                             <div className="flex justify-between items-center mt-2">
@@ -51,7 +51,7 @@ export default function ArticleCard({ article } : { article: any }) {
    
                         <div className="flex flex-col justify-end mt-1">
                             <p className="text-sm text-gray-600 flex justify-start"><span className="font-semibold mr-4">Author:</span>{articleAuthorReduced}</p>        
-                            <p className="text-sm text-gray-600 flex justify-start"><span className="font-semibold mr-4">Category:</span>{article.type}</p>        
+                            <p className="text-sm text-gray-600 flex justify-start"><span className="font-semibold mr-4">Category:</span>{article.type.name}</p>        
                             {/* <div className="flex flex-wrap relative">
                                 <p className="text-sm text-gray-600">{`${contentReduced}...`}</p>
                             </div> */}

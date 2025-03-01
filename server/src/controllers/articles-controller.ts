@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/prismaClient';
-import { ArticleType } from '@prisma/client'; // Import the enum from Prisma
+// import { ArticleType } from '@prisma/client'; // Import the enum from Prisma
 
 export interface AuthenticatedRequest extends Request {
     user?: any; 
@@ -12,7 +12,16 @@ export interface AuthenticatedRequest extends Request {
 // GET /api/articles/ - Get all articles
 export const getAllArticles = async (req: Request, res: Response) => {
     try {
-        const articles = await prisma.article.findMany();
+        // const articles = await prisma.article.findMany();
+
+        const articles = await prisma.article.findMany({
+            include: {
+                type: {
+                    select: { name: true }
+                }
+            } as any
+        });
+
         res.status(200).json(articles);
     } catch (error) {
         console.log('Error fetching articles:', error);
@@ -23,16 +32,36 @@ export const getAllArticles = async (req: Request, res: Response) => {
 }
 
 // GET /api/articles/categories - Get article categories
-export const getArticleCategories = async (req: Request, res: Response) => {
-    try {
-        const categories = await prisma.articleCategory.findMany();
-        res.status(200).json(categories);
+// export const getArticleCategories = async (req: Request, res: Response) => {
+//     try {
+//         const categories = await prisma.articleCategory.findMany();
+//         res.status(200).json(categories);
 
+//     } catch (error) {
+//         console.log('Error fetching article categories:', error);
+//         res.status(500).json({ message: 'Server Error: error fetching article categories', error: error });    
+//     }
+// };
+
+// GET /api/articles/type - Get article types
+export const getArticleTypes = async (req: Request, res: Response) => {
+    try {
+        // let articleTypes = await prisma.articleType.findMany({
+        //     select: { name: true }
+        // });
+        
+        // articleTypes = articleTypes.map((type: any) => type.name);
+
+        const articleTypesData = await prisma.articleType.findMany();
+
+        res.status(200).json(articleTypesData);
     } catch (error) {
-        console.log('Error fetching article categories:', error);
-        res.status(500).json({ message: 'Server Error: error fetching article categories', error: error });    
+        res.status(500).json({ message: 'Server Error: error fetching article types', error: error });
+        return;
     }
 };
+
+
 
 // GET /api/articles/type/:typeName - Get all articles of a specific type
 export const getArticlesByType = async (req: Request, res: Response) => {
@@ -40,10 +69,17 @@ export const getArticlesByType = async (req: Request, res: Response) => {
         let { typeName } = req.params;
 
         // typeName = typeName.charAt(0).toUpperCase() + typeName.slice(1).toLowerCase(); TO DO: Change Enum to lowercase
-
+        const articleType = await prisma.articleType.findUnique({
+            where: { name: typeName }
+        });
+        
+        if (!articleType) {
+            res.status(404).json({ error: 'Article type not found' });
+            return;
+        }
 
         const articles = await prisma.article.findMany({
-            where: { type: typeName as ArticleType }
+            where: { type_id: articleType.type_id } as any
         });
 
         res.status(200).json(articles);
@@ -58,14 +94,25 @@ export const getArticleById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
+        // const article = await prisma.article.findUnique({
+        //     where: { article_id: id },
+        // })
+
         const article = await prisma.article.findUnique({
             where: { article_id: id },
-        })
+            include: {
+                type: {
+                    select: { name: true }
+                }
+            } as any
+        });
 
         if (!article) {
             res.status(404).json({ error: 'Article not found' });
             return; 
         }
+
+        console.log("Article by ID: ", article);
 
         res.status(200).json(article);  
         return;
@@ -79,9 +126,22 @@ export const getArticleById = async (req: Request, res: Response) => {
     
 // POST /api/articles/ - Create a new article
 export const createArticle = async (req: AuthenticatedRequest, res: Response) => {
+    console.log('Request payload size:', JSON.stringify(req.body).length);
+
     try {
-        const { title, content, imageUrl, audience, status, type, author } = req.body;
+        // const { title, content, imageUrl, audience, status, type, author } = req.body;
+        const { title, content, imageUrl, audience, status, type_id, author } = req.body;
         const email = req.user.decodedClaims.email;
+
+        //validate type exists
+        // const articleType = await prisma.articleType.findUnique({
+        //     where: { name: type_id }
+        // }); 
+
+        // if(!articleType) {
+        //     res.status(404).json({ error: 'Invalid article type' });
+        //     return;
+        // }
 
         const authorId = await prisma.user.findUnique({
             where: { email: email },
@@ -96,9 +156,9 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
                 imageUrl: imageUrl ? imageUrl : '',
                 audience: audience,
                 status: status,
-                type: type,
+                type_id: type_id,
                 author: author,
-            }
+            } as any
         });
 
         res.status(201).json({ message: 'Article created successfully' });
@@ -116,8 +176,11 @@ export const updateArticle = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const { title, datePublished, content, 
-            imageUrl, audience, status, author_id, author, type } = req.body;
+        // const { title, datePublished, content, 
+        //     imageUrl, audience, status, author_id, author, type } = req.body;
+
+        const { title, datePublished, content, imageUrl, audience, status, 
+            author_id, author, type_id } = req.body;
 
         const updateArticleData: any = {};
 
@@ -129,13 +192,23 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (status) updateArticleData.status = status;
         if (author_id) updateArticleData.author_id = author_id;
         if (author) updateArticleData.author = author;
-        
-        if (type && type === 'Pre-Arrivals' ) {
-            updateArticleData.type = 'PreArrivals';
-        } else if (type) updateArticleData.type = type;
+        if (type_id) updateArticleData.type_id = type_id;
 
-        console.log("Image: ", imageUrl);
-        console.log("Update Article Data: ", updateArticleData);
+        // if (type_id) {
+        //     const articleType = await prisma.articleType.findUnique({
+        //         where: { type_id }
+        //     });
+
+        //     if (!articleType) {
+        //         res.status(404).json({ error: 'Invalid article type' });
+        //         return;
+        //     }
+
+        //     updateArticleData.type_id = articleType.type_id;
+        // }
+
+        // console.log("Image: ", imageUrl);
+        // console.log("Update Article Data: ", updateArticleData);
 
         await prisma.article.update({
             where: { article_id: id },
@@ -153,8 +226,23 @@ export const updateArticle = async (req: Request, res: Response) => {
 export const updateArticleWhole = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { title, datePublished, content, 
-            imageURL, audience, status, author_id, author, type } = req.body;
+        // const { title, datePublished, content, 
+        //     imageURL, audience, status, author_id, author, type } = req.body;
+
+        const { title, datePublished, content, imageURL, audience, status, 
+            author_id, author, type_id } = req.body;
+
+        //validate type exists
+        // if (type_id) {
+        //     const articleType = await prisma.articleType.findUnique({
+        //         where: { name: type_id }
+        //     });
+
+        //     if (!articleType) {
+        //         res.status(404).json({ error: 'Invalid article type' });
+        //         return;
+        //     }
+        // }
 
         const updatedArticle = await prisma.article.update({
             where: { article_id: id },
@@ -167,8 +255,8 @@ export const updateArticleWhole = async (req: Request, res: Response) => {
                 audience: audience,
                 status: status,
                 author: author,
-                type: type
-            }
+                type_id: type_id
+            } as any
         }); 
 
         res.status(200).json(updatedArticle);
@@ -177,6 +265,8 @@ export const updateArticleWhole = async (req: Request, res: Response) => {
         console.log('Error updating article:', error);
         res.status(500).json({ message: 'Server Error: error updating article', error: error });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 };
 

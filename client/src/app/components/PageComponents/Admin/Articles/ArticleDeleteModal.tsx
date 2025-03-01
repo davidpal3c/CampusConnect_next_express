@@ -98,7 +98,7 @@ const modalStyle = {
     width: 400,
     bgcolor: 'background.paper',    // default value set by theme in the Modal component
     border: '1px solid #000',
-    borderRadius: 8,
+    borderRadius: 4,
     boxShadow: 2,
     backgroundColor: "#f7f7f7",
   };

@@ -5,26 +5,28 @@ import React, { useState, useEffect, useRef } from "react";
 // import {FilterDropdown, FilterInput} from "@/app/components/Buttons/FilterButton/FilterButton";
 import ArticleCard from "@/app/components/PageComponents/Admin/Articles/ArticleCard";
 import ActionButton from "@/app/components/Buttons/ActionButton";
-import ArticleOptionsBtn from "@/app/components/Buttons/ArticleOptionsBtn";
+import OptionsButton from "@/app/components/Buttons/OptionsButton";
 import ArticleEditor from "@/app/components/PageComponents/Admin/Articles/ArticleEditor";
 import ArticlesTableDetailed from "@/app/components/PageComponents/Admin/Articles/ArticlesTableDetailed";
-
+import { useArticleTypes } from "@/app/_utils/articleTypes-context";
+import ArticleTypesModal from "@/app/components/PageComponents/Admin/Articles/ArticleTypesModal";
 import { toast } from "react-toastify";
 
 // mui 
 import { Tooltip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 
-
-//icons
 import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
 import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import ArrowLeftRoundedIcon from '@mui/icons-material/ArrowLeftRounded';
+import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 
-
+import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
+import { BsFiletypePdf } from "react-icons/bs";
 
 export default function Articles() {
 
@@ -39,8 +41,11 @@ export default function Articles() {
 
   const articleEditorRef = useRef(null);
 
-  // TODO : fetch current article types from backend and set them here
-  const [articleTypes, setArticleTypes] = useState(["Campus", "General", "News", "PreArrivals"]);
+
+  const { articleTypes, articleTypesData, fetchArticleTypes } = useArticleTypes();
+  // const [selectedArticleType, setSelectedArticleType] = useState("");
+  // const [selectedArticleTypeData, setSelectedArticleTypeData] = useState({});
+  // const [isArticleTypeModalVisible, setIsArticleTypeModalVisible] = useState(false);
 
   const [ isCreatePanelVisible, setIsCreatePanelVisible ] = useState(false);
   const [ panelTask, setPanelTask ] = useState("Create");
@@ -48,6 +53,50 @@ export default function Articles() {
   const [ articlesView, setArticlesView ] = useState("Simple");
   const [ selectedArticle, setSelectedArticle ] = useState({}); 
 
+
+  const fetchArticleData = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/`, {
+        method: "GET",
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",   
+      });
+
+      const articleData = await response.json();
+
+      if (!response.ok) {
+        const errorData = articleData;
+        toast.error(errorData.message || "An Error occurred fetching articles.");
+        return;
+      } 
+      
+      setArticles(articleData);
+      setOriginalArticles(articleData);
+
+      // checking for articles with images
+      // for (let i = 0; i < articleData.length; i++){ 
+      //   if(articleData[i].imageUrl !== null) {
+      //     console.log("Article Image: ", articleData[i].imageUrl);
+      //   }
+      // }
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Unknown error occurred fetching articles! : " + error, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    }
+  }
+
+  useEffect(() => {
+    fetchArticleData();
+  }, []);
 
   const handleSimpleView = () => {
     setArticlesView("Simple");
@@ -57,34 +106,27 @@ export default function Articles() {
     setArticlesView("Extended"); 
   };
 
-  useEffect(() => {
-    fetchArticleData();
-  }, []);
+  const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
+  const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
+  
+  const handleCreateArticle = () => {
+    setPanelTask("Create");
+    handleOpenCreatePanel();
+  };
 
+  const handleEditArticle =  async (article: any) => {
+    setPanelTask("Edit");
+    setSelectedArticle(article);
+    handleOpenCreatePanel();
+  };
 
-  // sroll to ArticleEditor when it is visible
+   // scroll to ArticleEditor when it is visible
   useEffect(() => {
     if (isCreatePanelVisible && articleEditorRef.current) {
       articleEditorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
 
     }
   }, [isCreatePanelVisible]);
-
-
-  // Pagination
-  const indexOfLastArticle = currentPage * articlesPerPage;
-  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
-
-  const totalPages = Math.ceil(articles.length / articlesPerPage);
-
-  const handlePrevious = () => {
-      if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-  };
-
-  const handleNext = () => {
-      if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-  };
    
   const handleSort = (option: any) => {
     setSortOption(option);
@@ -132,7 +174,7 @@ export default function Articles() {
     setCurrentPage(1);
     setFilterType(type);  
 
-    const filtered = type ? originalArticles.filter((article) => article.type === type) : [...originalArticles];
+    const filtered = type ? originalArticles.filter((article) => article.type?.name === type) : [...originalArticles];
     // if (!type) {
     //   setArticles([...originalArticles]);
     //   return;
@@ -146,7 +188,7 @@ export default function Articles() {
     let filtered = [...originalArticles];
 
     if (filterType) {
-      filtered = originalArticles.filter((article) => article.type === filterType);
+      filtered = originalArticles.filter((article) => article.type?.name === filterType);
     }
 
     if (searchQuery) {
@@ -161,7 +203,6 @@ export default function Articles() {
     setFilteredArticles(filtered);
     applySort(filtered, sortOption);
   }, [originalArticles, filterType, sortOption, searchQuery]);
-
 
 
   // re-apply filtering when original articles change
@@ -200,60 +241,39 @@ export default function Articles() {
   };
 
 
+  // Pagination
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
 
-  const fetchArticleData = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/`, {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-        },
-        credentials: "include",   
-      });
+  const totalPages = Math.ceil(articles.length / articlesPerPage);
 
-      const articleData = await response.json();
+  const handlePrevious = () => {
+      if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
 
-      if (!response.ok) {
-        const errorData = articleData;
-        toast.error(errorData.message || "An Error occurred fetching articles.");
-        return;
-      } 
+  const handleNext = () => {
+      if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
 
-      setArticles(articleData);
-      setOriginalArticles(articleData);
+  const [articlesPageOptionHandlers] = useState([
+    { title: "Articles Data Analytics", handler: () => console.log("Articles Data Analytics"), icon: null, },
+    { title: "Export to Excel", handler: () => console.log("Export to Excel"), icon: <PiMicrosoftExcelLogoFill style={{ color: "#005795", fontSize: 20}} /> },
+    { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
+    { title: "Manage Article Types", handler: () => handleArticleTypesModalOpen(), icon: null },
+  ]);
 
-      // checking for articles with images
-      // for (let i = 0; i < articleData.length; i++){ 
-      //   if(articleData[i].imageUrl !== null) {
-      //     console.log("Article Image: ", articleData[i].imageUrl);
-      //   }
-      // }
 
-    } catch (error) {
-      console.error(error);
-      toast.error("Unknown error occurred fetching articles! : " + error, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-    }
-  }
 
-  const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
-  const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
+  // Article Types Modal
+  const [openArticleTypesModal, setOpenArticleTypesModal] = useState(false);
+  const handleArticleTypesModalOpen = () => setOpenArticleTypesModal(true);
   
-  const handleCreateArticle = () => {
-    setPanelTask("Create");
-    handleOpenCreatePanel();
-  };
 
-  const handleEditArticle =  async (article: any) => {
-    setPanelTask("Edit");
-    setSelectedArticle(article);
-    handleOpenCreatePanel();
-  };
+
+  useEffect(() => {
+    fetchArticleTypes();
+  }, []);
 
 
   return(
@@ -337,9 +357,10 @@ export default function Articles() {
               </div>
             </Tooltip>
             <div>
-              <ArticleOptionsBtn icon={<MoreVertRoundedIcon />} />
+              <OptionsButton icon={<MoreVertRoundedIcon />} optionHandler={articlesPageOptionHandlers} />
             </div>
           </div>
+          <ArticleTypesModal openArticleTypesModal={openArticleTypesModal} setOpenArticleTypesModal={setOpenArticleTypesModal} />
         </header>
 
 
@@ -351,9 +372,9 @@ export default function Articles() {
               {currentArticles.length > 0 ? (
                 currentArticles.map((article) => (
                   <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
-                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitPurple p-1 rounded-full hover:scale-125 hover:bg-saitDarkPurple hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
+                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitBlue p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
                       <Tooltip title="Edit Article">    
-                        <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#e9d5ff] transition-colors duration-300" />
+                        <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#f7f7f7] transition-colors duration-300" />
                       </Tooltip>
                     </button>
                     {article.status === "Draft" ? (
@@ -380,17 +401,21 @@ export default function Articles() {
             
              {/* pagination */}
             <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
-              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} />
+              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<ArrowLeftRoundedIcon />} iconFirst={true}
+                borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+              />
               <span>
                 Page {currentPage} of {totalPages}
               </span>
-              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} />
+              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<ArrowRightRoundedIcon />} 
+                borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+              />
             </div>
           </div>
           
         ) : (
           // Extended Article View
-          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData}/>
+          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData} />
         )}
 
           {/* Create Article Panel */}
@@ -406,7 +431,7 @@ export default function Articles() {
                 className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
               >
                 <div className="">
-                  <ArticleEditor closeOnClick={handleCloseCreatePanel} articleTypes={articleTypes} action={panelTask} 
+                  <ArticleEditor closeOnClick={handleCloseCreatePanel} action={panelTask} 
                   closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle} reFetchArticles={fetchArticleData} />
                 </div>
               </motion.div>

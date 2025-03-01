@@ -8,13 +8,13 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { Tooltip } from '@mui/material';
 
 
-type ArticleOptionsBtnProps = {
+type OptionsButtonProps = {
     title?: string;
     icon?: any;
     optionHandler?: any;
 };
 
-const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, optionHandler }) => {
+const OptionsButton: React.FC<OptionsButtonProps> = ({ title, icon, optionHandler }) => {
         
     const [anchorExportOpt, setAnchorExportOpt] = useState<null | HTMLElement>(null);
     const openExportOptions = Boolean(anchorExportOpt);
@@ -29,10 +29,6 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, opti
 
     return (
         <div>
-            {/* <button
-                onClick={onClick}
-                className="bg-white border-2 border-saitGray text-green-700 font-semibold h-9 flex items-center py-2 px-4 rounded-lg hover:text-orange-500 hover:bg-saitRed hover:border-saitPurple hover:shadow-2xl transition-colors duration-300"
-            > */}
             <Tooltip title="Options" arrow>
                 <button
                     onClick={handleClickOptions}
@@ -60,7 +56,7 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, opti
                         marginTop: "0.4rem",
                         marginLeft: "0.4rem",
                         width: "auto",
-                        maxWidth: "12rem", 
+                        maxWidth: "18rem", 
                         whiteSpace: "nowrap", 
                     }
                 }}
@@ -84,7 +80,7 @@ const ArticleOptionsBtn: React.FC<ArticleOptionsBtnProps> = ({ title, icon, opti
     );
 };
 
-export default ArticleOptionsBtn;
+export default OptionsButton;
 
 
 const menuStyles = {
