@@ -11,7 +11,7 @@ import { Tooltip } from '@mui/material';
 type OptionsButtonProps = {
     title?: string;
     icon?: any;
-    optionHandler?: any;
+    optionHandler: any;
 };
 
 const OptionsButton: React.FC<OptionsButtonProps> = ({ title, icon, optionHandler }) => {
@@ -23,8 +23,17 @@ const OptionsButton: React.FC<OptionsButtonProps> = ({ title, icon, optionHandle
         setAnchorExportOpt(event.currentTarget);
     };
 
-    const handleExportOptClose = () => {
+    const handleOptionsMenuClose = () => {
+        console.log("Options closed");
         setAnchorExportOpt(null);
+    };
+
+    const handleOptionSelection = (event: React.MouseEvent<HTMLElement>, option: any) => {
+        console.log("Option selected: ", event.currentTarget.textContent);
+        handleOptionsMenuClose();
+
+        // if (option && option.handler) 
+        option.handler();
     };
 
     return (
@@ -42,7 +51,7 @@ const OptionsButton: React.FC<OptionsButtonProps> = ({ title, icon, optionHandle
                 id="basic-menu"
                 anchorEl={anchorExportOpt}
                 open={openExportOptions}
-                onClose={handleExportOptClose}
+                onClose={handleOptionsMenuClose}
                 MenuListProps={{
                     'aria-labelledby': 'basic-button',
                 }}
@@ -64,7 +73,7 @@ const OptionsButton: React.FC<OptionsButtonProps> = ({ title, icon, optionHandle
                 {optionHandler.map((option: any, index: number) => (
                     <MenuItem 
                         key={index} 
-                        onClick={option.handler} 
+                        onClick={(event) => handleOptionSelection(event, option)} 
                         sx={menuStyles.menuItem}
                     >
                         <p className="mr-3">{option.title}</p>

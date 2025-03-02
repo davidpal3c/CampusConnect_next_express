@@ -23,9 +23,11 @@ export const getAllArticles = async (req: Request, res: Response) => {
         });
 
         res.status(200).json(articles);
+        return;
     } catch (error) {
         console.log('Error fetching articles:', error);
         res.status(500).json({ message: 'Server Error: error fetching articles', error: error });
+        return;
     } finally {
         await prisma.$disconnect();
     }
@@ -43,15 +45,10 @@ export const getAllArticles = async (req: Request, res: Response) => {
 //     }
 // };
 
+
 // GET /api/articles/type - Get article types
 export const getArticleTypes = async (req: Request, res: Response) => {
     try {
-        // let articleTypes = await prisma.articleType.findMany({
-        //     select: { name: true }
-        // });
-        
-        // articleTypes = articleTypes.map((type: any) => type.name);
-
         const articleTypesData = await prisma.articleType.findMany();
 
         res.status(200).json(articleTypesData);
@@ -61,7 +58,79 @@ export const getArticleTypes = async (req: Request, res: Response) => {
     }
 };
 
+// GET /api/articles/type/:typeName/count - Get article count by type
+export const getArticleCountByType = async (req: Request, res: Response) => {
+    try {
+        const { typeName } = req.params;
+        const typeCount = await prisma.article.count({
+            where: { type: { name: typeName } }
+        });
+        res.status(200).json({ count: typeCount });
+        return;
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error: error fetching article count by type', error: error });
+        return;
+    }
+};
 
+
+// GET /api/articles/type/counts - Get article type counts
+export  const getArticleCountsByType = async (req: Request, res: Response) => {
+    try {
+        // // fetch article counts grouped by type_id
+        // const typeCounts = await prisma.article.groupBy({
+        //     by: ['type_id'],
+        //     _count: {
+        //         article_id: true
+        //     }
+        // });
+
+        // // fetch all article types to map type_id to type name
+        // const articleTypes = await prisma.articleType.findMany({
+        //     select: {
+        //         type_id: true,
+        //         name: true,
+        //     }
+        // })
+
+        // // map of type_id (key) to type name (value)
+        // const typeMap = articleTypes.reduce((acc: any, type: any) => {
+        //     acc[type.type_id] = type.name;
+        //     return acc;
+        // }, {});
+
+        // // transform result to include type names
+        // // map over the typeCounts array to include the type_name in the result using the typeMap.
+        // const result = typeCounts.map((count: any) => ({
+        //     type_id: count.type_id,
+        //     type_name: typeMap[count.type_id],
+        //     count: count._count.article_id 
+        // }));
+
+        // // console.log("Type Counts: ", typeCounts);   
+        // console.log("Article Type Counts: ", result);
+
+        const result = await prisma.$queryRaw`
+            SELECT t.name AS type_name, COUNT(a.article_id) AS count
+            FROM "Article" a
+            JOIN "Type" t ON a.type_id = t.type_id
+            GROUP BY t.name
+        `;
+
+        // [
+        //     { type_name: "Pre-Arrival", count: 2 },
+        //     { type_name: "Campus Life", count: 2 },
+        //     { type_name: "General", count: 1 },
+        // ]
+
+        console.log("Type Counts with Names: ", result);
+        res.status(200).json(result);
+        return;
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error: error fetching article type count', error: error });
+        return;
+    }
+};
 
 // GET /api/articles/type/:typeName - Get all articles of a specific type
 export const getArticlesByType = async (req: Request, res: Response) => {
@@ -83,11 +152,18 @@ export const getArticlesByType = async (req: Request, res: Response) => {
         });
 
         res.status(200).json(articles);
+        return;
     } catch (error) {
         console.log('Error fetching articles by type:', error);
         res.status(500).json({ message: 'Server Error: error fetching articles by type', error: error });
+        return;
     }
 };
+
+
+// GET /api/articles/audience - Get article audience
+
+
 
 // GET /api/articles/:id - Get a single article by ID
 export const getArticleById = async (req: Request, res: Response) => {
@@ -133,16 +209,6 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
         const { title, content, imageUrl, audience, status, type_id, author } = req.body;
         const email = req.user.decodedClaims.email;
 
-        //validate type exists
-        // const articleType = await prisma.articleType.findUnique({
-        //     where: { name: type_id }
-        // }); 
-
-        // if(!articleType) {
-        //     res.status(404).json({ error: 'Invalid article type' });
-        //     return;
-        // }
-
         const authorId = await prisma.user.findUnique({
             where: { email: email },
             select: { user_id: true }
@@ -170,6 +236,21 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
     }
 }   
 
+// POST /api/articles/types - Create a new article type
+export const createArticleType = async (req: Request, res: Response) => {
+    try {
+        const { typeName } = req.body;
+        const newArticleType = await prisma.articleType.create({
+            data: {
+                name: typeName
+            }
+        });
+
+        res.status(201).json({ message: 'Article type created successfully' });
+    } catch(error) {
+        res.status(500).json({ message: 'Server Error: error creating article type', error: error });
+    }
+};
 
 // PATCH /api/articles/:id - Update an article by ID. This is a partial update
 export const updateArticle = async (req: Request, res: Response) => {
@@ -193,19 +274,6 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (author_id) updateArticleData.author_id = author_id;
         if (author) updateArticleData.author = author;
         if (type_id) updateArticleData.type_id = type_id;
-
-        // if (type_id) {
-        //     const articleType = await prisma.articleType.findUnique({
-        //         where: { type_id }
-        //     });
-
-        //     if (!articleType) {
-        //         res.status(404).json({ error: 'Invalid article type' });
-        //         return;
-        //     }
-
-        //     updateArticleData.type_id = articleType.type_id;
-        // }
 
         // console.log("Image: ", imageUrl);
         // console.log("Update Article Data: ", updateArticleData);
@@ -232,18 +300,6 @@ export const updateArticleWhole = async (req: Request, res: Response) => {
         const { title, datePublished, content, imageURL, audience, status, 
             author_id, author, type_id } = req.body;
 
-        //validate type exists
-        // if (type_id) {
-        //     const articleType = await prisma.articleType.findUnique({
-        //         where: { name: type_id }
-        //     });
-
-        //     if (!articleType) {
-        //         res.status(404).json({ error: 'Invalid article type' });
-        //         return;
-        //     }
-        // }
-
         const updatedArticle = await prisma.article.update({
             where: { article_id: id },
             data: {
@@ -267,6 +323,42 @@ export const updateArticleWhole = async (req: Request, res: Response) => {
         return;
     } finally {
         await prisma.$disconnect();
+    }
+};
+
+// PATCH /api/articles/types/:typeName - Update article type by name
+export const updateArticleType = async (req: Request, res: Response) => {
+    try {
+        const { typeName } = req.params;
+        const { newTypeName } = req.body;
+
+        if (!typeName || !newTypeName) {
+            res.status(400).json({ message: 'typeName and newTypeName are required' });
+            return;
+        }
+
+        const existingType = await prisma.articleType.findUnique({
+            where: { name: newTypeName }
+        });
+        
+        if(existingType) {
+            res.status(409).json({ message: 'An article type with this name already exists.' });
+            return;
+        }
+
+        // update article type name
+        await prisma.articleType.update({
+            where: { name: typeName },
+            data: {
+                name: newTypeName
+            }
+        });
+
+        res.status(200).json({ message: 'Article type updated successfully' });
+        return;
+    } catch (error) {
+        res.status(500).json({ message: 'An unexpected error occurred while updating the article type.', error: error });
+        return;
     }
 };
 
@@ -311,3 +403,8 @@ export const deleteArticles = async (req: Request, res: Response) => {
         return;
     }
 };
+
+
+// PATCH /api/articles/types/:typeName - Update all articles of a specific type
+
+// DELETE /api/articles/types/:typeName - Delete all articles of a specific type

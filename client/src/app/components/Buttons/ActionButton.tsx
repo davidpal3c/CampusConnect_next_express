@@ -6,7 +6,7 @@ type ActionButtonProps = {
     title?: string;
     icon?: React.ReactElement;
     type?: string;
-    onClick: () => void;
+    onClick?: () => void;
     disabled?: boolean;
     iconFirst?: boolean;
 

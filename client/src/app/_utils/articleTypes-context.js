@@ -10,7 +10,7 @@ export const ArticleTypesProvider = ({ children }) => {
 
     const fetchArticleTypes = async() => { 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/type`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/types`, {
               method: "GET",
               headers: {
                 "content-type": "application/json",
@@ -28,9 +28,9 @@ export const ArticleTypesProvider = ({ children }) => {
             }
       
             setArticleTypesData(articleTypesData);
+            // console.log("Article Types fetched (context): ", articleTypesData);
+            
             setArticleTypes(articleTypesData.map((type) => type.name));   
-            console.log("Article Types fetched successfully! (context articleTypes)");
-            console.log("Article Types: ", articleTypesData);
           } catch (error) {
             console.error(error);
             // throw new Error("An Error occurred fetching article types.");
