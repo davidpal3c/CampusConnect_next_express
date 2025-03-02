@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
@@ -174,8 +174,6 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
 
     const submitForm = async (data: any, type:  "publish" | "save-preview" | "update" ) => {
         handleLoaderOpen();
-        console.log("Form Data (loader open): ", data);
-
 
         const authorName = data.author.trim() || userFullName;
         const selectedDate = data.datePublished || getTodayDate();
@@ -201,7 +199,6 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
             audience: data.audience,
             tags: data.tags,
             content: content,
-            // content: data.content ? data.content : articleContent,
             status: type === "update" ? data.status : type === "publish" ? "Published" : "Draft",
             author: authorName,
             imageUrl: imageUrl,
@@ -313,10 +310,10 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                     <h1 className="font-semibold">Create Article</h1> 
                     : <h1 className="font-semibold">Edit Article</h1>
                 }
-                <Tooltip title="Close Editor" arrow>
-                    <button onClick={closeOnClick}>
+                <Tooltip title="Close Editor" arrow>       
+                    <IconButton onClick={closeOnClick} >
                         <CloseIcon />
-                    </button>
+                    </IconButton>
                 </Tooltip>
             </header>
             <section className="relative flex items-center bg-white p-4 rounded-lg mb-6 shadow-md">
@@ -546,6 +543,6 @@ export default ArticleEditor;
 
 const formStyling = {
     labelStyling: "text-sm font-light text-saitBlack",
-    inputStyling: "font-light w-full p-2 mb-3 border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent",
+    inputStyling: "font-light w-full px-3 p-2 mb-3 border border-gray-300 bg-saitWhite mt-1 rounded-xl focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent",
     errorStyle: "text-red-500 text-sm",
 }

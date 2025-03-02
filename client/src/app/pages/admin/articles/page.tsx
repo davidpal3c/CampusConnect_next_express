@@ -268,8 +268,6 @@ export default function Articles() {
   // Article Types Modal
   const [openArticleTypesModal, setOpenArticleTypesModal] = useState(false);
   const handleArticleTypesModalOpen = () => setOpenArticleTypesModal(true);
-  
-
 
   useEffect(() => {
     fetchArticleTypes();
@@ -360,7 +358,12 @@ export default function Articles() {
               <OptionsButton icon={<MoreVertRoundedIcon />} optionHandler={articlesPageOptionHandlers} />
             </div>
           </div>
-          <ArticleTypesModal openArticleTypesModal={openArticleTypesModal} setOpenArticleTypesModal={setOpenArticleTypesModal} />
+          <ArticleTypesModal 
+            articlesData={originalArticles} 
+            openArticleTypesModal={openArticleTypesModal} 
+            setOpenArticleTypesModal={setOpenArticleTypesModal} 
+            fetchArticleData={fetchArticleData}
+          />
         </header>
 
 
