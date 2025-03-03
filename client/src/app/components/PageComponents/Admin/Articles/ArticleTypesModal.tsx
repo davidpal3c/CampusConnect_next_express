@@ -5,12 +5,13 @@ import Modal from '@mui/material/Modal';
 import { toast } from "react-toastify";
 import ActionButton from '@/app/components/Buttons/ActionButton';
 import { useArticleTypes } from '@/app/_utils/articleTypes-context';
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { IconButton } from "@mui/material";
 import { Tooltip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
+import { get } from 'http';
 
 type ArticleTypesModalProps = {
     openArticleTypesModal: boolean;
@@ -21,6 +22,7 @@ type ArticleTypesModalProps = {
 
 export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticleTypesModal, articlesData, fetchArticleData }: ArticleTypesModalProps) {
     const { articleTypesData, fetchArticleTypes } = useArticleTypes();
+    const [articleTypesDataFull, setArticleTypesDataFull] = useState([]);
 
     const [articleTypesCount, setArticleTypesCount] = useState<any[]>([]);
     const [isAddTypePanelVisible, setAddTypePanelVisible] = useState<boolean>(false);
@@ -64,13 +66,70 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
 
     useEffect(() => {
         if (articlesData && articleTypesData) {
+            // calculate counts for each article type
             const result = getArticleCountsByType(articlesData, articleTypesData);
             const resultArray = Object.entries(result).map(([typeName, count]) => ({ typeName, count }));
-            
-            // console.log("articles count by type array:", resultArray);
+
+            // map article types data to include count
+            const mappedData = articleTypesData.map((type: any) => {
+                const result = {
+                    id: type.type_id,
+                    name: type.name,
+                    count: 0,
+                    isDefault: type.isDefault || false,
+                };
+
+                // find count for this type
+                const typeCount = resultArray.find((item) => item.typeName === type.name);
+                if (typeCount) {
+                    result.count = typeCount.count;
+                }
+
+                return result;
+            });
+
             setArticleTypesCount(resultArray);
+            setArticleTypesDataFull(mappedData);
+            // console.log("Article Types Data Full:", mappedData);
         }
     }, [articlesData, articleTypesData]);
+
+
+    // useEffect(() => {
+    //     if (articlesData && articleTypesData) {
+    //         const result = getArticleCountsByType(articlesData, articleTypesData);
+    //         const resultArray = Object.entries(result).map(([typeName, count]) => ({ typeName, count }));
+            
+    //         // console.log("articles count by type array:", resultArray);
+    //         setArticleTypesCount(resultArray);
+    //         getArticleTypeDataFull();
+    //     }
+    // }, [articlesData, articleTypesData]);
+
+
+    // const getArticleTypeDataFull = () => {        
+    //     const mappedData = articleTypesData.map((type: any) => {
+    //         const result = {
+    //           id: type.type_id,
+    //           name: type.name,
+    //           count: 0,
+    //           isDefault: type.isDefault || false, 
+    //         };
+        
+    //         articleTypesCount.forEach((articleTypeCount) => {
+    //           if (type.name === articleTypeCount.typeName) {
+    //             result.count = articleTypeCount.count;
+    //           }
+    //         });
+        
+    //         return result;
+    //       });
+        
+    //       setArticleTypesDataFull(mappedData);
+    //       console.log("Article Types Data Full:", mappedData);
+        
+    //       return mappedData; 
+    // };
 
 
     const { register, handleSubmit, formState: { errors, touchedFields, isSubmitted }, reset } = useForm({
@@ -159,10 +218,10 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
                             </div>
 
                             {/* Table Body */}
-                            {articleTypesCount && articleTypesCount.map((articleTypeData: any, index: number) => (
-                                <ArticleTypeCard key={index} articleTypeData={articleTypeData} fetchArticleData={fetchArticleData} />
+                            {articleTypesDataFull && articleTypesDataFull.map((articleType: any, index: number) => (
+                                <ArticleTypeCard key={index} articleType={articleType} fetchArticleData={fetchArticleData} />
                             ))}
-
+                            
                             <div className="flex flex-row items-center justify-between w-full h-12 mt-5 overflow-hidden relative">
                                 <div className="flex flex-row items-center justify-start w-full">           
                                     <div>
@@ -196,7 +255,6 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
                                         )}
                                     </div>
                                 </div>
-                                
 
                                 <AnimatePresence>
                                     {isAddTypePanelVisible && (
@@ -216,7 +274,7 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
                                                     id="addArticleType"
                                                     type="text"
                                                     placeholder="Add New Type"
-                                                    className="w-48 p-2 px-3 font-light border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent"
+                                                    className="p-2 px-3 font-light border border-gray-300 rounded-xl w-48 xs:w-56 md:w-64 lg:w-80 focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent"
                                                     {...register("addArticleType", {
                                                         validate: (value) => {
                                                             if (!value) {
@@ -229,7 +287,7 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
                                                         },
                                                     })}
                                                 />
-                                                <Tooltip title="" arrow>
+                                                <Tooltip title="Add New Type" arrow>
                                                     <div>
                                                         <ActionButton
                                                             title="Submit"
@@ -248,7 +306,7 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
 
                             {/* Error Message */}
                             {errors.addArticleType && (touchedFields.addArticleType || isSubmitted) && (
-                                <span className="text-red-500 text-sm">
+                                <span className="text-saitRed text-sm">
                                     {errors.addArticleType.message}
                                 </span>
                             )}
@@ -257,7 +315,6 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
                 </Box>
             </Modal>
         </div>
-        
     );
 }
 
@@ -266,7 +323,13 @@ const modalStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 500,
+    width: {
+        'xs': 400,
+        'sm': 550,
+        'md': 620,
+        'lg': 800,
+        'xl': 900,
+    },
     bgcolor: 'background.paper',
     border: '1px solid #000',
     borderRadius: 4,

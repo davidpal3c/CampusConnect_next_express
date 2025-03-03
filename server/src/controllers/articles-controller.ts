@@ -132,23 +132,32 @@ export  const getArticleCountsByType = async (req: Request, res: Response) => {
     }
 };
 
-// GET /api/articles/type/:typeName - Get all articles of a specific type
+// GET /api/articles/type/:typeId - Get all articles of a specific type
 export const getArticlesByType = async (req: Request, res: Response) => {
     try {
-        let { typeName } = req.params;
+        let { typeId } = req.params;
 
         // typeName = typeName.charAt(0).toUpperCase() + typeName.slice(1).toLowerCase(); TO DO: Change Enum to lowercase
-        const articleType = await prisma.articleType.findUnique({
-            where: { name: typeName }
-        });
+        // const articleType = await prisma.articleType.findUnique({
+        //     where: { name: typeId }
+        // });
         
-        if (!articleType) {
-            res.status(404).json({ error: 'Article type not found' });
-            return;
-        }
+        // if (!articleType) {
+        //     res.status(404).json({ error: 'Article type not found' });
+        //     return;
+        // }
+
+        // const articles = await prisma.article.findMany({
+        //     where: { type_id: articleType.type_id } as any
+        // });
 
         const articles = await prisma.article.findMany({
-            where: { type_id: articleType.type_id } as any
+            where: { type_id: typeId } as any,
+            include: {
+                type: {
+                    select: { name: true }
+                }
+            } as any
         });
 
         res.status(200).json(articles);
@@ -160,9 +169,7 @@ export const getArticlesByType = async (req: Request, res: Response) => {
     }
 };
 
-
 // GET /api/articles/audience - Get article audience
-
 
 
 // GET /api/articles/:id - Get a single article by ID
@@ -326,14 +333,14 @@ export const updateArticleWhole = async (req: Request, res: Response) => {
     }
 };
 
-// PATCH /api/articles/types/:typeName - Update article type by name
+// PATCH /api/articles/types/:typeId - Update article type by name
 export const updateArticleType = async (req: Request, res: Response) => {
     try {
-        const { typeName } = req.params;
+        const { typeId } = req.params;
         const { newTypeName } = req.body;
 
-        if (!typeName || !newTypeName) {
-            res.status(400).json({ message: 'typeName and newTypeName are required' });
+        if (!typeId || !newTypeName) {
+            res.status(400).json({ message: 'typeId and newTypeName are required' });
             return;
         }
 
@@ -348,7 +355,7 @@ export const updateArticleType = async (req: Request, res: Response) => {
 
         // update article type name
         await prisma.articleType.update({
-            where: { name: typeName },
+            where: { type_id: typeId },
             data: {
                 name: newTypeName
             }
@@ -404,7 +411,48 @@ export const deleteArticles = async (req: Request, res: Response) => {
     }
 };
 
-
-// PATCH /api/articles/types/:typeName - Update all articles of a specific type
-
 // DELETE /api/articles/types/:typeName - Delete all articles of a specific type
+export const deleteArticleType = async (req: Request, res: Response) => {
+    try {
+        const { typeId } = req.params;
+
+        const articleType = await prisma.articleType.findUnique({
+            where: { type_id: typeId }
+        })
+
+        if (articleType?.isDefault) {
+            res.status(400).json({ message: 'Default article type cannot be deleted' });
+            return;
+
+        } else {
+            const defaultTypeId = await prisma.articleType.findFirst({
+                where: { isDefault: true } as any,
+                select: {
+                    type_id: true
+                }
+            });
+
+            if(!defaultTypeId) {
+                res.status(400).json({ message: 'Default article type not found' });
+                return;
+            }
+
+            const updatedArticles = await prisma.article.updateMany({
+                where: { type_id: typeId },
+                data: {
+                    type_id: defaultTypeId.type_id 
+                }
+            });
+
+            await prisma.articleType.delete({
+                where: { type_id: typeId }
+            });
+
+            res.status(200).json({ data: updatedArticles, message: 'Article type deleted successfully' });
+        }
+        return;
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error: error deleting article type', error: error });
+        return;
+    }
+};

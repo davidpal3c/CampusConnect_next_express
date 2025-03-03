@@ -111,9 +111,10 @@ model ArticleType {
   name       String    @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  isDefault  Boolean?  @default(false)
 
   // Relation
-  articles   Article[]
+  articles   Article[]  
 }
 
 model ArticleCategory {

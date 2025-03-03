@@ -1,7 +1,8 @@
 import express from 'express';
 import { verifySession, adminRoute, validatePermissions } from '../middleware/user-middleware';
 import { getAllArticles, getArticleTypes ,getArticlesByType, getArticleCountsByType, getArticleById, 
-    createArticle, createArticleType, updateArticle, updateArticleWhole, updateArticleType, deleteArticle, deleteArticles } from '../controllers/articles-controller';
+    createArticle, createArticleType, updateArticle, updateArticleWhole, updateArticleType, 
+    deleteArticle, deleteArticles, deleteArticleType} from '../controllers/articles-controller';
 
 const router = express.Router();
 
@@ -17,8 +18,8 @@ router.get('/types/', verifySession, getArticleTypes);
 // GET /api/articles/type/counts - Get article counts by type
 router.get('/types/counts', verifySession, getArticleCountsByType);
 
-// GET /api/articles/type/:typeName - Get all articles of a specific type
-router.get('/types/:typeName', verifySession, getArticlesByType);
+// GET /api/articles/type/:typeId - Get all articles of a specific type
+router.get('/types/:typeId', verifySession, getArticlesByType);
 
 // GET /api/articles/:id - Get a single article by ID
 router.get('/:id', verifySession, getArticleById);
@@ -32,8 +33,8 @@ router.post('/types/', verifySession, adminRoute, validatePermissions(['Full Acc
 // PATCH /api/articles/:id - Update an article by ID. This is a partial update
 router.patch('/:id', verifySession, validatePermissions(['Read-Write', 'Full Access']), updateArticle);
 
-// PATCH /api/articles/types/:typeName - Update article type by name 
-router.patch('/types/:typeName', verifySession, adminRoute, validatePermissions(['Full Access']), updateArticleType);
+// PATCH /api/articles/types/:typeId - Update article type by name 
+router.patch('/types/:typeId', verifySession, adminRoute, validatePermissions(['Full Access']), updateArticleType);
 
 // PUT /api/articles/:id - Update an article by ID. This is a full update
 router.put('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), updateArticleWhole);
@@ -44,8 +45,8 @@ router.delete('/:id', verifySession, adminRoute, validatePermissions(['Full Acce
 // DELETE /api/articles/ - Delete multiple articles
 router.delete('/', verifySession, adminRoute, validatePermissions(['Full Access']), deleteArticles);
 
-// DELETE /api/articles/types/:typeName - Delete an article type by name
-// router.delete('/types/:typeName', verifySession, adminRoute, validatePermissions(['Full Access']), deleteArticleType);
+// DELETE /api/articles/types/:typeId - Delete an article type by name
+router.delete('/types/:typeId', verifySession, adminRoute, validatePermissions(['Full Access']), deleteArticleType);
 
 export default router;
 
