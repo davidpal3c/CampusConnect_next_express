@@ -35,5 +35,5 @@ export const formatToDateTime = (isoString: string) => {
     const year = date.getFullYear();
     const time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-    return `${month} ${day}, ${year} ${time}`; 
+    return `${month} ${day}, ${year} - ${time}`; 
 }   
