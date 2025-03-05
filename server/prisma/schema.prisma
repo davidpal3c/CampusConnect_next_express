@@ -90,7 +90,7 @@ model Article {
   article_id      String    @id @unique @default(uuid())
   title           String
   content         String    @db.Text
-  type            ArticleType
+  type_id         String
   imageUrl        String?
   datePublished   DateTime? @default(now())
   created_at      DateTime @default(now())
@@ -103,7 +103,18 @@ model Article {
 
   //Relation  
   User            User?    @relation(fields: [author_id], references: [user_id], onDelete: SetNull)
+  type            ArticleType @relation(fields: [type_id], references: [type_id])
+}
 
+model ArticleType {
+  type_id    String    @id @unique @default(uuid())
+  name       String    @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  isDefault  Boolean?  @default(false)
+
+  // Relation
+  articles   Article[]  
 }
 
 model ArticleCategory {
@@ -240,9 +251,4 @@ enum ArticleStatus {
   Published
 }
 
-enum ArticleType {
-  Campus
-  General
-  News
-  PreArrivals
-}
+

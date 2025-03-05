@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
+import { useArticleTypes } from "@/app/_utils/articleTypes-context";
 import ArticleDeleteModal from './ArticleDeleteModal';
 import RichTextEditor from './RichTextEditor';
 
@@ -18,11 +19,10 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { Value } from '@radix-ui/react-select';
+
 
 type CreateArticleProps = { 
     closeOnClick: any,
-    articleTypes: string[], 
     action: string,
     articleObject?: any,
     closeArticleEditor: any,
@@ -30,13 +30,19 @@ type CreateArticleProps = {
 };
 
 
-const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleTypes, action, articleObject, closeArticleEditor, reFetchArticles }) => {
+const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, articleObject, closeArticleEditor, reFetchArticles }) => {
+
+    const { articleTypesData } = useArticleTypes();
 
     const { userData } = useUserData();
     const [ userFullName, setUserFullName ] = useState("");
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [contentMode, setContentMode] = useState("simplified");   
     const [articleContent, setArticleContent] = useState("");
+    const [articleTypes, setArticleTypes] = useState<string[]>([]);
+
+    useEffect(() => {
+        if(articleTypesData) setArticleTypes(articleTypesData.map((type: any) => type.name));
+    }, [articleTypesData]);
 
     // image upload
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -45,19 +51,22 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
     const [backdrop, setBackdrop] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    // loader functions
     const handleLoaderOpen = () => {
         setBackdrop(true);
         setLoading(true);
     }
-
     const handleLoaderClose = () => {
         setBackdrop(false);
         setLoading(false);
         closeArticleEditor();
     }
 
+    // Delete Modal
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const handleDeleteModalOpen = () => setOpenDeleteModal(true);
     const handleDeleteModalClose = () => setOpenDeleteModal(false);
+
     const toggleContentMode = () => {
         setContentMode(contentMode === "simplified" ? "richText" : "simplified");
     }
@@ -81,7 +90,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
             reset({
                 title: articleObject.title || "",
                 datePublished: formatToDateOnly(articleObject.datePublished) || getTodayDate(),
-                type: articleObject.type || "",
+                type: articleObject.type.name || "",
                 audience: articleObject.audience || "",
                 tags: articleObject.tags || "",
                 content: articleObject.content || "",
@@ -95,16 +104,18 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
         }
     }, [action, articleObject, reset, userFullName]);
 
-
+    // sets preview image
     const handleImageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (file) {
+        if (file && file.size > 5 * 1024 * 1024 * 4) {    
+            toast.error("File size must not exceed 20 MB");
             setPreviewUrl(URL.createObjectURL(file));
         } else {
             setPreviewUrl(null);
         }
     };
 
+    // removes preview image
     const handleRemoveImage = () => {   
         setPreviewUrl(null);
         if (fileInputRef.current) {
@@ -117,6 +128,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
         reset({ ...articleObject, imageUrl: null });
     }
 
+    // upload image to imgbb API
     const handleImageUpload = async(file: File) => {
         if (!file) {
             return null;
@@ -141,16 +153,19 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                 return;
             }
 
-            // console.log("Image upload response: ", responseData)
+            console.log("Image upload response: ", responseData)
             if (responseData.success) {
                 return responseData.data.url; // Return the image URL
             } else {
-                console.log(responseData.error?.message || 'Image upload failed');
+                // console.log(responseData.error?.message || 'Image upload failed');
+                toast.error(responseData.error?.message || 'Image upload failed');
+                return null;
             }
         } catch (error) {
             console.log("Error: ", error);
             toast.error("An error occurred uploading image");
-            // return null;
+
+            return null;
         }
         // finally {
         //     // set loader to false
@@ -158,9 +173,8 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
     }
 
     const submitForm = async (data: any, type:  "publish" | "save-preview" | "update" ) => {
-
         handleLoaderOpen();
-        // console.log("Type: ", type);
+
         const authorName = data.author.trim() || userFullName;
         const selectedDate = data.datePublished || getTodayDate();
         const formattedDate = new Date(selectedDate).toISOString();
@@ -168,28 +182,29 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
 
         let imageUrl = data.imageUrl;
 
-        if (data.imageUrl && data.imageUrl[0] instanceof File) {        //only runs if a new image is uploaded
+        if (data.imageUrl && data.imageUrl[0] instanceof File) {                                        //only runs if a new image is uploaded
             imageUrl = await handleImageUpload(data.imageUrl[0]);
             if (!imageUrl) {
-                toast.error('Failed to upload image');
-                return; 
+                toast.error('Failed to upload image. creating article without image. Please contact support.');
+                // return; 
             }
         }
+
+        const type_id = articleTypesData.find((type: any) => type.name === data.type)?.type_id;         //returns object with type_id matching selected type
 
         const articleData = {
             title: data.title,
             datePublished: formattedDate,
-            type: data.type,
+            type_id: type_id,
             audience: data.audience,
             tags: data.tags,
             content: content,
-            // content: data.content ? data.content : articleContent,
             status: type === "update" ? data.status : type === "publish" ? "Published" : "Draft",
             author: authorName,
             imageUrl: imageUrl,
         }
 
-        console.log("Entered Article Data: ", articleData);
+        // console.log("Entered Article Data: ", articleData);
 
         if (action === "Create") {
             processCreateArticle(articleData);
@@ -295,10 +310,10 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                     <h1 className="font-semibold">Create Article</h1> 
                     : <h1 className="font-semibold">Edit Article</h1>
                 }
-                <Tooltip title="Close Editor" arrow>
-                    <button onClick={closeOnClick}>
+                <Tooltip title="Close Editor" arrow>       
+                    <IconButton onClick={closeOnClick} >
                         <CloseIcon />
-                    </button>
+                    </IconButton>
                 </Tooltip>
             </header>
             <section className="relative flex items-center bg-white p-4 rounded-lg mb-6 shadow-md">
@@ -341,7 +356,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
 
                                         const file = value[0];
                                          // if (!file) return 'Please select a file';
-                                        return file.size <= 5 * 1024 * 1024 * 6 || 'File size must not exceed 32 MB';
+                                        return file.size <= 5 * 1024 * 1024 * 4 || 'File size must not exceed 20MB';
                                     },
                                     },
                                 })}
@@ -492,7 +507,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, articleType
                             <div className="flex flex-row items-center space-x-4">
                                 <ActionButton title="Submit Update" onClick={handleSubmit((data) => submitForm(data, "update"))}
                                     textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
-                                <ActionButton title="Cancel" onClick={closeOnClick} type="button" 
+                                <ActionButton title="Cancel" onClick={closeOnClick} type="button"       // type button to prevent form submission
                                     textColor="text-slate-800" borderColor="border-slate-800" hoverBgColor="bg-saitBlack" hoverTextColor="text-saitDarkRed"/>
                             </div>
 
@@ -528,6 +543,6 @@ export default ArticleEditor;
 
 const formStyling = {
     labelStyling: "text-sm font-light text-saitBlack",
-    inputStyling: "font-light w-full p-2 mb-3 border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent",
+    inputStyling: "font-light w-full px-3 p-2 mb-3 border border-gray-300 bg-saitWhite mt-1 rounded-xl focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent",
     errorStyle: "text-red-500 text-sm",
 }

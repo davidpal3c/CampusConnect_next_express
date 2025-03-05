@@ -124,7 +124,7 @@ export const setUserImage = async (req: AuthenticatedRequest, res: Response, nex
 
         if (storedPicture?.image_url === picture || storedPicture?.image_url !== null) {
             // console.log("User image already set:", storedPicture?.image_url);
-            next();
+            return next();
         }
         
         await prisma.user.update({
@@ -144,9 +144,7 @@ export const setUserImage = async (req: AuthenticatedRequest, res: Response, nex
 // session request route: verify session cookie and set user object in request
 export const verifySession = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-            
         initializeFirebaseAdmin(); 
-
         const sessionCookie = req.cookies['session'];
 
         if (!sessionCookie) {
