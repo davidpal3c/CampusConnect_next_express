@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { useMediaQuery } from "react-responsive";
 
 import StudentSidebar from "@/app/components/Sidebar/StudentSidebar";
@@ -14,13 +14,19 @@ export default function StudentLayout({
 
   // State Management for Sidebar
   const [isOpen, setIsOpen] = useState(false);
-  const shouldShowButton = useMediaQuery({ maxWidth: 767 });
+  const [shouldShowButton, setShouldShowButton] = useState(false);
+
+  const isMobile = useMediaQuery({ maxWidth: 767 })
 
   // Handle Sidebar Toggle
 
   const handleSidebarToggle = () => {
       setIsOpen(!isOpen);
   };
+
+  useEffect(() => {
+    setShouldShowButton(isMobile);
+  }, []);
 
   return (
     <main className="flex min-h-screen bg-white">

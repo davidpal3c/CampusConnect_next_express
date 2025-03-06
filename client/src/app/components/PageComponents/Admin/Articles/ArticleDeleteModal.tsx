@@ -77,12 +77,12 @@ export default function ArticleDeleteModal({ articleId, openDeleteModal, handleD
                 <div className="flex flex-col items-center justify-center p-4 my-2">    
                     <p className="text-center">Are you sure you want to delete this article?</p>
                     <p className="text-center">Article ID: {articleId}</p>
-                    <p className="text-center italic text-sm">This operation can't be undone!</p>            
+                    <p className="text-center italic text-sm text-saitDarkRed mt-2">* This operation can't be undone! *</p>            
                     <div className="flex items-center justify-center w-full space-x-5 mt-4">
-                    <ActionButton title="Delete" onClick={submitDelete}
-                                textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>                            
-                    <ActionButton title="Cancel" onClick={handleDeleteModalClose}
-                                textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                                                          
+                        <ActionButton title="Delete" onClick={submitDelete}
+                                    textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>                            
+                        <ActionButton title="Cancel" onClick={handleDeleteModalClose}
+                                    textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                                                          
                     </div>
                 </div>
             </Box>   
@@ -98,7 +98,7 @@ const modalStyle = {
     width: 400,
     bgcolor: 'background.paper',    // default value set by theme in the Modal component
     border: '1px solid #000',
-    borderRadius: 8,
+    borderRadius: 4,
     boxShadow: 2,
     backgroundColor: "#f7f7f7",
   };

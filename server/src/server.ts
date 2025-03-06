@@ -20,6 +20,8 @@ const app = express();
 const PORT = 8080;
 
 app.use(cookieParser());
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
 // server Middlewares
 app.use(cors({
