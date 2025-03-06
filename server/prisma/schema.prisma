@@ -29,7 +29,7 @@ model User {
   Groups      Group[]
   MessagesSent  Message[]
   Articles    Article[]
- 
+  Forms       Form[]
   //EventsOwned Event[]   
 
   @@index([email, user_id])
@@ -90,7 +90,7 @@ model Article {
   article_id      String    @id @unique @default(uuid())
   title           String
   content         String    @db.Text
-  type            ArticleType
+  type_id         String
   imageUrl        String?
   datePublished   DateTime? @default(now())
   created_at      DateTime @default(now())
@@ -98,12 +98,24 @@ model Article {
   author          String?
   author_id       String
   audience        Json?                // stores array of audience types and categories using JSONB
+  tags            String?   
   status          ArticleStatus
   Categories      ArticleCategory[]
 
   //Relation  
   User            User?    @relation(fields: [author_id], references: [user_id], onDelete: SetNull)
+  type            ArticleType @relation(fields: [type_id], references: [type_id])
+}
 
+model ArticleType {
+  type_id    String    @id @unique @default(uuid())
+  name       String    @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  isDefault  Boolean?  @default(false)
+
+  // Relation
+  articles   Article[]  
 }
 
 model ArticleCategory {
@@ -126,15 +138,27 @@ model Event {
   contact         String
   capacity        Int
   current_attendees Int   @default(0)
+  form_id         String? //Referencing to the form
 
   //Relation
   Categories      EventCategory[]
   UserEvents      UserEvent[]
+  Form            Form?   @relation(fields: [event_id], references: [event_id])
   
   //User            User  @relation(fields: [owner], references: [user_id])
 
   @@index([host])
   //@@index([owner])
+}
+
+model Form {
+  form_id     String   @id @unique @default(uuid())
+  title       String
+  questions   Json
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  event_id    String?
+  Event       Event?   @relation(fields: [event_id], references: [event_id])
 }
 
 model EventCategory {
@@ -189,7 +213,6 @@ model UserEvent {
   @@index([user_email])   
 }
 
-
 model UserGroup {
   id           String    @id @unique @default(uuid())
   user_id      String
@@ -240,9 +263,4 @@ enum ArticleStatus {
   Published
 }
 
-enum ArticleType {
-  Campus
-  General
-  News
-  PreArrivals
-}
+
