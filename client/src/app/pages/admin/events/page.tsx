@@ -79,6 +79,27 @@ const filterByLocation = (location) => {
   setEvents(filteredEvents);
 };
 
+const handleDeleteEvent = async (event) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event._id}`, {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      toast.error(data.message || "An error occurred deleting the event.");
+      return;
+    }
+
+    toast.success("Event deleted successfully");
+    fetchEvents(); // Refresh the events list
+  } catch (error) {
+    console.error(error);
+    toast.error("Error deleting event: " + error);
+  }
+};
   const handleOpenCreatePanel = () => setShowEventEditor(true);
   const handleCloseCreatePanel = () => setShowEventEditor(false);
 
@@ -99,6 +120,7 @@ const filterByLocation = (location) => {
       <div>
         {/** Make the header look more like the Articles page */}
       <header>
+        <h1 className="text-2xl font-semibold">Events</h1>
         <div className="flex items-center space-x-4 p-4 bg-gray-100 rounded-lg">
           <input
             type="text"
@@ -120,6 +142,17 @@ const filterByLocation = (location) => {
             onChange={(e) => filterByLocation(e.target.value)}
             className="p-2 border rounded-lg"
           />
+          <div className="flex justify-between items-center p-4">
+            
+            <ActionButton
+              title="Create Event" //Make button look the same as article
+              onClick={handleCreateEvent}
+              textColor="text-saitBlue"
+              borderColor="border-saitBlue"
+              hoverBgColor="bg-saitBlue"
+              hoverTextColor="text-saitWhite"
+            />
+          </div>
         </div>
       </header>
           <div className="bg-saitWhite h-screen">
@@ -127,20 +160,11 @@ const filterByLocation = (location) => {
               <Loader isLoading={true} />
             ) : (
               <div>
-                <div className="flex justify-between items-center p-4">
-                  <h1 className="text-2xl font-semibold">Events</h1>
-                  <ActionButton
-                    title="Create Event" //Make button look the same as article
-                    onClick={handleCreateEvent}
-                    textColor="text-saitBlue"
-                    borderColor="border-saitBlue"
-                    hoverBgColor="bg-saitBlue"
-                    hoverTextColor="text-saitWhite"
-                  />
-                </div>
+                
 
                 {/* Event List View */}
-                <EventListView events={events} onEventSelect={handleEventSelect} />
+                <EventListView events={events} onEventSelect={handleEventSelect} onEventDelete={handleDeleteEvent}/>
+
 
                 {/* Event Editor Panel */}
                 <AnimatePresence>

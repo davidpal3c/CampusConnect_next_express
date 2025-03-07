@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import { Tooltip } from "@mui/material";
 import ActionButton from "../../../Buttons/ActionButton";
-import EventForm from "./EventForm"; // Import the EventForm component
+import EventForm from "./EventForm";
 
 type CreateEventProps = {
   closeOnClick: any;
