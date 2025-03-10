@@ -1,13 +1,16 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
+import useAsyncState from '@/app/hooks/useAsyncState';
 import { useForm } from "react-hook-form";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
 import { useArticleTypes } from "@/app/_utils/articleTypes-context";
-import ArticleDeleteModal from './ArticleDeleteModal';
+import ArticleDeleteModal from './Modals/ArticleDeleteModal';
 import RichTextEditor from './RichTextEditor';
+import AudienceSelectionModal from '@/app/components/PageComponents/Admin/Articles/AudienceSelectionModal';
+import CriteriaAccordion from './CriteriaAccordion';
 
 import { toast } from "react-toastify";
 
@@ -19,7 +22,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-
+import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 
 type CreateArticleProps = { 
     closeOnClick: any,
@@ -67,6 +70,19 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
     const handleDeleteModalOpen = () => setOpenDeleteModal(true);
     const handleDeleteModalClose = () => setOpenDeleteModal(false);
 
+    // Audience Modal
+    const [openAudienceSelectionModal, setOpenAudienceSelectionModal] = useState(false);
+    const handleAudienceSelectionOpen = () => setOpenAudienceSelectionModal(true);
+
+    // Audience Criteria
+    const [audienceCriteria, setAudienceCriteria] = useState({});
+    // const [audienceCriteria, setAudienceCriteria] = useAsyncState<Record<string, any>>({});  
+    const [showAccordion, setShowAccordion] = useState(false);
+
+    const saveAudienceCriteria = async (audienceCriteria: any) => {
+        await setAudienceCriteria(audienceCriteria);
+    }
+
     const toggleContentMode = () => {
         setContentMode(contentMode === "simplified" ? "richText" : "simplified");
     }
@@ -91,7 +107,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                 title: articleObject.title || "",
                 datePublished: formatToDateOnly(articleObject.datePublished) || getTodayDate(),
                 type: articleObject.type.name || "",
-                audience: articleObject.audience || "",
+                audience: articleObject.audience || "All",
                 tags: articleObject.tags || "",
                 content: articleObject.content || "",
                 author: articleObject.author || userFullName,
@@ -299,9 +315,16 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
     //     router.push(`/articles/preview?data=${encodeURIComponent(JSON.stringify(articleData))}`);
     // }
 
+
     useEffect(() => {
         setUserFullName(`${userData?.first_name || ""} ${userData?.last_name || ""}`.trim());
     }, []);
+
+    useEffect(() => {
+        console.log('Selected Audience criteria (Article Editor): ', audienceCriteria);
+        console.log('Length of Selected Audience criteria (Article Editor): ', Object.keys(audienceCriteria).length);  
+    }, [audienceCriteria]);
+
 
     return(
         <main className="h-full w-full">
@@ -324,7 +347,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                         {/* title */}
                         <div>
                             <label className={formStyling.labelStyling} htmlFor="title">Title</label>
-                            <input className={formStyling.inputStyling} type="text" id="title" 
+                            <input className={formStyling.inputStyling} type="text" id="title" placeholder="Enter Title"    
                                 {...register("title", { 
                                     required: 'Title is Required',
                                     maxLength: { value: 100, message: 'Title should not exceed 100 characters' }
@@ -413,6 +436,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                                 {errors.type && <p className={formStyling.errorStyle}>{errors.type.message}</p>}
                             </div>
                         </div>
+                        
 
                         {/* author name */}
                         {action === "Create" ? (
@@ -445,15 +469,55 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
 
                         {/* audience and tags */}
                         <div>
-                            <label className={formStyling.labelStyling} htmlFor="Audience">Audience (*select modal)</label>
-                            <input className={formStyling.inputStyling} type="audience" id="audience" 
-                                // {...register("audience", { required: 'Audience is Required' })}
-                            />
+                            <label className={formStyling.labelStyling} htmlFor="Audience">Audience <span className="text-saitRed text-xs italic">(*defaults to 'All')</span></label>
+                            <div className="flex items-center justify-center gap-2 relative mt-[0.27rem]"> {/* Use flexbox to align items horizontally */}
+                                {/* {audienceCriteria.length > 0 ? (
+                                
+                                ) : (
+                                )} */}
+                                
+                                {/* <CriteriaAccordion criteria={audienceCriteria} />  */}
+                                {showAccordion ? (
+                                    <div className="flex items-center justify-center gap-2 w-full">                                       
+                                        <Tooltip title="Select Audience" arrow>
+                                            <div className="">
+                                                <ActionButton onClick={handleAudienceSelectionOpen} type="button" icon={<PersonSearchRoundedIcon sx={{ fontSize: 23 }}/>}
+                                                    bgColor="bg-saitWhite" textColor="text-saitBlue" borderColor="border-saitBlue" 
+                                                    hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                                                />
+                                            </div>
+                                        </Tooltip>
+                                        <div className="relative w-full mb-10">
+                                            <CriteriaAccordion criteria={audienceCriteria} /> 
+                                        </div>  
+                                    </div>
+                                ) : (
+                                    <div className="flex w-full items-center justify-center gap-2 relative -mt-1"> {/* Use flexbox to align items horizontally */}
+                                        <Tooltip title="Select Audience" arrow>
+                                            <div className="mt-1">
+                                                <ActionButton onClick={handleAudienceSelectionOpen} type="button" icon={<PersonSearchRoundedIcon sx={{ fontSize: 23 }}/>}
+                                                    bgColor="bg-saitWhite" textColor="text-saitBlue" borderColor="border-saitBlue" 
+                                                    hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                                                />
+                                            </div>
+                                        </Tooltip>
+                                        <input
+                                        className={audienceInput} 
+                                        type="text" 
+                                        placeholder="Select Audience"
+                                        readOnly 
+                                        {...register("audience", { required: false })}
+                                        />
+                                    </div>
+                                )}
+                                
+                            </div>
+                                                        
                             {/* {errors.audience && <p className={formStyling.errorStyle}>{errors.audience.message}</p>} */}
                         </div>
                         <div>
                             <label className={formStyling.labelStyling} htmlFor="tags">Tags</label>
-                            <input className={formStyling.inputStyling} type="text" id="tags"
+                            <input className={formStyling.inputStyling} type="text" id="tags" placeholder="Enter Tags"
                                 {...register("tags", { required: false })}
                             />
                             {errors.tags && <p className={formStyling.errorStyle}>{errors.tags.message}</p>}
@@ -501,7 +565,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                                 textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
                         </div>
                     ) : (
-                        <div className="flex flex-row items-center justify-between w-full">
+                        <div className="flex flex-row items-center justify-between w-full ">
                             <div className=""></div>
 
                             <div className="flex flex-row items-center space-x-4">
@@ -525,8 +589,15 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                     closeArticleEditor={closeArticleEditor}    
                     reFetchArticles={reFetchArticles}         
                 />
+                <AudienceSelectionModal 
+                    openAudienceSelectionModal={openAudienceSelectionModal}
+                    setOpenAudienceSelectionModal={setOpenAudienceSelectionModal}
+                    saveAudienceCriteria={saveAudienceCriteria}
+                    currentAudienceCriteria={audienceCriteria}
+                    setShowAccordion={setShowAccordion}
+                />
             </section>
-
+            
             <Backdrop
                 sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
                 open={backdrop}
@@ -543,6 +614,8 @@ export default ArticleEditor;
 
 const formStyling = {
     labelStyling: "text-sm font-light text-saitBlack",
-    inputStyling: "font-light w-full px-3 p-2 mb-3 border border-gray-300 bg-saitWhite mt-1 rounded-xl focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent",
+    inputStyling: "font-light w-full px-3 p-2 mb-3 border border-gray-400 bg-saitWhite mt-1 rounded-xl focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent",
     errorStyle: "text-red-500 text-sm",
 }
+
+const audienceInput = "font-light w-full px-3 p-2 border border-gray-400 bg-saitWhite mt-1 rounded-xl focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent";

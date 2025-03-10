@@ -65,6 +65,10 @@ export default function Article() {
         fetchArticleData();
     }, []);
 
+    // useEffect(() => {
+    //     console.log("Article Data: ", articleData)
+    // }, [articleData])
+
     return(
         <div className="p-4">
             <div className="flex justify-between items-center">
@@ -139,6 +143,8 @@ export default function Article() {
                         <p className="font-semibold">Readability</p>
                         <p className="font-semibold">SEO Score</p>
                         <p className="font-semibold">Word Count</p>
+                        <p className="font-semibold">Article Tags:</p>
+                        <p className="font-thin">{articleData.tags}</p>
                         
                         <div className="flex justify-center items-center">
                             <button className="flex flex-wrap w-64 justify-center items-center border border-saitBlue rounded-full p-2 mt-4">

@@ -195,8 +195,6 @@ export const getArticleById = async (req: Request, res: Response) => {
             return; 
         }
 
-        console.log("Article by ID: ", article);
-
         res.status(200).json(article);  
         return;
     } catch (error) {
@@ -213,7 +211,7 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
 
     try {
         // const { title, content, imageUrl, audience, status, type, author } = req.body;
-        const { title, content, imageUrl, audience, status, type_id, author } = req.body;
+        const { title, content, imageUrl, audience, status, type_id, author, tags } = req.body;
         const email = req.user.decodedClaims.email;
 
         const authorId = await prisma.user.findUnique({
@@ -231,6 +229,7 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
                 status: status,
                 type_id: type_id,
                 author: author,
+                tags: tags
             } as any
         });
 
@@ -268,7 +267,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         //     imageUrl, audience, status, author_id, author, type } = req.body;
 
         const { title, datePublished, content, imageUrl, audience, status, 
-            author_id, author, type_id } = req.body;
+            author_id, author, type_id, tags } = req.body;
 
         const updateArticleData: any = {};
 
@@ -281,6 +280,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (author_id) updateArticleData.author_id = author_id;
         if (author) updateArticleData.author = author;
         if (type_id) updateArticleData.type_id = type_id;
+        if (tags) updateArticleData.tags = tags;
 
         // console.log("Image: ", imageUrl);
         // console.log("Update Article Data: ", updateArticleData);

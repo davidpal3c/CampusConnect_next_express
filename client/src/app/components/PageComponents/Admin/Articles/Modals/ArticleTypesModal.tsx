@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ArticleTypeCard from './ArticleTypeCard';
+import ArticleTypeCard from '../ArticleTypeCard';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { toast } from "react-toastify";
