@@ -31,11 +31,6 @@ export default function AdminPage() {
     user?.role !== "Admin" ? (
       <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
         <div>
-          {/* <img
-            src="/sait-logo.png"
-            alt="Campus Connect"
-            className="rounded-lg mb-6 mx-auto w-40 md:w-60"
-          /> */}
           <div>
             <h1 className="text-4xl text-white font-bold">403</h1>
             <h2 className="text-2xl text-white font-semibold">Forbidden Access</h2>

@@ -45,6 +45,7 @@ export default {
         saitBlack: "#06222b",
         saitWhite: "#f7f7f7",
         saitRed: "#ca3929",
+        saitLightRed: "#ff8b7e",
         saitDarkRed: "#932728",
         saitLighterBlueOg: "#449dde", 
         saitLighterBlue: "#449dde",        // original : out of contrast with white
@@ -59,7 +60,9 @@ export default {
       },
       backgroundImage: {
         "blue-gradient": `linear-gradient(to top, #2b64ae, #449dde)`,
-        "red-gradient": `linear-gradient(to top, #ca3929, #932728)`,
+        "purple-gradient": `linear-gradient(to top, #722a7a, #8d4990)`,
+        "red-gradient": `linear-gradient(to top, #ff8b7e, #ca3929)`,
+        "side-red-gradient": `linear-gradient(to right, #ca3929, #932728)`,
       },
       screens: {
         '2xs': '320px',
