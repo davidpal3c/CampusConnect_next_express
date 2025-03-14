@@ -92,6 +92,13 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
         if (user.role === 'Student') {
             const student = await prisma.student.findUnique({
                 where: { user_id: user.user_id },
+                include: {
+                    Program: {
+                        include: {
+                            Department: true
+                        }
+                    }
+                }
             });
 
             if (!student) {
@@ -103,6 +110,7 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
 
             res.status(200).json({ user });
             return;
+            
         } else if (user.role === 'Alumni') {
             const alumni = await prisma.alumni.findUnique({
                 where: { user_id: user.user_id },
