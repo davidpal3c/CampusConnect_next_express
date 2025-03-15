@@ -1,212 +1,196 @@
-"use client";
+import React, { useState } from 'react';
 
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import CloseIcon from "@mui/icons-material/Close";
-import { Tooltip } from "@mui/material";
-import ActionButton from "../../../Buttons/ActionButton";
-import EventForm from "./EventForm";
+type EventData = {
+  name: string,
+  date: string,
+  location: string,
+  departments: string,
+  programs: string,
+  description: string,
+  host: string,
+  capacity: string
+}
 
-type CreateEventProps = {
-  closeOnClick: any;
-  action: string;
-  eventObject?: any;
-  closeEventEditor: any;
-};
+type EventProps = EventData & {
+  updateFields: (fields: Partial<EventData>) => void
+}
 
-const EventEditor: React.FC<CreateEventProps> = ({
-  closeOnClick,
-  action,
-  eventObject,
-  closeEventEditor,
-}) => {
-  const [step, setStep] = useState(1); // Step 1: EventEditor form, Step 2: EventForm multi steps woop woop
-  const [eventEditorData, setEventEditorData] = useState(null); // Store EventEditor form data hopefully
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
-    defaultValues: {
-      name: "",
-      date: new Date().toISOString().slice(0, 16), 
-      location: "",
-      audience: "",
-      host: "",
-      contact: "",
-      capacity: 0,
-      current_attendees: 0,
-    },
-  });
-
-  // Handle EventEditor form submission
-  const handleEventEditorSubmit = async (data) => {
-    try {
-      //Make sure the capacity is int
-      const eventData = {
-        ...data,
-        date: new Date(data.date).toISOString(),
-
-        capacity: parseInt(data.capacity, 10),
-        current_attendees: parseInt(data.current_attendees, 10),
-      };
-  
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(eventData), // Use the parsed eventData
-      });
-  
-      const result = await response.json();
-      if (!response.ok) {
-        toast.error(result.message || "An error occurred submitting the event.");
-        return;
-      }
-  
-      toast.success("Event created successfully!");
-      setEventEditorData(eventData); // Save the parsed event data
-      setStep(2); // Move to the next step
-    } catch (error) {
-      console.error(error);
-      toast.error(`Error submitting event: ${error}`);
-    }
-  };
-
-  // Handle EventForm submission
-  const handleEventFormSubmit = async (data) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/forms/`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-      if (!response.ok) {
-        toast.error(result.message || "An error occurred submitting the form.");
-        return;
-      }
-
-      toast.success("Form submitted successfully!");
-      closeEventEditor(); // Close the editor after both forms are submitted
-    } catch (error) {
-      console.error(error);
-      toast.error(`Error submitting form: ${error}`);
-    }
-  };
+function EventEditor(
+  {
+  name, date, location, departments,
+  description, host, capacity,
+  updateFields
+  }: EventProps){
 
   return (
-    <main className="h-full w-full">
-      <header className="flex justify-between items-center bg-white p-5 rounded-lg mb-6 shadow-md">
-        <h1 className="font-semibold">{action === "Create" ? "Create Event" : "Edit Event"}</h1>
-        <Tooltip title="Close Editor" arrow>
-          <button onClick={closeOnClick}>
-            <CloseIcon />
-          </button>
-        </Tooltip>
-      </header>
-
-      <section className="bg-white p-4 rounded-lg shadow-md">
-        {step === 1 ? (
-          // Step 1: EventEditor form
-          <form onSubmit={handleSubmit(handleEventEditorSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-light">Event Name</label>
+    <div className="flex p-4 gap-4 bg-gray-100 min-h-screen">
+      {/* Preview Panel */}
+      <div className="w-1/4 bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-bold mb-4">Preview</h2>
+        
+        <p className="font-medium mt-4">Name:</p>
+        <p className="text-gray-600">{name || 'Name field is required.'}</p>
+        
+        <p className="font-medium mt-4">Date:</p>
+        <p className="text-gray-600">{date || 'Date field is required.'}</p>
+        
+        <p className="font-medium mt-4">Location:</p>
+        <p className="text-gray-600">{location || 'Location is required.'}</p>
+        
+        <p className="font-medium mt-4">Departments:</p>
+        <p className="text-gray-600">{departments}</p>
+        
+        {/* This is gotta work like the articles as well */}
+        <p className="font-medium mt-4">Programs:</p>
+        {/* <p className="text-gray-600">{programs}</p> */}    
+        
+        <p className="font-medium mt-4">Description:</p>
+        <p className="text-gray-600">{description || 'Default description is empty.'}</p>
+        
+        {/* Has nothing right now */}
+        <p className="font-medium mt-4">Host:</p>
+        <p className="text-gray-600">{host}</p>
+        
+        <p className="font-medium mt-4">Capacity:</p>
+        <p className="text-gray-600">{capacity || 'Capacity is required.'}</p>
+        
+        {/* Have to make this work as well */}
+        <p className="font-medium mt-4">Image File:</p>
+        <p className="text-gray-600">Default Image File is empty.</p>
+      </div>
+      
+      {/* Form */}
+      <div className="w-3/4 bg-white p-6 rounded-lg shadow">
+        <div className="grid grid-cols-2 gap-6">
+          {/* Name and Image */}
+          <div>
+            <label className="block mb-2">
+              Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter name"
+              value={name}
+              onChange={e => updateFields({name: e.target.value})}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2">Image</label>
+              <button className="bg-blue-400 text-white p-2 rounded w-full">Upload File</button>
+            </div>
+            <div>
+              <label className="block mb-2">
+                Date <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
                 <input
-                  {...register("name", { required: "Event name is required" })}
-                  className="w-full p-2 border rounded mt-1"
+                  type="text"
+                  name="date"
+                  placeholder="Start Date - End Date"
+                  value={date}
+                  onChange={e => updateFields({date: e.target.value})}
+                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
-                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-              </div>
-
-              <div>
-                <label className="text-sm font-light">Date & Time</label>
-                <input
-                  type="datetime-local"
-                  {...register("date", { required: "Date is required" })}
-                  className="w-full p-2 border rounded mt-1"
-                />
-                {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
-              </div>
-
-              <div>
-                <label className="text-sm font-light">Location</label>
-                <input
-                  {...register("location", { required: "Location is required" })}
-                  className="w-full p-2 border rounded mt-1"
-                />
-                {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
-              </div>
-
-              <div>
-                <label className="text-sm font-light">Audience (comma-separated)</label>
-                <input
-                  {...register("audience", { required: "Audience is required" })}
-                  className="w-full p-2 border rounded mt-1"
-                />
-                {errors.audience && <p className="text-red-500 text-sm">{errors.audience.message}</p>}
-              </div>
-
-              <div>
-                <label className="text-sm font-light">Host</label>
-                <input
-                  {...register("host")}
-                  className="w-full p-2 border rounded mt-1"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-light">Contact</label>
-                <input
-                  {...register("contact", { required: "Contact is required" })}
-                  className="w-full p-2 border rounded mt-1"
-                />
-                {errors.contact && <p className="text-red-500 text-sm">{errors.contact.message}</p>}
-              </div>
-
-              <div>
-                <label className="text-sm font-light">Capacity</label>
-                <input
-                  type="number"
-                  {...register("capacity", {
-                    required: "Capacity is required",
-                    min: { value: 1, message: "Capacity must be at least 1" },
-                  })}
-                  className="w-full p-2 border rounded mt-1"
-                />
-                {errors.capacity && <p className="text-red-500 text-sm">{errors.capacity.message}</p>}
-              </div>
-
-              {action === "Edit" && (
-                <div>
-                  <label className="text-sm font-light">Current Attendees</label>
-                  <input
-                    type="number"
-                    {...register("current_attendees")}
-                    className="w-full p-2 border rounded mt-1"
-                  />
+                <div className="absolute right-2 top-2 text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
-              )}
+              </div>
             </div>
-
-            <div className="flex justify-center space-x-4 mt-6">
-              <ActionButton
-                title="Next"
-                type="submit"
-                textColor="text-saitBlue"
-                borderColor="border-saitBlue"
-                hoverBgColor="bg-saitBlue"
-                hoverTextColor="text-saitWhite"
+          </div>
+          
+          {/* Location and Target Department */}
+          <div>
+            <label className="block mb-2">
+              Location <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="location"
+              placeholder="Enter Location"
+              value={location}
+              onChange={e => updateFields({location: e.target.value})}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">Target Department(s)</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Select Target Department(s)"
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
+              <div className="absolute right-2 top-2 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
             </div>
-          </form>
-        ) : (
-          // Step 2: EventForm
-          <EventForm onSubmit={handleEventFormSubmit} onBack={() => setStep(1)} />
-        )}
-      </section>
-    </main>
+          </div>
+          
+          {/* Target Program */}
+          <div>
+            <label className="block mb-2">Target Program(s)</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Select Target Program(s)"
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+              <div className="absolute right-2 top-2 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          {/* Description */}
+          <div className="col-span-2">
+            <label className="block mb-2">Description</label>
+            <textarea
+              name="description"
+              placeholder="Enter Description"
+              value={description}
+              onChange={e => updateFields({description: e.target.value})}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 h-40"
+            ></textarea>
+          </div>
+
+          {/* Host and Capacity in their own row */}
+          <div>
+            <label className="block mb-2">Host</label>
+            <input
+              type="text"
+              name="host"
+              placeholder="Enter Host Name"
+              value={host}
+              onChange={e => updateFields({host: e.target.value})}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">
+              Capacity <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="capacity"
+              placeholder="Enter Number"
+              value={capacity}
+              onChange={e => updateFields({capacity: e.target.value})}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

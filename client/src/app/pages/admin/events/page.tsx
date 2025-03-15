@@ -6,10 +6,37 @@ import { motion, AnimatePresence } from "framer-motion";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import EventEditor from "@/app/components/PageComponents/Admin/Events/EventEditor";
 import EventListView from "@/app/components/PageComponents/Admin/Events/EventListView";
+import EventForm from "@/app/components/PageComponents/Admin/Events/EventForm"
 import EventCalendarView from "@/app/components/PageComponents/Admin/Events/EventCalendarView";
 import Loader from "@/app/components/Loader/Loader";
+import { MultistepForm } from "@/app/components/PageComponents/Admin/Events/MultistepForm";
+
+
+type EventData = {
+  name: string,
+  date: string,
+  location: string,
+  departments: string,
+  programs: string,
+  description: string,
+  host: string,
+  capacity: string
+}
+
+const INITIAL_DATA = {
+  name: '',
+  date: '',
+  location: '',
+  departments: 'Default departments are all.',
+  programs: 'Default programs are all.',
+  time: '',
+  description: '',
+  host: 'SAIT',
+  capacity: ''
+}
 
 const Events = () => {
+  const [data, setData] =useState(INITIAL_DATA)
   const [events, setEvents] = useState([]);
   const [originalEvents, setOriginalEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +50,7 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`, {
         method: "GET",
         headers: { "content-type": "application/json" },
         credentials: "include",
@@ -44,7 +71,14 @@ const Events = () => {
     }
   };
 
-// 
+
+//Multi Step Form handling and shetttt
+const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = MultistepForm([
+  <EventEditor {...data} updateFields={updateFields}/>, 
+  <EventForm /> //Will have to change it for the form instead of using the Event data
+])
+
+// Searching still needs to be worked on
 const [searchTerm, setSearchTerm] = useState("");
 const [filterCriteria, setFilterCriteria] = useState({
   date: "",
@@ -115,6 +149,49 @@ const handleDeleteEvent = async (event) => {
     handleOpenCreatePanel();
   };
 
+  //Change this to submit the data properly
+  // Something like this basically
+  // const handleCreateEvent = async (event) => {
+  //   try {
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event._id}`, {
+  //       method: "POST",
+  //       headers: { "content-type": "application/json" },
+  //       credentials: "include",
+  //     });
+  
+  //     const data = await response.json();
+  //     if (!response.ok) {
+  //       toast.error(data.message || "An error occurred creating the event.");
+  //       return;
+  //     }
+  
+  //     toast.success("Event Created successfully");
+  //     fetchEvents(); // Refresh the events list
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error("Error creating event: " + error);
+  //   }
+  // };
+  function onSubmitEvent(e: Event){
+    e.preventDefault();
+    console.log("This event was submitted");
+    next()
+    
+  }
+
+  //Can change type to Event form or something
+  function onSubmitForm(){
+    console.log("This form and event are now fully created")
+    handleCloseCreatePanel();
+  }
+
+  function updateFields(fields: Partial<EventData>) {
+    setData(prev => {
+      return {...prev, ...fields}
+    })
+  }
+
+
   return (
     <main>
       <div>
@@ -143,9 +220,10 @@ const handleDeleteEvent = async (event) => {
             className="p-2 border rounded-lg"
           />
           <div className="flex justify-between items-center p-4">
-            
+
+          {/* Make button look the same as article */}
             <ActionButton
-              title="Create Event" //Make button look the same as article
+              title="Create Event" 
               onClick={handleCreateEvent}
               textColor="text-saitBlue"
               borderColor="border-saitBlue"
@@ -160,11 +238,9 @@ const handleDeleteEvent = async (event) => {
               <Loader isLoading={true} />
             ) : (
               <div>
-                
 
                 {/* Event List View */}
                 <EventListView events={events} onEventSelect={handleEventSelect} onEventDelete={handleDeleteEvent}/>
-
 
                 {/* Event Editor Panel */}
                 <AnimatePresence>
@@ -176,12 +252,57 @@ const handleDeleteEvent = async (event) => {
                       transition={{ duration: 0.7, ease: "easeInOut" }}
                       className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                     >
-                      <EventEditor
-                        closeOnClick={handleCloseCreatePanel}
-                        action={action}
-                        eventObject={selectedEvent}
-                        onSave={fetchEvents}
-                      />
+                      <form >
+                        <div>
+                          {/* Can make this look better than just numbers */}
+                          <p dir="rtl">Steps: {currentStepIndex + 1} / {steps.length}</p>
+
+                          {/* Button to close editor style could use some work*/}
+                          <ActionButton
+                          title="Close Event"
+                          type="button"
+                          onClick={handleCloseCreatePanel}
+                          textColor="text-saitBlue"
+                          borderColor="border-saitBlue"
+                          hoverBgColor="bg-saitBlue"
+                          hoverTextColor="text-saitWhite"
+                          />
+                        </div>
+                        <div>
+                          {step}
+                          {!isFirstStep && 
+                            <ActionButton 
+                              onClick={back}
+                              title="Back"
+                              type="button"
+                              textColor="text-saitBlue"
+                              borderColor="border-saitBlue"
+                              hoverBgColor="bg-saitBlue"
+                              hoverTextColor="text-saitWhite" 
+                            ></ActionButton>}
+                          { isLastStep ?
+                            <ActionButton  
+                              title="Publish"
+                              onClick={onSubmitForm}
+                              textColor="text-saitBlue"
+                              borderColor="border-saitBlue"
+                              hoverBgColor="bg-saitBlue"
+                              hoverTextColor="text-saitWhite"  
+                            ></ActionButton>
+                            
+                          :
+                            <ActionButton  
+                              title="Next"
+                              onClick={onSubmitEvent}
+                              textColor="text-saitBlue"
+                              borderColor="border-saitBlue"
+                              hoverBgColor="bg-saitBlue"
+                              hoverTextColor="text-saitWhite"  
+                            ></ActionButton>
+                          }
+                        </div>
+                      
+                      </form>
                     </motion.div>
                   )}
                 </AnimatePresence>
