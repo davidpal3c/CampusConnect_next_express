@@ -33,6 +33,11 @@ export default function AudienceSelectionModal({
     const [selectedIntakeSeasons, setSelectedIntakeSeasons] = useState<string[]>([]);
     const [selectedIntakeYears, setSelectedIntakeYears] = useState<string[]>([]);       // convert fetched numbers to string (to match the 'All' option)
     const [audienceSelection, setAudienceSelection] = useState<any>({});
+    
+    const [availableAudience, setAvailableAudience] = useState<any>({});
+    const { programs, departments, intakeSeasons, intakeYears } = availableAudience;
+
+
 
     const handleAudienceSelectionClose = () => {
         if (!isSaved) {
@@ -109,30 +114,56 @@ export default function AudienceSelectionModal({
         }
     };
 
-    const [programs] = useState([
-        { program_id: '1', name: 'Program 1' },
-        { program_id: '2', name: 'Program 2' },
-        { program_id: '3', name: 'Program 3' },
-        { program_id: '4', name: 'Program 4' },
-        { program_id: '5', name: 'Program 5' },
-        { program_id: '6', name: 'Program 6' },
-        { program_id: '7', name: 'Program 7' },
-        { program_id: '8', name: 'Program 8' },
-        { program_id: '9', name: 'Program 9' },
-        { program_id: '10', name: 'Program 10' },   
-        { program_id: '11', name: 'Program 11' },
-        { program_id: '12', name: 'Program 12' },
-    ]);
+    const fetchAvailableAudience = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audience/`, {
+                method: "GET",
+                headers: {
+                  "content-type": "application/json",
+                },
+                credentials: "include",   
+            });
 
-    const [departments] = useState([
-        { department_id: '1', name: 'Department 1' },
-        { department_id: '2', name: 'Department 2' },
-        { department_id: '3', name: 'Department 3' },
-    ]);
+            const audienceData = await response.json();
+
+            if(!response.ok) {
+                const errorData = audienceData;
+                toast.error(errorData.message || "An Error occurred fetching audience.");
+                return;
+            }
+
+            setAvailableAudience(audienceData);
+            console.log(audienceData.message);
+        } catch (error: any) {
+            console.error("Error fetching Audience Selection: ", error);
+            toast.error("Error fetching Audience Selection", error);
+        }
+    }
+
+    // const [programs] = useState([
+    //     { program_id: '1', name: 'Program 1' },
+    //     { program_id: '2', name: 'Program 2' },
+    //     { program_id: '3', name: 'Program 3' },
+    //     { program_id: '4', name: 'Program 4' },
+    //     { program_id: '5', name: 'Program 5' },
+    //     { program_id: '6', name: 'Program 6' },
+    //     { program_id: '7', name: 'Program 7' },
+    //     { program_id: '8', name: 'Program 8' },
+    //     { program_id: '9', name: 'Program 9' },
+    //     { program_id: '10', name: 'Program 10' },   
+    //     { program_id: '11', name: 'Program 11' },
+    //     { program_id: '12', name: 'Program 12' },
+    // ]);
+
+    // const [departments] = useState([
+    //     { department_id: '1', name: 'Department 1' },
+    //     { department_id: '2', name: 'Department 2' },
+    //     { department_id: '3', name: 'Department 3' },
+    // ]);
 
 
-    const [intakeSeasons] = useState(['Fall', 'Winter', 'Spring', 'Summer']);
-    const [intakeYears] = useState([2021, 2022, 2023, 2024, 2025]); 
+    // const [intakeSeasons] = useState(['Fall', 'Winter', 'Spring', 'Summer']);
+    // const [intakeYears] = useState([2021, 2022, 2023, 2024, 2025]); 
 
 
     // useEffect(() => {
@@ -145,6 +176,12 @@ export default function AudienceSelectionModal({
     useEffect(() => {
         console.log("Current Audience Criteria (modal): ", currentAudienceCriteria);
     }, [currentAudienceCriteria]);
+
+    useEffect(() => {
+        fetchAvailableAudience();
+        console.log("Available Audience: ", availableAudience);
+    }, [availableAudience]);
+
 
     return (
         <div>
@@ -178,9 +215,9 @@ export default function AudienceSelectionModal({
 
                             {/* Programs List */}
                             <div className="flex-1">
-                                <label className="block text-sm font-medium mb-2">Programs</label>
+                                <label className="block text-md font-semibold mb-2">Programs</label>
                                 <ScrollableList
-                                    items={programs.map((program) => program.name)}
+                                    items={programs?.map((program) => program.name) || []}
                                     selectedItems={selectedPrograms}
                                     onSelect={handleProgramSelection}
                                 />
@@ -188,9 +225,9 @@ export default function AudienceSelectionModal({
 
                             {/* Departments List */}
                             <div className="flex-1">
-                                <label className="block text-sm font-medium mb-2">Departments</label>
+                                <label className="block text-md font-semibold mb-2">Departments</label>
                                 <ScrollableList
-                                items={departments.map((d) => d.name)}
+                                items={departments?.map((d) => d.name) || []}
                                 selectedItems={selectedDepartments}
                                 onSelect={handleDepartmentSelection}
                                 />
@@ -198,9 +235,9 @@ export default function AudienceSelectionModal({
 
                             {/* Intake Season List */}
                             <div className="flex-1">
-                                <label className="block text-sm font-medium mb-2">Intake Season</label>
+                                <label className="block text-md font-semibold mb-2">Intake Season</label>
                                 <ScrollableList
-                                items={intakeSeasons.map((season) => season)}
+                                items={intakeSeasons?.map((season) => season) || []}
                                 selectedItems={selectedIntakeSeasons}
                                 onSelect={handleIntakeSeasonSelection}
                                 includeAllOption={true}
@@ -209,9 +246,9 @@ export default function AudienceSelectionModal({
 
                             {/* Intake Year List */}
                             <div className="flex-1">
-                                <label className="block text-sm font-medium mb-2">Intake Season</label>
+                                <label className="block text-md font-semibold mb-2">Intake Season</label>
                                 <ScrollableList
-                                items={intakeYears.map((y) => y.toString())}
+                                items={intakeYears?.map((y) => y.intake_year.toString()) || []}
                                 selectedItems={selectedIntakeYears}
                                 onSelect={handleIntakeYearSelection}
                                 includeAllOption={true}
@@ -451,90 +488,3 @@ const customButton = "group text-saitDarkRed border border-saitDarkRed bg-saitWh
     // );
 
 
-
-
-// import { Modal, Box, Typography, Button, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-
-// const AudienceSelectionModal = ({ open, onClose, onSave, programs, departments }) => {
-//   const [selectedPrograms, setSelectedPrograms] = useState<string[]>([]);
-//   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
-//   const [selectedIntakeSeason, setSelectedIntakeSeason] = useState<string>("");
-//   const [selectedIntakeYears, setSelectedIntakeYears] = useState<number>(new Date().getFullYear());
-
-//   const handleSave = () => {
-//     const audienceCriteria = {
-//       programs: selectedPrograms,
-//       departments: selectedDepartments,
-//       intakeSeason: selectedIntakeSeason,
-//       intakeYear: selectedIntakeYears,
-//     };
-//     onSave(audienceCriteria);
-//     onClose();
-//   };
-
-//   return (
-//     <Modal open={open} onClose={onClose}>
-//       <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
-//         <Typography variant="h6" gutterBottom>Select Audience</Typography>
-        
-//         {/* Programs Dropdown */}
-//         <FormControl fullWidth sx={{ mt: 2 }}>
-//           <InputLabel>Programs</InputLabel>
-//           <Select
-//             multiple
-//             value={selectedPrograms}
-//             onChange={(e) => setSelectedPrograms(e.target.value as string[])}
-//           >
-//             {programs.map((program) => (
-//               <MenuItem key={program.program_id} value={program.name}>
-//                 {program.name}
-//               </MenuItem>
-//             ))}
-//           </Select>
-//         </FormControl>
-
-//         {/* Departments Dropdown */}
-//         <FormControl fullWidth sx={{ mt: 2 }}>
-//           <InputLabel>Departments</InputLabel>
-//           <Select
-//             multiple
-//             value={selectedDepartments}
-//             onChange={(e) => setSelectedDepartments(e.target.value as string[])}
-//           >
-//             {departments.map((department) => (
-//               <MenuItem key={department.department_id} value={department.name}>
-//                 {department.name}
-//               </MenuItem>
-//             ))}
-//           </Select>
-//         </FormControl>
-
-//         {/* Intake Season Dropdown */}
-//         <FormControl fullWidth sx={{ mt: 2 }}>
-//           <InputLabel>Intake Season</InputLabel>
-//           <Select
-//             value={selectedIntakeSeason}
-//             onChange={(e) => setSelectedIntakeSeason(e.target.value as string)}
-//           >
-//             <MenuItem value="Fall">Fall</MenuItem>
-//             <MenuItem value="Winter">Winter</MenuItem>
-//             <MenuItem value="Spring">Spring</MenuItem>
-//             <MenuItem value="Summer">Summer</MenuItem>
-//           </Select>
-//         </FormControl>
-
-//         {/* Intake Year Input */}
-//         <FormControl fullWidth sx={{ mt: 2 }}>
-//           <InputLabel>Intake Year</InputLabel>
-//           <input
-//             type="number"
-//             value={selectedIntakeYears}
-//             onChange={(e) => setSelectedIntakeYears(parseInt(e.target.value))}
-//           />
-//         </FormControl>
-
-//         <Button onClick={handleSave} sx={{ mt: 2 }}>Save</Button>
-//       </Box>
-//     </Modal>
-//   );
-// };
