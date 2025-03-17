@@ -219,7 +219,9 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
             select: { user_id: true }
         })
 
-        await prisma.article.create({
+        console.log('Audience; ', audience);
+
+        const submitted = await prisma.article.create({
             data: {
                 title: title,
                 content: content,
@@ -232,6 +234,8 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
                 tags: tags
             } as any
         });
+
+        console.log('Article created:', submitted);
 
         res.status(201).json({ message: 'Article created successfully' });
     } catch (error) {
@@ -269,6 +273,8 @@ export const updateArticle = async (req: Request, res: Response) => {
         const { title, datePublished, content, imageUrl, audience, status, 
             author_id, author, type_id, tags } = req.body;
 
+        console.log("Audience: ", audience);
+        
         const updateArticleData: any = {};
 
         if (title) updateArticleData.title = title;

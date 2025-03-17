@@ -25,12 +25,14 @@ export const getAllAudience = async (req: Request, res: Response) => {
         const intakeSeasons = ["Fall", "Winter", "Spring", "Summer"];
 
         // get all intake years from registered students
-        const intakeYears = await prisma.student.findMany({
+        const intakeYearsObj = await prisma.student.findMany({
             select: {
                 intake_year: true
             },
             distinct: ['intake_year']
         });
+
+        const intakeYears = intakeYearsObj.map((year) => year.intake_year);
 
         const audienceData = {
             departments, 
@@ -39,7 +41,7 @@ export const getAllAudience = async (req: Request, res: Response) => {
             intakeYears
         }
 
-        console.log("Audience Data: ", audienceData);
+        // console.log("Audience Data: ", audienceData);
 
         res.status(200).json({ data: audienceData, message: 'Audience retrieved successfully!' });
     } catch (error) {

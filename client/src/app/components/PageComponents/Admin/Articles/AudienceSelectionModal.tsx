@@ -1,10 +1,11 @@
-
+"use client";
 import React, { useEffect, useState } from 'react';
 
 import ActionButton from '@/app/components/Buttons/ActionButton';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded';
 import ScrollableList from '@/app/components/PageComponents/Admin/Articles/ScrollableList';
+import ScrollableListForObjects, { Item } from '@/app/components/PageComponents/Admin/Articles/ScrollableListForObjects';
 
 import { toast } from "react-toastify";
 import Box from '@mui/material/Box';
@@ -28,94 +29,24 @@ export default function AudienceSelectionModal({
 
     const [isSaved, setIsSaved] = useState(false);
 
-    const [selectedPrograms, setSelectedPrograms] = useState<string[]>([]);
-    const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+    const [selectedPrograms, setSelectedPrograms] = useState<Item[]>([]);
+    const [selectedDepartments, setSelectedDepartments] = useState<Item[]>([]);
     const [selectedIntakeSeasons, setSelectedIntakeSeasons] = useState<string[]>([]);
     const [selectedIntakeYears, setSelectedIntakeYears] = useState<string[]>([]);       // convert fetched numbers to string (to match the 'All' option)
-    const [audienceSelection, setAudienceSelection] = useState<any>({});
     
+    const [isLoading, setIsLoading] = useState(false);
     const [availableAudience, setAvailableAudience] = useState<any>({});
-    const { programs, departments, intakeSeasons, intakeYears } = availableAudience;
 
+    const [programsData, setProgramsData] = useState<Item[]>([]);
+    const [departmentsData, setDepartmentsData] = useState<Item[]>([]);
+    const [intakeSeasons, setIntakeSeasons] = useState<string[]>([]);
+    const [intakeYears, setIntakeYears] = useState<string[]>([]);
+    // const { programs = [], departments = [], intakeSeasons = [], intakeYears = [] } = availableAudience;
 
-
-    const handleAudienceSelectionClose = () => {
-        if (!isSaved) {
-            saveAudienceCriteria({});
-            setOpenAudienceSelectionModal(false);
-        } 
-        setOpenAudienceSelectionModal(false)
-    };
-
-    const handleSave = async () => {
-        const audienceCriteria = {
-          programs: selectedPrograms.includes('All') ? ['All'] : selectedPrograms,
-          departments: selectedDepartments.includes('All') ? ['All'] : selectedDepartments,
-          intakeSeasons: selectedIntakeSeasons.includes('All') ? ['All'] : selectedIntakeSeasons,
-          intakeYear: selectedIntakeYears.includes('All') ? ['All'] : selectedIntakeYears,
-        };
-
-        await saveAudienceCriteria(audienceCriteria);
-        
-        setIsSaved(true);
-        handleAudienceSelectionClose();
-        setShowAccordion(true);
-    };
-
-    // Handle selection for Programs
-    const handleProgramSelection = (program: string) => {
-        if (program === 'All') {
-        setSelectedPrograms(selectedPrograms.includes('All') ? [] : ['All', ...programs.map((p) => p.name)]);
-        } else {
-        const updatedPrograms = selectedPrograms.includes(program)
-            ? selectedPrograms.filter((p) => p !== program)
-            : [...selectedPrograms.filter((p) => p !== 'All'), program];
-        setSelectedPrograms(updatedPrograms.length === 0 ? [] : updatedPrograms);
-        }
-    };
-    
-    // Handle selection for Departments
-    const handleDepartmentSelection = (department: string) => {
-        if (department === 'All') {
-        setSelectedDepartments(selectedDepartments.includes('All') ? [] : ['All', ...departments.map((d) => d.name)]);
-        } else {
-        const updatedDepartments = selectedDepartments.includes(department)
-            ? selectedDepartments.filter((d) => d !== department)
-            : [...selectedDepartments.filter((d) => d !== 'All'), department];
-        setSelectedDepartments(updatedDepartments.length === 0 ? [] : updatedDepartments);
-        }
-    };
-
-    // Handle selection for Intake Season
-    const handleIntakeSeasonSelection = (season: string) => {
-        if (season === 'All') {
-            // Toggle "All" selection
-            setSelectedIntakeSeasons(selectedIntakeSeasons.includes('All') ? [] : ['All', ...intakeSeasons]);
-        } else {
-            // Toggle specific season selection
-       const updateSeasons = selectedIntakeSeasons.includes(season)
-            ? selectedIntakeSeasons.filter((s) => s !== season)                      // deselect 
-            : [...selectedIntakeSeasons.filter((s) => s !== 'All'), season];         // select
-        setSelectedIntakeSeasons(updateSeasons.length === 0 ? [] : updateSeasons);
-        }
-    };
-
-    // Handle selection for Intake Year
-    const handleIntakeYearSelection = (year: number | 'All') => {
-        if (year === 'All') {
-            // toggle all. --> Convert fetched numbers to string (to match the 'All' option)
-            setSelectedIntakeYears(selectedIntakeYears.includes('All') ? [] : ['All', ...intakeYears.map((y) => y.toString())]);    
-        } else {
-            const updatedYears = selectedIntakeYears.includes(year.toString()) 
-            ? selectedIntakeYears.filter((y) => y !== year.toString()) 
-            : [...selectedIntakeYears.filter((y) => y !== 'All'), year.toString()];
-
-            setSelectedIntakeYears(updatedYears.length === 0 ? [] : updatedYears);
-        }
-    };
 
     const fetchAvailableAudience = async () => {
         try {
+            setIsLoading(true);
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/audience/`, {
                 method: "GET",
                 headers: {
@@ -133,54 +64,73 @@ export default function AudienceSelectionModal({
             }
 
             setAvailableAudience(audienceData);
+            
+            setProgramsData(audienceData.data.programs);
+            setDepartmentsData(audienceData.data.departments);
+            setIntakeSeasons(audienceData.data.intakeSeasons);
+            setIntakeYears(audienceData.data.intakeYears);
+
             console.log(audienceData.message);
         } catch (error: any) {
             console.error("Error fetching Audience Selection: ", error);
             toast.error("Error fetching Audience Selection", error);
+        } finally {
+            setIsLoading(false);
         }
-    }
+    };
 
-    // const [programs] = useState([
-    //     { program_id: '1', name: 'Program 1' },
-    //     { program_id: '2', name: 'Program 2' },
-    //     { program_id: '3', name: 'Program 3' },
-    //     { program_id: '4', name: 'Program 4' },
-    //     { program_id: '5', name: 'Program 5' },
-    //     { program_id: '6', name: 'Program 6' },
-    //     { program_id: '7', name: 'Program 7' },
-    //     { program_id: '8', name: 'Program 8' },
-    //     { program_id: '9', name: 'Program 9' },
-    //     { program_id: '10', name: 'Program 10' },   
-    //     { program_id: '11', name: 'Program 11' },
-    //     { program_id: '12', name: 'Program 12' },
-    // ]);
+    const handleAudienceSelectionClose = () => {
+        if (!isSaved) {
+            saveAudienceCriteria({});
+            setOpenAudienceSelectionModal(false);
+        } 
+        setOpenAudienceSelectionModal(false)
+    };
 
-    // const [departments] = useState([
-    //     { department_id: '1', name: 'Department 1' },
-    //     { department_id: '2', name: 'Department 2' },
-    //     { department_id: '3', name: 'Department 3' },
-    // ]);
+    const handleSave = async () => {
+        const audienceCriteria = {
+          programs: selectedPrograms,
+          departments: selectedDepartments,
+          intakeSeasons: selectedIntakeSeasons.includes('All') ? ['All'] : selectedIntakeSeasons,
+          intakeYear: selectedIntakeYears.includes('All') ? ['All'] : selectedIntakeYears,
+        };
 
+        saveAudienceCriteria({...audienceCriteria});              //ensure reactivity: pass a new object reference to trigger re-render
+        
+        setIsSaved(true);
+        handleAudienceSelectionClose();
+        setShowAccordion(true);
+    };
 
-    // const [intakeSeasons] = useState(['Fall', 'Winter', 'Spring', 'Summer']);
-    // const [intakeYears] = useState([2021, 2022, 2023, 2024, 2025]); 
+    // Handle selection for Programs
+    const handleProgramSelection = (programs: Item[]) => {
+        setSelectedPrograms(programs); 
+    };
+  
+  // Handle selection for Departments
+    const handleDepartmentSelection = (departments: Item[]) => {
+        setSelectedDepartments(departments); 
+    };
 
+    // Handle selection for Intake Season
+    const handleIntakeSeasonSelection = (seasons: string[]) => {
+        setSelectedIntakeSeasons(seasons);
+    };
 
-    // useEffect(() => {
-    //     console.log("Selected Programs: ", selectedPrograms);
-    //     console.log("Selected Departments: ", selectedDepartments);
-    //     console.log("Selected Intake Seasons: ", selectedIntakeSeasons);
-    //     console.log("Selected Intake Years: ", selectedIntakeYears);
-    // }, [selectedDepartments, selectedPrograms, selectedIntakeSeasons, selectedIntakeYears]);
+    // Handle selection for Intake Year
+    const handleIntakeYearSelection = (years: string[]) => {
+        setSelectedIntakeYears(years);
+    };
+
+    useEffect(() => {
+        fetchAvailableAudience();
+    }, []);
 
     useEffect(() => {
         console.log("Current Audience Criteria (modal): ", currentAudienceCriteria);
     }, [currentAudienceCriteria]);
 
-    useEffect(() => {
-        fetchAvailableAudience();
-        console.log("Available Audience: ", availableAudience);
-    }, [availableAudience]);
+
 
 
     return (
@@ -210,50 +160,59 @@ export default function AudienceSelectionModal({
                             </div>
                         </div>
 
+                        <div className="w-full">
+                            {isLoading ? (
+                                <p>Loading Audience...</p>
+                            ) : programsData?.length > 0 || departmentsData?.length > 0 || intakeSeasons?.length > 0 || intakeYears?.length > 0 ? (
+                                <div className='flex flex-row items-center justify-center px-6 my-2 w-full gap-4'>
+                                    
+                                    {/* Departments List */}
+                                    <div className="flex-1">
+                                        <label className="block text-md font-semibold mb-2">Departments</label>
+                                        <ScrollableListForObjects
+                                            items={departmentsData?.map((d) => ({ department_id: d.department_id, name: d.name })) || []}
+                                            selectedItems={selectedDepartments}
+                                            onSelect={handleDepartmentSelection}
+                                            idObjKey="department_id"
+                                        />
+                                    </div>
+                                    
+                                    {/* Programs List */}
+                                    <div className="flex-1">
+                                        <label className="block text-md font-semibold mb-2">Programs</label>
+                                        <ScrollableListForObjects
+                                            items={programsData?.map((p) => ({ program_id: p.program_id, name: p.name })) || []}
+                                            selectedItems={selectedPrograms}
+                                            onSelect={handleProgramSelection}
+                                            idObjKey="program_id"
+                                        />
+                                    </div>
 
-                        <div className="flex flex-row items-center justify-center px-6 my-2 w-full border border-green-400 gap-4">
+                                    {/* Intake Season List */}
+                                    <div className="w-1/6">
+                                        <label className="block text-md font-semibold mb-2">Intake Season</label>
+                                        <ScrollableList
+                                            items={intakeSeasons?.map((season) => season) || []}
+                                            selectedItems={selectedIntakeSeasons}
+                                            onSelect={handleIntakeSeasonSelection}
+                                            includeAllOption={true}
+                                        />
+                                    </div>
 
-                            {/* Programs List */}
-                            <div className="flex-1">
-                                <label className="block text-md font-semibold mb-2">Programs</label>
-                                <ScrollableList
-                                    items={programs?.map((program) => program.name) || []}
-                                    selectedItems={selectedPrograms}
-                                    onSelect={handleProgramSelection}
-                                />
-                            </div>
-
-                            {/* Departments List */}
-                            <div className="flex-1">
-                                <label className="block text-md font-semibold mb-2">Departments</label>
-                                <ScrollableList
-                                items={departments?.map((d) => d.name) || []}
-                                selectedItems={selectedDepartments}
-                                onSelect={handleDepartmentSelection}
-                                />
-                            </div>
-
-                            {/* Intake Season List */}
-                            <div className="flex-1">
-                                <label className="block text-md font-semibold mb-2">Intake Season</label>
-                                <ScrollableList
-                                items={intakeSeasons?.map((season) => season) || []}
-                                selectedItems={selectedIntakeSeasons}
-                                onSelect={handleIntakeSeasonSelection}
-                                includeAllOption={true}
-                                />
-                            </div>
-
-                            {/* Intake Year List */}
-                            <div className="flex-1">
-                                <label className="block text-md font-semibold mb-2">Intake Season</label>
-                                <ScrollableList
-                                items={intakeYears?.map((y) => y.intake_year.toString()) || []}
-                                selectedItems={selectedIntakeYears}
-                                onSelect={handleIntakeYearSelection}
-                                includeAllOption={true}
-                                />
-                            </div>
+                                    {/* Intake Year List */}
+                                    <div className="w-1/6">
+                                        <label className="block text-md font-semibold mb-2">Intake Season</label>
+                                        <ScrollableList
+                                            items={intakeYears?.map((y) => y.toString()) || []}
+                                            selectedItems={selectedIntakeYears}
+                                            onSelect={handleIntakeYearSelection}
+                                            includeAllOption={true}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <p>No Audience Data Available</p>
+                            )}
                         </div>
 
                         <div className="my-5">
@@ -292,6 +251,19 @@ const modalStyle = {
 const customButton = "group text-saitDarkRed border border-saitDarkRed bg-saitWhite font-normal h-9 flex flex-row items-center justify-center h-9 py-2 px-4 rounded-full hover:bg-saitDarkRed hover:text-white hover:shadow-2xl active:scale-75 transition delay-150 transition-colors transition-transform duration-300 ease-in-out";
 
 
+
+// {
+//     "programs": [
+//         {"name": "Software Development", "program_id": "SADT-009"},
+//         {"name": "Business Administration Diploma", "program_id": "SADT-012"}
+//     ],
+//     "intakeYear": ["2023", "2024", "2025"],
+//     "departments": [
+//         {"name": "School of Advanced Digital Technology", "department_id": "SADT630"}, 
+//         {"name": "School of Business", "department_id": "SADT420"}
+//     ], 
+//     "intakeSeasons": ["Fall", "Winter", "Summer"]
+// }
 
 
     // return (

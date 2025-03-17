@@ -5,7 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-
+import { maxHeaderSize } from 'http';
 interface CriteriaAccordionProps {
     criteria: any;
 }
@@ -13,30 +13,19 @@ interface CriteriaAccordionProps {
 const CriteriaAccordion: React.FC<CriteriaAccordionProps> = ({ criteria }) => {
     
     const [expanded, setExpanded] = useState(false);
-    const accordionRef = useRef<HTMLDivElement>(null);  // Reference to the accordion element
-    const [criteriaLength, setCriteriaLength] = useState(0);
+    const accordionRef = useRef<HTMLDivElement>(null);  
+    
+    const [totalCriteria, setTotalCriteria] = useState<number>(0);
 
-    const formatCriteria = (criteria: any) => {
-        const parts = [];
+    const countCriteria= (criteria: any) => {
+        const totalSelectedItems =
+        (criteria?.departments?.length || 0) +
+        (criteria?.programs?.length || 0) +
+        (criteria?.intakeSeasons?.length || 0) +
+        (criteria?.intakeYear?.length || 0);
 
-        if (criteria.programs && criteria.programs.length > 0) {
-            parts.push(`Programs: ${criteria.programs.join(", ")}`);
-        }
-
-        if (criteria.departments && criteria.departments.length > 0) {
-            parts.push(`Departments: ${criteria.departments.join(", ")}`);
-        }
-
-        if (criteria.intakeSeasons && criteria.intakeSeasons.length > 0) {
-            parts.push(`Intake Seasons: ${criteria.intakeSeasons.join(", ")}`);
-        }
-
-        if (criteria.intakeYear && criteria.intakeYear.length > 0) {
-            parts.push(`Intake Years: ${criteria.intakeYear.join(", ")}`);
-        }
-
-        return parts.length > 0 ? parts.join("; ") : "No criteria selected";
-    };
+        setTotalCriteria(totalSelectedItems);
+    }    
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -52,15 +41,11 @@ const CriteriaAccordion: React.FC<CriteriaAccordionProps> = ({ criteria }) => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     const totalPrograms = criteria.programs ? criteria.programs.length : 0;
-    //     const totalDepartments = criteria.departments ? criteria.departments.length : 0;
-    //     const totalIntakeSeasons = criteria.intakeSeasons ? criteria.intakeSeasons.length : 0;
-    //     const totalIntakeYears = criteria.intakeYear ? criteria.intakeYear.length : 0;
-        
-    //     const totalLength = totalPrograms + totalDepartments + totalIntakeSeasons + totalIntakeYears;
-    //     setCriteriaLength(totalLength);
-    // }, [criteria]);
+
+    useEffect(() => {
+        countCriteria(criteria);
+    }, [criteria]);
+
 
     return (
         // set criteria length in TITLE if it is not empty 
@@ -76,16 +61,62 @@ const CriteriaAccordion: React.FC<CriteriaAccordionProps> = ({ criteria }) => {
                     sx={accordionStyle.summary}
                 >
                     <Typography variant="subtitle1" sx={accordionStyle.title}>
-                        <p className="text-md">Selected Criteria 
-                            {Object.keys(criteria).length > 0 ? <CheckRoundedIcon sx={{ marginLeft: 1.2 }}/> : ""}
-                        </p>
+                        <div className="flex flex-row">
+                            <p className="text-md">
+                                {Object.keys(criteria).length > 0 ? `Selected Criteria (${totalCriteria})` : "Selected Criteria"}
+                            </p>
+                            {Object.keys(criteria).length > 0 &&
+                                <CheckRoundedIcon sx={{ marginLeft: 1.2 }}/>
+                            }
+                        </div>
                     </Typography>
                 </AccordionSummary>
-                <AccordionDetails sx={accordionStyle.details}>
-                    <Typography variant="body2" sx={accordionStyle.content}>
-                        {formatCriteria(criteria)}
-                    </Typography>
-                </AccordionDetails>
+                {criteria && Object.keys(criteria).length > 0 ? (   
+                    // <div className="bg-white p-2 border-gray-400 border rounded-md">
+                    <div>
+                        {criteria.departments && criteria.departments.length > 0 && (
+                            <AccordionDetails sx={accordionStyle.details}>
+                            <Typography variant="body2" component="div" sx={accordionStyle.content}>
+                                <span className="font-semibold">Departments:</span> 
+                                {criteria.departments.map((d: any) => 
+                                    <div key={d.department_id}>* {d.name}</div>
+                                )}
+                            </Typography>
+                        </AccordionDetails>  
+                        )}
+                        {criteria.programs && criteria.programs.length > 0 && (
+                            <AccordionDetails sx={accordionStyle.details}>
+                                <Typography variant="body2" component="div" sx={accordionStyle.content}>
+                                    <span className="font-semibold">Programs:</span> 
+                                    {criteria.programs.map((p: any) => 
+                                        <div key={p.program_id}>* {p.name}</div>
+                                    )}
+                                </Typography>
+                            </AccordionDetails>
+                        )}
+                        {criteria.intakeSeasons && criteria.intakeSeasons.length > 0 && (
+                            <AccordionDetails sx={accordionStyle.details}>
+                                <Typography variant="body2" component="div" sx={accordionStyle.content}>
+                                    <span className="font-semibold">Intake Seasons:</span> {criteria.intakeSeasons.join(", ")}
+                                </Typography>
+                            </AccordionDetails>
+                        )}
+                        {criteria.intakeYear && criteria.intakeYear.length > 0 && (
+                            <AccordionDetails sx={accordionStyle.details}>
+                                <Typography variant="body2" component="div" sx={accordionStyle.content}>
+                                    <span className="font-semibold">Intake Years:</span> {criteria.intakeYear.join(", ")}
+                                </Typography>
+                            </AccordionDetails>
+                        )}
+
+                    </div>
+                ) : (
+                    <AccordionDetails sx={accordionStyle.details}>
+                        <Typography variant="body2" sx={accordionStyle.content}>
+                            No criteria selected
+                        </Typography>
+                    </AccordionDetails>
+                )}
             </Accordion>
         </div>
     );
@@ -96,12 +127,13 @@ export default CriteriaAccordion;
 const accordionStyle = {
     accordion: {
         boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.1)',
-        borderRadius: '18px !important', 
+        borderRadius: '12px !important', 
         border: '1px solid #9ca3af',
-        backgroundColor: '#f7f7f7',
+        backgroundColor: '#fffff',
         position: 'absolute',
         zIndex: 1000,
         width: '100%',
+        // height: '41px',
         // maxHeight: '40px !important', 
         display: 'flex',
         flexDirection: 'column',
@@ -111,7 +143,7 @@ const accordionStyle = {
             // borderRadius: '18px 18px 18px 18px', // 
         },
         '&.Mui-expanded': {
-            borderRadius: '18px !important',
+            borderRadius: '12px !important',
             // minHeight: 'unset !important', // Allow height to adjust dynamically when expanded
             zIndex: 1000,
         },
@@ -119,17 +151,22 @@ const accordionStyle = {
     summary: {
         borderRadius: '100px', 
         '&.Mui-expanded': {
-            borderRadius: '18px', 
+            borderRadius: '12px', 
             minHeight: 'unset !important'
         },
     },
     details: {
         padding: '16px',
         borderTop: '1px solid #d1d3d8', 
-        borderRadius: '18px', 
+        borderRadius: '12px', 
         backgroundColor: '#f7f7f7',
         border: '1px solid #9ca3af',
         boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.1)',
+        marginRight: '12px',
+        marginLeft: '12px',
+        '&:last-child': {
+            marginBottom: '12px',
+        }
     },
     title: {
         fontWeight: '400',

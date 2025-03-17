@@ -80,7 +80,9 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
     const [showAccordion, setShowAccordion] = useState(false);
 
     const saveAudienceCriteria = async (audienceCriteria: any) => {
-        await setAudienceCriteria(audienceCriteria);
+        setShowAccordion(false);                                             // disable accordion while updating
+        setAudienceCriteria((prev) => ({...prev, ...audienceCriteria}));                                   
+        setTimeout(() => setShowAccordion(true), 0);                                       
     }
 
     const toggleContentMode = () => {
@@ -212,7 +214,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
             title: data.title,
             datePublished: formattedDate,
             type_id: type_id,
-            audience: data.audience,
+            audience: audienceCriteria || "All",
             tags: data.tags,
             content: content,
             status: type === "update" ? data.status : type === "publish" ? "Published" : "Draft",
@@ -315,16 +317,21 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
     //     router.push(`/articles/preview?data=${encodeURIComponent(JSON.stringify(articleData))}`);
     // }
 
-
     useEffect(() => {
         setUserFullName(`${userData?.first_name || ""} ${userData?.last_name || ""}`.trim());
     }, []);
 
     useEffect(() => {
-        console.log('Selected Audience criteria (Article Editor): ', audienceCriteria);
-        console.log('Length of Selected Audience criteria (Article Editor): ', Object.keys(audienceCriteria).length);  
-    }, [audienceCriteria]);
+        setShowAccordion(false);                                             
+        setAudienceCriteria(articleObject?.audience || {});
+        // setAudienceCriteria((prev) => ({...prev, ...audienceCriteria}));                                   
+        setTimeout(() => setShowAccordion(true), 0);       
+    }, [articleObject]);
 
+    
+    // useEffect(() => {
+    //     console.log("Article Object: ", articleObject);
+    // }, []);
 
     return(
         <main className="h-full w-full">
@@ -478,9 +485,9 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                                 
                                 {/* <CriteriaAccordion criteria={audienceCriteria} />  */}
                                 {showAccordion ? (
-                                    <div className="flex items-center justify-center gap-2 w-full">                                       
+                                    <div className="flex w-full items-center justify-center gap-2">                                       
                                         <Tooltip title="Select Audience" arrow>
-                                            <div className="">
+                                            <div>
                                                 <ActionButton onClick={handleAudienceSelectionOpen} type="button" icon={<PersonSearchRoundedIcon sx={{ fontSize: 23 }}/>}
                                                     bgColor="bg-saitWhite" textColor="text-saitBlue" borderColor="border-saitBlue" 
                                                     hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
@@ -517,7 +524,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                         </div>
                         <div>
                             <label className={formStyling.labelStyling} htmlFor="tags">Tags</label>
-                            <input className={formStyling.inputStyling} type="text" id="tags" placeholder="Enter Tags"
+                            <input className={`${formStyling.inputStyling} h-[3.4rem]`} type="text" id="tags" placeholder="Enter Tags"
                                 {...register("tags", { required: false })}
                             />
                             {errors.tags && <p className={formStyling.errorStyle}>{errors.tags.message}</p>}
@@ -618,4 +625,4 @@ const formStyling = {
     errorStyle: "text-red-500 text-sm",
 }
 
-const audienceInput = "font-light w-full px-3 p-2 border border-gray-400 bg-saitWhite mt-1 rounded-xl focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent";
+const audienceInput = "font-light w-full h-[3.3rem] px-3 p-2 border border-gray-400 bg-saitWhite mt-1 rounded-xl focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent";
