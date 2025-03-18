@@ -210,7 +210,6 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
     console.log('Request payload size:', JSON.stringify(req.body).length);
 
     try {
-        // const { title, content, imageUrl, audience, status, type, author } = req.body;
         const { title, content, imageUrl, audience, status, type_id, author, tags } = req.body;
         const email = req.user.decodedClaims.email;
 
@@ -235,7 +234,7 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
             } as any
         });
 
-        console.log('Article created:', submitted);
+        // console.log('Article created:', submitted);
 
         res.status(201).json({ message: 'Article created successfully' });
     } catch (error) {
