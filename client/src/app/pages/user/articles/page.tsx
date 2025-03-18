@@ -7,13 +7,46 @@ import { fetchArticleTypes, fetchAllArticles } from "../articles/articles";
 import { ArticleTypeInterface} from "../props";
 import ArticleTypeButton from "@/app/components/PageComponents/User/Articles/ArticleTypeButton";
 
+type TypesCount = {
+  [key: string]: number;
+};
+
 export default function Articles() {
   const searchParams = useSearchParams();
   const paramsType = searchParams.get("type");
 
   const [typeName, setTypeName] = useState(paramsType || "All");
   const [articleTypes, setArticleTypes] = useState([]);
-  const [allArticles, setAllArticles] = useState([]); // Store all articles only once
+  const [allArticles, setAllArticles] = useState([]); 
+
+  const [articleCounts, setArticleCounts] = useState<TypesCount>({});
+
+  const getArticleCountsByType = (allArticles: any, articleTypes: any) => {
+    const countsByType = new Map();
+
+    articleTypes.forEach((type: any) => {                                       
+        countsByType.set(type.type_id, 0);
+    });
+
+    allArticles.forEach((article: any) => {
+        const typeId = article.type_id;
+        if (countsByType.has(typeId)) {
+            countsByType.set(typeId, countsByType.get(typeId) + 1);
+        }
+    });
+
+    const result: TypesCount = {};
+    countsByType.forEach((count, typeId) => {
+        result[typeId] = count;
+    });
+
+    // console.log(">>>> result: ", result);
+    return result;
+  };
+
+  useEffect(() => {
+    setArticleCounts(getArticleCountsByType(allArticles, articleTypes));
+  }, [allArticles, articleTypes]);
 
   useEffect(() => {
     // Fetch article types
@@ -41,7 +74,7 @@ export default function Articles() {
   }, []);
 
   // Filter articles based on selected type (computed on re-render)
-  const filteredArticles = useMemo(() => {
+  const filteredArticles = useMemo(() => {                                                                //useMemo is used to memoize the result of a function. Memoize is
     if (typeName === "All") return allArticles;
     const selectedType = articleTypes.find((t) => t.name === typeName);
     return selectedType ? allArticles.filter(article => article.type_id === selectedType.type_id) : [];
@@ -51,12 +84,14 @@ export default function Articles() {
     <div className="m-8">
       <div className="flex flex-row space-x-4">
         {articleTypes.map((articleType: ArticleTypeInterface) => (
-          <ArticleTypeButton
-            key={articleType.type_id}
-            articleType={articleType}
-            type={typeName}
-            setType={setTypeName}
-          />
+          articleCounts[articleType.type_id] > 0 && (
+            <ArticleTypeButton
+              key={articleType.type_id}
+              articleType={articleType}
+              type={typeName}
+              setType={setTypeName}
+            />
+          )
         ))}
       </div>
       
