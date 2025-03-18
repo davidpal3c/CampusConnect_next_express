@@ -9,7 +9,7 @@ import OptionsButton from "@/app/components/Buttons/OptionsButton";
 import ArticleEditor from "@/app/components/PageComponents/Admin/Articles/ArticleEditor";
 import ArticlesTableDetailed from "@/app/components/PageComponents/Admin/Articles/ArticlesTableDetailed";
 import { useArticleTypes } from "@/app/_utils/articleTypes-context";
-import ArticleTypesModal from "@/app/components/PageComponents/Admin/Articles/ArticleTypesModal";
+import ArticleTypesModal from "@/app/components/PageComponents/Admin/Articles/Modals/ArticleTypesModal";
 import { toast } from "react-toastify";
 
 // mui 
@@ -25,6 +25,7 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import ArrowLeftRoundedIcon from '@mui/icons-material/ArrowLeftRounded';
 import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 
+import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
 import { BsFiletypePdf } from "react-icons/bs";
 
@@ -257,10 +258,11 @@ export default function Articles() {
   };
 
   const [articlesPageOptionHandlers] = useState([
-    { title: "Articles Data Analytics", handler: () => console.log("Articles Data Analytics"), icon: null, },
+    { title: "Articles Data Analytics", handler: () => console.log("Articles Data Analytics"), icon: <QueryStatsRoundedIcon style={{ color: "#005795", fontSize: 21}}/>, },
+    { title: "Audience Settings", handler: () => console.log("Audience Settings") },
+    { title: "Manage Article Types", handler: () => handleArticleTypesModalOpen(), icon: null },
     { title: "Export to Excel", handler: () => console.log("Export to Excel"), icon: <PiMicrosoftExcelLogoFill style={{ color: "#005795", fontSize: 20}} /> },
     { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
-    { title: "Manage Article Types", handler: () => handleArticleTypesModalOpen(), icon: null },
   ]);
 
 
@@ -440,7 +442,6 @@ export default function Articles() {
               </motion.div>
             }
           </AnimatePresence>
-
 
         <div className="mt-6">
           <p className="text-black">Total Articles: {articles.length}</p>

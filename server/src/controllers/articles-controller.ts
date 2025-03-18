@@ -195,8 +195,6 @@ export const getArticleById = async (req: Request, res: Response) => {
             return; 
         }
 
-        console.log("Article by ID: ", article);
-
         res.status(200).json(article);  
         return;
     } catch (error) {
@@ -212,8 +210,7 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
     console.log('Request payload size:', JSON.stringify(req.body).length);
 
     try {
-        // const { title, content, imageUrl, audience, status, type, author } = req.body;
-        const { title, content, imageUrl, audience, status, type_id, author } = req.body;
+        const { title, content, imageUrl, audience, status, type_id, author, tags } = req.body;
         const email = req.user.decodedClaims.email;
 
         const authorId = await prisma.user.findUnique({
@@ -221,7 +218,9 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
             select: { user_id: true }
         })
 
-        await prisma.article.create({
+        console.log('Audience; ', audience);
+
+        const submitted = await prisma.article.create({
             data: {
                 title: title,
                 content: content,
@@ -231,8 +230,11 @@ export const createArticle = async (req: AuthenticatedRequest, res: Response) =>
                 status: status,
                 type_id: type_id,
                 author: author,
+                tags: tags
             } as any
         });
+
+        // console.log('Article created:', submitted);
 
         res.status(201).json({ message: 'Article created successfully' });
     } catch (error) {
@@ -268,8 +270,10 @@ export const updateArticle = async (req: Request, res: Response) => {
         //     imageUrl, audience, status, author_id, author, type } = req.body;
 
         const { title, datePublished, content, imageUrl, audience, status, 
-            author_id, author, type_id } = req.body;
+            author_id, author, type_id, tags } = req.body;
 
+        console.log("Audience: ", audience);
+        
         const updateArticleData: any = {};
 
         if (title) updateArticleData.title = title;
@@ -281,6 +285,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (author_id) updateArticleData.author_id = author_id;
         if (author) updateArticleData.author = author;
         if (type_id) updateArticleData.type_id = type_id;
+        if (tags) updateArticleData.tags = tags;
 
         // console.log("Image: ", imageUrl);
         // console.log("Update Article Data: ", updateArticleData);

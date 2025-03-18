@@ -58,7 +58,7 @@ export default function Users() {
                 headers: {
                   "content-type": "application/json",
                 },
-                credentials: "include",
+                credentials: "include",  
             });
 
             const data = await response.json();
@@ -127,7 +127,12 @@ export default function Users() {
     const handlePanel = () => {
         setIsPanelVisible(!isPanelVisible);
     };
+
+    // useEffect(() => {   
+    //     fetchUserData();
+    // }, []);
     
+
     return (
         <div className="bg-saitWhite h-screen">
             {isLoading ? (
@@ -195,7 +200,6 @@ export default function Users() {
                         )}
 
                     {/* Create New User */}
-
                     <AnimatePresence>
                         {isPanelVisible &&
                         <motion.div

@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 
 type ActionButtonProps = {
     title?: string;
-    icon?: React.ReactElement;
+    icon?: any;
     type?: string;
     onClick?: () => void;
     disabled?: boolean;

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { set, useForm } from "react-hook-form";
 import { useArticleTypes } from "@/app/_utils/articleTypes-context";
-import ArticleTypeDeleteModal from "./ArticleTypeDeleteModal";
+import ArticleTypeDeleteModal from "./Modals/ArticleTypeDeleteModal";
 
 import { IconButton } from "@mui/material"
 import Tooltip from "@mui/material/Tooltip"
@@ -151,7 +151,7 @@ export default function ArticleTypeCard({ articleType, fetchArticleData }: Artic
                         initial={{ opacity: 0, x: 100 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 100 }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
                         className="flex flex-row items-center justify-between w-full mt-[0.4rem] bg-white shadow-md border border-transparent p-2 rounded-lg"
                     >
                         <form className="flex flex-row items-center justify-between w-full" onSubmit={handleSubmit((data) => processEditArticleType(data))}>
