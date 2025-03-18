@@ -2,14 +2,14 @@
 
 import { useUserAuth } from "@/app/_utils/auth-context";
 import UserSidebarButton from "./UserSidebarBbutton";
-import HomeIcon from "../Icons/home_icon";
-import EventIcon from "../Icons/event_icon";
-import NotificationIcon from "../Icons/notification_icon";
-import GroupIcon from "../Icons/group_icon";
-import CampusInformationIcon from "../Icons/campusInformation_icon";
-import GeneralInformationIcon from "../Icons/generalnformation_icon";
+import HomeIcon from "../icons/home_icon";
+import EventIcon from "../icons/event_icon";
+import NotificationIcon from "../icons/notification_icon";
+import GroupIcon from "../icons/group_icon";
+import CampusInformationIcon from "../icons/campusInformation_icon";
+import GeneralInformationIcon from "../icons/generalnformation_icon";
 import SearchIcon from "@mui/icons-material/Search";
-import PreArrivalIcon from "../Icons/preArrival_icon";
+import PreArrivalIcon from "../icons/preArrival_icon";
 
 export default function StudentSidebar() {
   const { user } = useUserAuth();
