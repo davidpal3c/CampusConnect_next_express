@@ -259,10 +259,10 @@ export default function Articles() {
 
   const [articlesPageOptionHandlers] = useState([
     { title: "Articles Data Analytics", handler: () => console.log("Articles Data Analytics"), icon: <QueryStatsRoundedIcon style={{ color: "#005795", fontSize: 21}}/>, },
-    { title: "Audience Settings", handler: () => console.log("Audience Settings") },
-    { title: "Manage Article Types", handler: () => handleArticleTypesModalOpen(), icon: null },
+    // { title: "Audience Settings", handler: () => console.log("Audience Settings") },
     { title: "Export to Excel", handler: () => console.log("Export to Excel"), icon: <PiMicrosoftExcelLogoFill style={{ color: "#005795", fontSize: 20}} /> },
     { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
+    { title: "Manage Article Types", handler: () => handleArticleTypesModalOpen(), icon: null },
   ]);
 
 
@@ -304,19 +304,6 @@ export default function Articles() {
 
             {articlesView === "Simple" && (
               <div className="flex flex-row space-x-2">
-                <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 w-32">
-                  <select
-                      className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
-                      onChange={(e) => handleFilterByType(e.target.value)}
-                  >
-                    <option value="">Filter By Type</option>
-                    {articleTypes.map((type, index) => (
-                      <option key={index} value={type}>
-                        {type}
-                      </option>
-                    ))}        
-                  </select>
-                </div>
               
                 <div className="flex flex-row w-[9.2rem] items-center bg-white border-2 rounded-lg p-1">
                   <select
@@ -331,6 +318,20 @@ export default function Articles() {
                     <option value="Date ASC">Most Recent (created)</option>   
                     <option value="Title ASC">Title (A to Z)</option> 
                     <option value="Title DSC">Title (Z to A)</option> 
+                  </select>
+                </div>
+
+                <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 w-32">
+                  <select
+                      className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
+                      onChange={(e) => handleFilterByType(e.target.value)}
+                  >
+                    <option value="">Filter By Type</option>
+                    {articleTypes.map((type: any, index: number) => (
+                      <option key={index} value={type}>
+                        {type}
+                      </option>
+                    ))}        
                   </select>
                 </div>
               </div>
