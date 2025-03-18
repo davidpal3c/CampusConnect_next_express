@@ -183,6 +183,14 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
             return <span>{params.row.type?.name || "Unknown"}</span>;
         }},
         { field: 'audience', headerName: 'Audience', width: 110 },
+        // { field: 'audience', headerName: 'Audience', width: 110, renderCell: (params) => {
+        //     return <span>{params.row.audience?.join(', ') || ""}</span>;
+        //     return(
+        //         <div className="flex items-center justify-center w-full h-full">
+        //             < />
+        //         </div>
+        //     );
+        // } },
         { field: 'author', headerName: 'Author', width: 125 },
         { field: 'author_id', headerName: 'Author ID', width: 90, renderCell: (params) => { 
             return(

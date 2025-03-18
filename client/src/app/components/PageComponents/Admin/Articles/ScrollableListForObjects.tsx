@@ -13,6 +13,7 @@ interface ScrollableListForObjectsProps {
   onSelect: (items: Item[]) => void;                            // handler for selection
   includeAllOption?: boolean;                                   // Whether to include the "All" option
   idObjKey: string;                                               // Key to use for comparing objects  
+  currentAudienceCriteria: any;                                 // current audience criteria
 }
 
 const ScrollableListForObjects: React.FC<ScrollableListForObjectsProps> = ({
@@ -21,6 +22,7 @@ const ScrollableListForObjects: React.FC<ScrollableListForObjectsProps> = ({
   onSelect,
   includeAllOption = true,
   idObjKey,
+  currentAudienceCriteria
 }) => {
   const handleItemClick = (item: 'All' | Item) => {         
     if (item === 'All') {                                   // toggle "All" selection
@@ -64,7 +66,7 @@ const ScrollableListForObjects: React.FC<ScrollableListForObjectsProps> = ({
           <li
             key={`${item[idObjKey]}-${item.name}-${index}`} 
             className={`p-2 cursor-pointer ${
-              selectedItems.some((selected) => selected[idObjKey] === item[idObjKey])
+              selectedItems.some((selected) => selected[idObjKey] === item[idObjKey]) || currentAudienceCriteria?.some((selected: any) => selected[idObjKey] === item[idObjKey])
                 ? 'bg-blue-100'
                 : 'hover:bg-saitLightPurple'
             }`}

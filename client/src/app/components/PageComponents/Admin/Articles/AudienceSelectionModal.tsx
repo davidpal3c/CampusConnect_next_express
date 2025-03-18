@@ -14,7 +14,6 @@ import { IconButton } from "@mui/material";
 import { Tooltip } from '@mui/material';
 
 
-
 type AudienceSelectionModalProps = {
     openAudienceSelectionModal: any,
     setOpenAudienceSelectionModal: any,
@@ -126,11 +125,15 @@ export default function AudienceSelectionModal({
         fetchAvailableAudience();
     }, []);
 
+
+
     useEffect(() => {
         console.log("Current Audience Criteria (modal): ", currentAudienceCriteria);
+        setProgramsData(currentAudienceCriteria?.programs || []);
+        setDepartmentsData(currentAudienceCriteria?.departments || []); 
+        setIntakeSeasons(currentAudienceCriteria?.intakeSeasons || []);
+        setIntakeYears(currentAudienceCriteria?.intakeYear || []);
     }, [currentAudienceCriteria]);
-
-
 
 
     return (
@@ -174,6 +177,7 @@ export default function AudienceSelectionModal({
                                             selectedItems={selectedDepartments}
                                             onSelect={handleDepartmentSelection}
                                             idObjKey="department_id"
+                                            currentAudienceCriteria={currentAudienceCriteria?.departments}
                                         />
                                     </div>
                                     
@@ -185,6 +189,7 @@ export default function AudienceSelectionModal({
                                             selectedItems={selectedPrograms}
                                             onSelect={handleProgramSelection}
                                             idObjKey="program_id"
+                                            currentAudienceCriteria={currentAudienceCriteria?.programs}
                                         />
                                     </div>
 
@@ -196,6 +201,7 @@ export default function AudienceSelectionModal({
                                             selectedItems={selectedIntakeSeasons}
                                             onSelect={handleIntakeSeasonSelection}
                                             includeAllOption={true}
+                                            currentAudienceCriteria={currentAudienceCriteria?.intakeSeasons}
                                         />
                                     </div>
 
@@ -207,6 +213,7 @@ export default function AudienceSelectionModal({
                                             selectedItems={selectedIntakeYears}
                                             onSelect={handleIntakeYearSelection}
                                             includeAllOption={true}
+                                            currentAudienceCriteria={currentAudienceCriteria?.intakeYear}
                                         />
                                     </div>
                                 </div>
@@ -264,6 +271,8 @@ const customButton = "group text-saitDarkRed border border-saitDarkRed bg-saitWh
 //     ], 
 //     "intakeSeasons": ["Fall", "Winter", "Summer"]
 // }
+
+// {"0": "A", "1": "l", "2": "l", "programs": [{"name": "Software Development", "program_id": "SADT-009"}, {"name": "Business Administration Diploma", "program_id": "SADT-012"}], "intakeYear": ["2023", "2024"], "departments": [{"name": "School of Advanced Digital Technology", "department_id": "SADT630"}], "intakeSeasons": ["Fall", "Spring"]}
 
 
     // return (

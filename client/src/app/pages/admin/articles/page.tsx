@@ -443,7 +443,6 @@ export default function Articles() {
             }
           </AnimatePresence>
 
-
         <div className="mt-6">
           <p className="text-black">Total Articles: {articles.length}</p>
         </div>

@@ -323,15 +323,14 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
 
     useEffect(() => {
         setShowAccordion(false);                                             
-        setAudienceCriteria(articleObject?.audience || {});
-        // setAudienceCriteria((prev) => ({...prev, ...audienceCriteria}));                                   
+        // setAudienceCriteria(articleObject?.audience || {});
+        setAudienceCriteria((prev) => ({...prev, ...articleObject?.audience || {}}));                                   
         setTimeout(() => setShowAccordion(true), 0);       
     }, [articleObject]);
 
-    
-    // useEffect(() => {
-    //     console.log("Article Object: ", articleObject);
-    // }, []);
+    useEffect(() => {
+        console.log("Article Object: ", articleObject);
+    }, []);
 
     return(
         <main className="h-full w-full">

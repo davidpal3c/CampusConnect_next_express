@@ -126,7 +126,7 @@ export default CriteriaAccordion;
 
 const accordionStyle = {
     accordion: {
-        boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.2)',
         borderRadius: '12px !important', 
         border: '1px solid #9ca3af',
         backgroundColor: '#fffff',
@@ -161,7 +161,7 @@ const accordionStyle = {
         borderRadius: '12px', 
         backgroundColor: '#f7f7f7',
         border: '1px solid #9ca3af',
-        boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.2)',
         marginRight: '12px',
         marginLeft: '12px',
         '&:last-child': {

@@ -5,8 +5,9 @@ interface ScrollableListProps {
   onSelect: any;
   includeAllOption?: boolean;
   type?: string;
+  currentAudienceCriteria: any;
 }
-const ScrollableList: React.FC<ScrollableListProps> = ({ items, selectedItems, onSelect, type, includeAllOption = true }) => {
+const ScrollableList: React.FC<ScrollableListProps> = ({ items, selectedItems, onSelect, type, currentAudienceCriteria, includeAllOption = true }) => {
 
   
   const handleItemClick = (item: string) => {
@@ -55,7 +56,7 @@ const ScrollableList: React.FC<ScrollableListProps> = ({ items, selectedItems, o
           <li
             key={item}
             className={`p-2 cursor-pointer ${
-              selectedItems.includes(item) ? 'bg-blue-100' : 'hover:bg-saitLightPurple'
+              selectedItems.includes(item) || currentAudienceCriteria?.includes(item) ? 'bg-blue-100' : 'hover:bg-saitLightPurple'
             }`}
             onClick={() => handleItemClick(item)}
           >
