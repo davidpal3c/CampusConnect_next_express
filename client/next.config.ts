@@ -21,11 +21,7 @@ const nextConfig: NextConfig = {
       // User pages
       { source: '/user/events', destination: '/pages/user/events'},
       { source: '/user/groups', destination: '/pages/user/groups'},
-      { source: '/user/notifications', destination: '/pages/user/notifications'},
-      { source: '/user/general-information', destination: '/pages/user/generalInformation'},
-      { source: '/user/campus-information', destination: '/pages/user/campusInformation'},
-      { source: '/user/pre-arrival', destination: '/pages/user/preArrival'},
-      // { source: '/user/news', destination: '/pages/user/news'},
+      { source: '/user/articles', destination: '/pages/user/articles'},
       { source: '/user/articles/:id', destination: '/pages/user/articles/:id'},
     ];
   },
