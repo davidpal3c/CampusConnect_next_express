@@ -8,7 +8,7 @@ client/.next/
 client/.env
 
 server/.env
-
+application-map.md
 
 load-db.sql
 load-db2.sql

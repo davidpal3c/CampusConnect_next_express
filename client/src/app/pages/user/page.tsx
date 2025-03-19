@@ -278,5 +278,7 @@ export default function UserPage() {
     </main>
   );
 
-  return user ? unauthorized : authorizedPage;
+
+  return !user ? unauthorized : authorizedPage;
 }
+

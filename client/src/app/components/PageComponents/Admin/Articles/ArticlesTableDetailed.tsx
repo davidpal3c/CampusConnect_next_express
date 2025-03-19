@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { formatToDateTime } from "@/app/_utils/dateUtils";
 import { useRouter } from "next/navigation";
-import ArticleDeleteModal from "./ArticleDeleteModal";
-import ArticleDeleteMultipleModal from "./ArticleDeleteMultipleModal";
+import ArticleDeleteModal from "./Modals/ArticleDeleteModal";
+import ArticleDeleteMultipleModal from "./Modals/ArticleDeleteMultipleModal";
 import ArticleEditor from "./ArticleEditor";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { deleteButton, getButtonClasses } from "@/app/assets/styles/buttonStyles";
@@ -183,6 +183,14 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
             return <span>{params.row.type?.name || "Unknown"}</span>;
         }},
         { field: 'audience', headerName: 'Audience', width: 110 },
+        // { field: 'audience', headerName: 'Audience', width: 110, renderCell: (params) => {
+        //     return <span>{params.row.audience?.join(', ') || ""}</span>;
+        //     return(
+        //         <div className="flex items-center justify-center w-full h-full">
+        //             < />
+        //         </div>
+        //     );
+        // } },
         { field: 'author', headerName: 'Author', width: 125 },
         { field: 'author_id', headerName: 'Author ID', width: 90, renderCell: (params) => { 
             return(
@@ -208,6 +216,7 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
                 return <a href={params.row.imageUrl} target="_blank" className="font-normal text-saitBlack p-2 rounded-xl">{params.row.imageUrl}</a>;
             }
         },
+        { field: 'tags', headerName: 'Tags', width: 200 },
         { field: 'content', headerName: 'Content', width: 200 }
     ];
 

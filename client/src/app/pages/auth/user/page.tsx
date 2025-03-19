@@ -95,6 +95,7 @@ export default function AdminLogin() {
             {/* First Column */}
             <div className="bg-white border-2 h-full shadow-lg w-full md:w-1/3 flex-col justify-center px-12 my-auto hidden md:block">
                 <img
+
                     src="/sait-logo-trans.png"
                     alt="Campus Connect"
                     className=" rounded-lg m-3 w-80 md:h-auto mx-auto mt-32"
@@ -163,7 +164,6 @@ export default function AdminLogin() {
                                 className="text-saitWhite text-md"
                             >Or Sign in with</p>
                         </div>
-
                         <button className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
                             <img src="/microsoft.png" alt="Microsoft Logo" className="w-8 h-auto mr-auto" />
                             <p
