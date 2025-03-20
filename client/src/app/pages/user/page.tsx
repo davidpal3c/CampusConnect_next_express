@@ -6,6 +6,7 @@ import UserCard from "@/app/components/PageComponents/Admin/User/UserCard";
 import { getCurrentSeason } from "../../components/PageComponents/Admin/User/IntakePicker";
 
 import { useUserData } from "@/app/_utils/userData-context";
+import { useUserAuth } from "@/app/_utils/auth-context";
 import UserPageMenu from "@/app/components/PageComponents/User/UserPageMenu";
 import OverViewCard from "@/app/components/PageComponents/User/Dashboard/OverviewCard";
 import EventCard from "@/app/components/PageComponents/User/Dashboard/EventCard";
@@ -14,7 +15,8 @@ import { ArticleCard } from "@/app/components/PageComponents/User/Articles/Artic
 
 // Student/Alumni Dashboard (Home)
 export default function UserPage() {
-  const { userData } = useUserData();  
+  const { userData } = useUserData();
+  const { user, authUserLoading } = useUserAuth();  
   const { user_id, first_name, last_name, role, status } = userData?.user || {};
   const [isClient, setIsClient] = useState(false); // dummy state to track code is running client-side
   const router = useRouter();
@@ -34,6 +36,7 @@ export default function UserPage() {
     setIsClient(true);
   }, []);
 
+
   function onClickOverview() {
     // TODO
   }
@@ -44,6 +47,10 @@ export default function UserPage() {
 
   function onClickAnnouncements() {
     // TODO
+  }
+
+  if (authUserLoading || !isClient) {
+    return null;                                                // prevent rendering until the component is mounted on the client side
   }
 
   const testOverviewItems = [
@@ -229,21 +236,23 @@ export default function UserPage() {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testOverviewItems.slice(0, 4).map((item) => (
-          <OverViewCard
-            title={item.title}
-            icon={item.icon}
-            number={item.number}
-            text={item.text}
-          />
+        {testOverviewItems.slice(0, 4).map((item, index) => (
+            <OverViewCard
+              key={index}
+              title={item.title}
+              icon={item.icon}
+              number={item.number}
+              text={item.text}
+            />
         ))}
       </div>
 
       <h1 className="flextext-2xl text-xl font-semibold mt-4">Events</h1>
 
       <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testEvents.slice(0, 3).map((event) => (
+        {testEvents.slice(0, 3).map((event, index) => (
           <EventCard
+            key={index}
             title={event.title}
             date={event.date}
             time={event.time}
@@ -258,8 +267,9 @@ export default function UserPage() {
       </h1>
 
       <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testArticles.slice(0, 3).map((article) => (
+        {testArticles.slice(0, 3).map((article, index) => (
           <ArticleCard
+            key={index}
             article_id={article.article_id}
             title={article.title}
             content={article.content}

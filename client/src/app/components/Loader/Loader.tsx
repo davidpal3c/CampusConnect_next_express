@@ -13,4 +13,4 @@ export default function Loader({isLoading}: LoaderProps) {
             </div>
         </div>
     );
-}
+};
