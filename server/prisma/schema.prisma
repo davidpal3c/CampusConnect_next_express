@@ -47,7 +47,7 @@ model Student {
   user_id     String   @id @unique
   program_id  String?       // if null, reflect student status  
   department_id   String           
-  intake_year Int     
+  intake_year Int?    
   intake      String?
   status      Status
  

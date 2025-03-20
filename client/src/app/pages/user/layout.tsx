@@ -2,7 +2,6 @@
 
 import React, {useEffect, useState} from 'react';
 import { useMediaQuery } from "react-responsive";
-import { UserProvider } from "@/app/_utils/user-context";
 
 import TopBar from '@/app/components/TopBar/TopBar';
 
@@ -29,17 +28,15 @@ export default function StudentLayout({
   }, []);
 
   return (
-    <UserProvider>
-        <main className="flex min-h-screen bg-white">
-            <div className="flex flex-col bg-gray-200 w-full h-screen">
-                <header>
-                    <TopBar />
-                </header>
-                <section className="flex-grow overflow-auto relative bg-saitWhite">
-                    {children}
-                </section>
-            </div>
-        </main>
-    </UserProvider>
+    <main className="flex min-h-screen bg-white">
+        <div className="flex flex-col bg-gray-200 w-full h-screen">
+            <header>
+                <TopBar />
+            </header>
+            <section className="flex-grow overflow-auto relative bg-saitWhite">
+                {children}
+            </section>
+        </div>
+    </main>
   );
 }
