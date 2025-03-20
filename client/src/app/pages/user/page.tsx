@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import UserCard from "@/app/components/PageComponents/Admin/User/UserCard";
 import { getCurrentSeason } from "../../components/PageComponents/Admin/User/IntakePicker";
-import { useUser } from "@/app/_utils/user-context";
+import { useUserData } from "@/app/_utils/userData-context";
 
 // Student/Alumni Dashboard (Home)
 export default function UserPage() {
-  const { user, loadingUser } = useUser();
-  const { user_id, first_name, last_name, role, status } = user?.user || {};
+  const { userData } = useUserData();  
+  const { user_id, first_name, last_name, role, status } = userData?.user || {};
   const [isClient, setIsClient] = useState(false); // dummy state to track code is running client-side
   const router = useRouter();
 
@@ -73,5 +73,5 @@ export default function UserPage() {
     </main>
   );
 
-  return !user ? unauthorized : authorizedPage;
+  return !userData ? unauthorized : authorizedPage;
 }

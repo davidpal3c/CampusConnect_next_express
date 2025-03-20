@@ -5,11 +5,11 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null);  // Ensure initial state is `null` for better error handling
-    const [loadingUser, setLoadingUser] = useState(true); // Add loading state
+    const [user, setUser] = useState(null);  
+    const [loadingUser, setLoadingUser] = useState(true); 
 
     const fetchUser = async () => {
-        setLoadingUser(true);  // Start loading before fetching
+        setLoadingUser(true); 
         try {
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/me`,

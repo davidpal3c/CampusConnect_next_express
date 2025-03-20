@@ -6,22 +6,21 @@ import { TopBarButton, TopBarDropdown, TopBarDropdownOption } from "./TopBarButt
 import Loader from "../Loader/Loader";
 
 import { fetchArticleTypes } from "@/app/pages/user/articles/articles";
-import { useUser } from "@/app/_utils/user-context";
+import { useUserData } from "@/app/_utils/userData-context";
 import TopBarNavigator from "./TopBarNavigator";
 import { ArticleTypeInterface } from "@/app/pages/user/props";
 
 
 export default function TopNavBar() {
 
-
-    const { user, loadingUser } = useUser();
-    const { image_url, user_id } = user?.user || {};
+    const { userData } = useUserData();
+    const { image_url, user_id } = userData?.user || {};
     const [articleTypes, setArticleTypes] = useState([]);
 
     const [loading, setLoading] = useState(true);
     
     useEffect(() => {
-        if (!loadingUser) {  // Only proceed once `loadingUser` is false
+        if (userData) {  
             const fetchData = async () => {
                 try {
                     const articleTypes = await fetchArticleTypes();
@@ -38,17 +37,17 @@ export default function TopNavBar() {
 
             fetchData();
         }
-    }, [loadingUser]);
+    }, [userData]);
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const handleMenu = (event) => setAnchorEl(event.currentTarget);
+    const handleMenu = (event: any) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
 
-    if (!loadingUser) {
-        const userKeys = Object.keys(user || {});
-        console.log("Available properties:", userKeys);
-        console.log("User:", user.user);
-    }
+    // if (userData) {
+    //     const userKeys = Object.keys(userData || {});
+    //     console.log("Available properties:", userKeys);
+    //     console.log("User:", userData.user);
+    // }
     
 
     if (loading) return <Loader isLoading={loading} />;
