@@ -12,7 +12,7 @@ export default function UserPageMenu({
         <div
           key={item.title}
           onClick={item.onClick}
-          className=" hover:text-saitLighterBlue underline decoration-inherit"
+          className=" hover:text-saitRed underline decoration-inherit"
         >
           {item.title}
         </div>
@@ -23,7 +23,7 @@ export default function UserPageMenu({
   }
 
   return (
-    <div className="bg-saitWhite flex gap-6 text-saitGray text-xl mt-8 underline cursor-pointer">
+    <div className="flex gap-6 text-saitBlack font-semibold mt-8 underline cursor-pointer">
       {getMenuItems()}
     </div>
   );
