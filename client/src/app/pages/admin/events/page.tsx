@@ -20,7 +20,7 @@ type EventData = {
   programs: string,
   description: string,
   host: string,
-  capacity: string
+  capacity: number
 }
 
 const INITIAL_DATA = {
@@ -78,62 +78,7 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
   <EventForm /> //Will have to change it for the form instead of using the Event data
 ])
 
-// Searching still needs to be worked on
-const [searchTerm, setSearchTerm] = useState("");
-const [filterCriteria, setFilterCriteria] = useState({
-  date: "",
-  location: "",
-});
 
-const searchByName = (searchValue) => {
-  setSearchTerm(searchValue);
-  if (searchValue === "") {
-    setEvents(originalEvents); // Reset to original events if search is empty
-  } else {
-    const filteredEvents = originalEvents.filter((event) =>
-      event.name.toLowerCase().includes(searchValue.toLowerCase())
-    );
-    setEvents(filteredEvents);
-  }
-};
-
-const filterByDate = (date) => {
-  setFilterCriteria({ ...filterCriteria, date });
-  const filteredEvents = originalEvents.filter((event) =>
-    new Date(event.date).toLocaleDateString() === new Date(date).toLocaleDateString()
-  );
-  setEvents(filteredEvents);
-};
-
-const filterByLocation = (location) => {
-  setFilterCriteria({ ...filterCriteria, location });
-  const filteredEvents = originalEvents.filter((event) =>
-    event.location.toLowerCase().includes(location.toLowerCase())
-  );
-  setEvents(filteredEvents);
-};
-
-const handleDeleteEvent = async (event) => {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event._id}`, {
-      method: "DELETE",
-      headers: { "content-type": "application/json" },
-      credentials: "include",
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      toast.error(data.message || "An error occurred deleting the event.");
-      return;
-    }
-
-    toast.success("Event deleted successfully");
-    fetchEvents(); // Refresh the events list
-  } catch (error) {
-    console.error(error);
-    toast.error("Error deleting event: " + error);
-  }
-};
   const handleOpenCreatePanel = () => setShowEventEditor(true);
   const handleCloseCreatePanel = () => setShowEventEditor(false);
 
@@ -149,41 +94,48 @@ const handleDeleteEvent = async (event) => {
     handleOpenCreatePanel();
   };
 
-  //Change this to submit the data properly
-  // Something like this basically
-  // const handleCreateEvent = async (event) => {
-  //   try {
-  //     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event._id}`, {
-  //       method: "POST",
-  //       headers: { "content-type": "application/json" },
-  //       credentials: "include",
-  //     });
-  
-  //     const data = await response.json();
-  //     if (!response.ok) {
-  //       toast.error(data.message || "An error occurred creating the event.");
-  //       return;
-  //     }
-  
-  //     toast.success("Event Created successfully");
-  //     fetchEvents(); // Refresh the events list
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Error creating event: " + error);
-  //   }
-  // };
-  function onSubmitEvent(e: Event){
-    e.preventDefault();
+  const handleDeleteEvent = () => {
+    console.log("event deleted");
+  }
+
+  function handleEventSubmission(){
     console.log("This event was submitted");
     next()
     
   }
 
-  //Can change type to Event form or something
-  function onSubmitForm(){
-    console.log("This form and event are now fully created")
+  const handlePublish = async () => {
+    console.log("Publish button clicked"); // Debugging
+    try {
+      const eventData = {
+        ...data,
+        capacity: parseInt(data.capacity, 10), // Convert capacity to an integer
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data), // Send the form data
+      });
+  
+      const result = await response.json();
+      console.log("API Response:", result); // Debugging
+  
+      if (!response.ok) {
+        toast.error(result.message || "An error occurred creating the event.");
+        return;
+      }
+  
+      toast.success("Event created successfully!");
+      fetchEvents(); // Refresh the events list
+      handleCloseCreatePanel(); // Close the editor panel
+    } catch (error) {
+      console.error(error);
+      toast.error("Error creating event: " + error);
+    }
     handleCloseCreatePanel();
-  }
+  };
 
   function updateFields(fields: Partial<EventData>) {
     setData(prev => {
@@ -202,21 +154,21 @@ const handleDeleteEvent = async (event) => {
           <input
             type="text"
             placeholder="Search by name"
-            value={searchTerm}
-            onChange={(e) => searchByName(e.target.value)}
+            // value={searchTerm}
+            // onChange={(e) => searchByName(e.target.value)}
             className="p-2 border rounded-lg"
           />
           <input
             type="date"
-            value={filterCriteria.date}
-            onChange={(e) => filterByDate(e.target.value)}
+            // value={filterCriteria.date}
+            // onChange={(e) => filterByDate(e.target.value)}
             className="p-2 border rounded-lg"
           />
           <input
             type="text"
             placeholder="Filter by location"
-            value={filterCriteria.location}
-            onChange={(e) => filterByLocation(e.target.value)}
+            // value={filterCriteria.location}
+            // onChange={(e) => filterByLocation(e.target.value)}
             className="p-2 border rounded-lg"
           />
           <div className="flex justify-between items-center p-4">
@@ -252,7 +204,14 @@ const handleDeleteEvent = async (event) => {
                       transition={{ duration: 0.7, ease: "easeInOut" }}
                       className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                     >
-                      <form >
+                      <form onSubmit={(e) => {
+                          e.preventDefault();
+                          if (isLastStep) {
+                            handlePublish();
+                          } else {
+                            handleEventSubmission();
+                          }
+                        }}>
                         <div>
                           {/* Can make this look better than just numbers */}
                           <p dir="rtl">Steps: {currentStepIndex + 1} / {steps.length}</p>
@@ -283,7 +242,6 @@ const handleDeleteEvent = async (event) => {
                           { isLastStep ?
                             <ActionButton  
                               title="Publish"
-                              onClick={onSubmitForm}
                               textColor="text-saitBlue"
                               borderColor="border-saitBlue"
                               hoverBgColor="bg-saitBlue"
@@ -293,7 +251,7 @@ const handleDeleteEvent = async (event) => {
                           :
                             <ActionButton  
                               title="Next"
-                              onClick={onSubmitEvent}
+                              //Could work on the handling to get rid of this error but it seems to be working okay for now
                               textColor="text-saitBlue"
                               borderColor="border-saitBlue"
                               hoverBgColor="bg-saitBlue"
@@ -315,6 +273,7 @@ const handleDeleteEvent = async (event) => {
 };
 
 export default Events;
+
 const events = [
   {
     title: "Meeting",

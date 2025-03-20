@@ -1,27 +1,45 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 type EventData = {
-  name: string,
-  date: string,
-  location: string,
-  departments: string,
-  programs: string,
-  description: string,
-  host: string,
-  capacity: string
-}
+  name: string;
+  date: string;
+  location: string;
+  audience: string;
+  programs: string;
+  description: string;
+  host: string;
+  contact: string;
+  capacity: number;
+};
 
 type EventProps = EventData & {
-  updateFields: (fields: Partial<EventData>) => void
-}
+  updateFields: (fields: Partial<EventData>) => void;
+};
 
+function EventEditor({
+  name,
+  date,
+  location,
+  audience,
+  description,
+  host,
+  capacity,
+  programs,
+  contact,
+  updateFields,
+}: EventProps) {
+  const dummyAud = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];
+  const dummyContact = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];
+  const dummyPrograms = ['Program A', 'Program B', 'Program C', 'Program D'];
 
-function EventEditor(
-  {
-  name, date, location, departments,
-  description, host, capacity,
-  updateFields
-  }: EventProps){
+  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = e.target.value; // Already in the correct format for datetime-local
+    const isoDate = new Date(selectedDate).toISOString(); // Convert to ISO-8601 for the backend
+    updateFields({ date: isoDate });
+  };
+
+  // Format the date for the datetime-local input
+  const formattedDate = date ? new Date(date).toISOString().slice(0, 16) : '';
 
   return (
     <div className="flex p-4 gap-4 bg-gray-100 min-h-screen">
@@ -38,24 +56,21 @@ function EventEditor(
         <p className="font-medium mt-4">Location:</p>
         <p className="text-gray-600">{location || 'Location is required.'}</p>
         
-        <p className="font-medium mt-4">Departments:</p>
-        <p className="text-gray-600">{departments}</p>
+        <p className="font-medium mt-4">Audience:</p>
+        <p className="text-gray-600">{audience}</p>
         
-        {/* This is gotta work like the articles as well */}
         <p className="font-medium mt-4">Programs:</p>
-        {/* <p className="text-gray-600">{programs}</p> */}    
+        <p className="text-gray-600">{programs}</p>
         
         <p className="font-medium mt-4">Description:</p>
         <p className="text-gray-600">{description || 'Default description is empty.'}</p>
         
-        {/* Has nothing right now */}
         <p className="font-medium mt-4">Host:</p>
         <p className="text-gray-600">{host}</p>
         
         <p className="font-medium mt-4">Capacity:</p>
         <p className="text-gray-600">{capacity || 'Capacity is required.'}</p>
         
-        {/* Have to make this work as well */}
         <p className="font-medium mt-4">Image File:</p>
         <p className="text-gray-600">Default Image File is empty.</p>
       </div>
@@ -73,7 +88,7 @@ function EventEditor(
               name="name"
               placeholder="Enter name"
               value={name}
-              onChange={e => updateFields({name: e.target.value})}
+              onChange={(e) => updateFields({ name: e.target.value })}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
@@ -88,18 +103,12 @@ function EventEditor(
               </label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="datetime-local"
                   name="date"
-                  placeholder="Start Date - End Date"
-                  value={date}
-                  onChange={e => updateFields({date: e.target.value})}
+                  value={formattedDate} // Use the formatted date
+                  onChange={handleDateTimeChange}
                   className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
-                <div className="absolute right-2 top-2 text-gray-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
               </div>
             </div>
           </div>
@@ -114,41 +123,53 @@ function EventEditor(
               name="location"
               placeholder="Enter Location"
               value={location}
-              onChange={e => updateFields({location: e.target.value})}
+              onChange={(e) => updateFields({ location: e.target.value })}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
+
           <div>
             <label className="block mb-2">Target Department(s)</label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Select Target Department(s)"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-              />
-              <div className="absolute right-2 top-2 text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
+            <select
+              value={audience}
+              onChange={(e) => updateFields({ audience: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="">Select Department</option>
+              {dummyAud.map((aud, index) => (
+                <option key={index} value={aud}>{aud}</option>
+              ))}
+            </select>
           </div>
           
           {/* Target Program */}
           <div>
             <label className="block mb-2">Target Program(s)</label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Select Target Program(s)"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-              />
-              <div className="absolute right-2 top-2 text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
+            <select
+              value={programs}
+              onChange={(e) => updateFields({ programs: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="">Select Program</option>
+              {dummyPrograms.map((prog, index) => (
+                <option key={index} value={prog}>{prog}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <label className="block mb-2">Contact(s)</label>
+            <select
+              value={contact}
+              onChange={(e) => updateFields({ contact: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="">Select Department</option>
+              {dummyContact.map((aud, index) => (
+                <option key={index} value={aud}>{aud}</option>
+              ))}
+            </select>
           </div>
           
           {/* Description */}
@@ -158,7 +179,7 @@ function EventEditor(
               name="description"
               placeholder="Enter Description"
               value={description}
-              onChange={e => updateFields({description: e.target.value})}
+              onChange={(e) => updateFields({ description: e.target.value })}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 h-40"
             ></textarea>
           </div>
@@ -171,7 +192,7 @@ function EventEditor(
               name="host"
               placeholder="Enter Host Name"
               value={host}
-              onChange={e => updateFields({host: e.target.value})}
+              onChange={(e) => updateFields({ host: e.target.value })}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
@@ -180,11 +201,11 @@ function EventEditor(
               Capacity <span className="text-red-500">*</span>
             </label>
             <input
-              type="text"
+              type="number"
               name="capacity"
               placeholder="Enter Number"
               value={capacity}
-              onChange={e => updateFields({capacity: e.target.value})}
+              onChange={(e) => updateFields({ capacity: parseInt(e.target.value, 10) })}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
@@ -192,6 +213,6 @@ function EventEditor(
       </div>
     </div>
   );
-};
+}
 
 export default EventEditor;

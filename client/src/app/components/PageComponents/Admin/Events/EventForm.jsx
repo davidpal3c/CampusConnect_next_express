@@ -224,20 +224,4 @@ const FormBuilder = () => {
     </div>
   );
 };
-
-{/**
-    const handleSubmit = async () => {
-  const formData = {
-    title: formTitle,
-    questions: questions,
-    created: new Date()
-  };
-  
-  // Send to your Node.js backend
-  await fetch('/api/forms', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  });
-}; */}
 export default FormBuilder;
