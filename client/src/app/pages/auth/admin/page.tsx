@@ -173,12 +173,12 @@ export default function AdminLogin() {
                             >Or Sign in with</p>
                         </div>
 
-                        <button className="bg-saitBlue h-24 w-full flex flex-row justify-center items-center hover:bg-opacity-15 border-white border-2 rounded-2xl shadow-xl">
-                            <img src="/microsoft.png" alt="Microsoft Logo" className="w-24 h-auto  " />
+                        <button className="h-24 w-full flex flex-row justify-center items-center bg-saitBlue hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl">
+                            <img src="/microsoft.png" alt="Microsoft Logo" className="w-10 h-auto  " />
                             <p
                                 // className="w-40 font-light text-saitWhite -ml-16"        // original : out of contrast with blue gradient    
-                                className="w-40 font-normal text-saitWhite -ml-16"
-                            >Microsoft</p>
+                                className="w-40 font-normal text-saitWhite ml-4"
+                            >Sign In with Microsoft</p>
                         </button>
 
                         <button onClick={handleSignIn} className="h-24 w-full flex flex-row justify-center items-center bg-saitBlue hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl">

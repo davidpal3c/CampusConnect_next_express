@@ -1,58 +1,84 @@
 "use client";
 
 import React, {useState, useEffect} from "react";
-import { Menu, MenuItem } from "@mui/material";
+import { useUserAuth } from "@/app/_utils/auth-context";
+import { useUserData } from "@/app/_utils/userData-context";
+import { useRouter } from "next/navigation";
+
 import { TopBarButton, TopBarDropdown, TopBarDropdownOption } from "./TopBarButtons";
 import Loader from "../Loader/Loader";
-
 import { fetchArticleTypes } from "@/app/pages/user/articles/articles";
-import { useUser } from "@/app/_utils/user-context";
 import TopBarNavigator from "./TopBarNavigator";
 import { ArticleTypeInterface } from "@/app/pages/user/props";
 
+import { Menu, MenuItem } from "@mui/material";
 
 export default function TopNavBar() {
 
+    const { authUserLoading, signOutAll } = useUserAuth();
+    const { userData } = useUserData();
+    const [userId, setUserId] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
 
-    const { user, loadingUser } = useUser();
-    const { image_url, user_id } = user?.user || {};
+    const router = useRouter();
+
     const [articleTypes, setArticleTypes] = useState([]);
-
     const [loading, setLoading] = useState(true);
     
-    useEffect(() => {
-        if (!loadingUser) {  // Only proceed once `loadingUser` is false
-            const fetchData = async () => {
-                try {
-                    const articleTypes = await fetchArticleTypes();
-
-                    if (articleTypes) setArticleTypes(articleTypes);
-
-                    console.log("articleTypes", articleTypes);
-                } catch (error) {
-                    console.error("Error fetching article types:", error);
-                } finally {
-                    setLoading(false); 
-                }
-            };
-
-            fetchData();
+    const populateUserData = () => {
+        if (userData) {
+            setUserId(userData.user_id);
+            setImageUrl(userData.image_url);
         }
-    }, [loadingUser]);
+    }
+
+    const fetchArticlesData = async () => {
+        if (userData && !authUserLoading) {  
+            try {
+                const articleTypes = await fetchArticleTypes();
+    
+                if (articleTypes) setArticleTypes(articleTypes);
+    
+                console.log("articleTypes", articleTypes);
+            } catch (error) {
+                console.error("Error fetching article types:", error);
+            } finally {
+                setLoading(false); 
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchArticlesData();
+        populateUserData();
+
+        console.log ("User:", userData);
+        console.log("User ID:", userId);
+        console.log("User Image:", imageUrl);
+    }, [userData]);
+
+        
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const handleMenu = (event) => setAnchorEl(event.currentTarget);
+    const handleMenu = (event: any) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
 
-    if (!loadingUser) {
-        const userKeys = Object.keys(user || {});
-        console.log("Available properties:", userKeys);
-        console.log("User:", user.user);
-    }
+   const handleSignOut = async() => {
+        setAnchorEl(null);
+        try {
+            await signOutAll();
+            router.push("/user/login");
+        } catch (err) {
+            console.log("Sign Out error:", err);
+        }
+   }
     
 
-    if (loading) return <Loader isLoading={loading} />;
+    if (authUserLoading || loading ) return <Loader isLoading={true} />;
+
+    // if (loading) return <Loader isLoading={loading} />;
     return (
+
     <div>
         <div className="bg-side-red-gradient text-white shadow-xl relative z-10">
             <div className="container justify-between flex items-center p-4">
@@ -94,7 +120,7 @@ export default function TopNavBar() {
                 <div className="flex items-end space-x-4">
                     <button className="p-1 bg-white text-black rounded-full" onClick={handleMenu}>
                         <img
-                            src={image_url} 
+                            src={imageUrl || '/avatar-generic.jpg'} 
                             alt="User Profile Image"
                             className="w-12 h-12 rounded-full"
                         />
@@ -109,13 +135,13 @@ export default function TopNavBar() {
                         >
                             <MenuItem>Profile</MenuItem>
                             <MenuItem>Account</MenuItem>
-                            <MenuItem>Logout</MenuItem>
+                            <MenuItem onClick={handleSignOut}>Logout</MenuItem>
                         </Menu>
                     </div>
                 </div>
             </div>
         </div>
-        <TopBarNavigator userId={user_id}/>
+        <TopBarNavigator userId={userId}/>
     </div>
     );
 }

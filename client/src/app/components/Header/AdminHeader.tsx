@@ -13,7 +13,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Tooltip } from "@mui/material";
 
 
-export default function Header({handleSidebarToggle, shouldShowButton}) {
+type HeaderProps = {
+    handleSidebarToggle: () => void;
+    shouldShowButton: boolean;
+}
+
+export default function Header({ handleSidebarToggle, shouldShowButton }: HeaderProps) {
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
     const router = useRouter();

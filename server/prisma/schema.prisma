@@ -44,13 +44,13 @@ model Admin {
 }
 
 model Student {
-  user_id       String  @id @unique
-  program_id    String? // if null, reflect student status  
-  department_id String
-  intake_year   Int
-  intake        String?
-  status        Status
-
+  user_id     String   @id @unique
+  program_id  String?       // if null, reflect student status  
+  department_id   String           
+  intake_year Int?    
+  intake      String?
+  status      Status
+ 
   // Relations
   User       User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   Program    Program?   @relation(fields: [program_id], references: [program_id])
@@ -87,20 +87,20 @@ model Department {
 
 // Content Models
 model Article {
-  article_id    String            @id @unique @default(uuid())
-  title         String
-  content       String            @db.Text
-  type_id       String
-  imageUrl      String?
-  datePublished DateTime?         @default(now())
-  created_at    DateTime          @default(now())
-  updated_at    DateTime          @updatedAt
-  author        String?
-  author_id     String
-  audience      Json? // stores array of audience types and categories using JSONB
-  tags          String?
-  status        ArticleStatus
-  Categories    ArticleCategory[]
+  article_id      String    @id @unique @default(uuid())
+  title           String
+  content         String    @db.Text
+  type_id         String
+  imageUrl        String?
+  datePublished   DateTime? @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  author          String?
+  author_id       String
+  audience        Json?                // stores array of audience types and categories using JSONB
+  tags            String?   
+  status          ArticleStatus
+  Categories      ArticleCategory[]
 
   //Relation  
   User User?       @relation(fields: [author_id], references: [user_id], onDelete: SetNull)

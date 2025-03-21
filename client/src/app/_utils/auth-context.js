@@ -341,7 +341,7 @@ export const AuthContextProvider = ({ children }) => {
         // router.push("/admin/login");
       } else if (user.role !== "Admin") {
         // console.log("Redirecting non-admin user to admin login...");
-        // router.push("/admin/login");
+        // router.push("/user/login");
         return;
       } else {
         // console.log("Redirecting admin to dashboard...");

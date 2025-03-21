@@ -64,8 +64,19 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
 
         // retrieve user fields based on role (Student/Alumni) from db
         if (user?.role === "Student") {
+            // const studentFields = await prisma.student.findUnique({
+            //     where: { user_id: userId },
+            // });
+
             const studentFields = await prisma.student.findUnique({
                 where: { user_id: userId },
+                include: {
+                    Program: {
+                        include: {
+                            Department: true
+                        }
+                    }
+                }
             });
             
             req.user = { ...req.user, dbUser: user, studentFields: studentFields };
