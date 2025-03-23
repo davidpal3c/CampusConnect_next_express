@@ -16,6 +16,14 @@ export const AuthContextProvider = ({ children }) => {
   const { updateUserData } = useUserData();
   const [isProcessingAuth, setIsProcessingAuth] = useState(false);
 
+  const normalizeUser = async (user) => {
+    const token = await user.getIdToken(true);
+    return {
+      ...user,
+      currentToken: token,
+    };
+  };
+
   const googleSignIn = async () => {
     if (isProcessingAuth) return;
     setIsProcessingAuth(true);
@@ -27,15 +35,11 @@ export const AuthContextProvider = ({ children }) => {
 
     try {
       result = await signInWithPopup(auth, provider);
-      const token = await result.user.getIdToken(true);
 
-      const userWithToken = {
-        ...result.user,
-        currentToken: token,
-      };
-
-      setUser(userWithToken);
+      const normalizedUser = await normalizeUser(result.user);
+      setUser(normalizedUser);
       return result;
+
     } catch (error) {
       if (error.code === 'auth/popup-closed-by-user') {
         return "cancelled"; 
@@ -59,15 +63,11 @@ export const AuthContextProvider = ({ children }) => {
 
     try {
       result = await signInWithPopup(auth, provider);
-      const token = await result.user.getIdToken(true);
-
-      const userWithToken = {
-        ...result.user,
-        currentToken: token,
-      };
-
-      setUser(userWithToken);
+      
+      const normalizedUser = await normalizeUser(result.user);
+      setUser(normalizedUser);
       return result;
+
     } catch (error) {
       if (error.code === 'auth/popup-closed-by-user') {
         result = 'cancelled';

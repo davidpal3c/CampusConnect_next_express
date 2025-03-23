@@ -30,6 +30,16 @@ export default function AdminLogin() {
     const [authRoleType, setAuthRoleType] = useState("");
     const [userResultProp, setUserResultProp] = useState(false);
 
+    const handleLoaderOpen = (provider: string) => {
+        setBackdrop(true);
+        if (provider === "google") {
+            setLoadingGoogle(true);
+        } 
+
+        if (provider === "microsoft") {
+            setLoadingMicrosoft(true);
+        }
+    };
 
     const handleLoaderClose = (provider: string) => {
         setBackdrop(false);
@@ -43,26 +53,12 @@ export default function AdminLogin() {
         }
     };
 
-    const handleLoaderOpen = (provider: string) => {
-        setBackdrop(true);
-        if (provider === "google") {
-            setLoadingGoogle(true);
-        } 
-
-        if (provider === "microsoft") {
-            setLoadingMicrosoft(true);
-        }
-    };
-
-
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
     async function handleSignIn(provider: string) {
         setProvider(provider);
         handleLoaderOpen(provider);
         await delay(500);
-
-        console.log("Sign in with: ", provider);
 
         const currentUser = auth.currentUser;
         if (currentUser) {                                          // sign out first if user is already signed in
@@ -85,9 +81,7 @@ export default function AdminLogin() {
             }
 
             setUserResultProp(result);
-            // const idToken = await getIdToken();
-            // console.log("ID Token - initial login: ", idToken);
-            // setAdminRoute("/admin/");
+            
             setAuthRoleType("admin");
             setLoaderBackdrop(true);
             handleLoaderClose(provider);
