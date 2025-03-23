@@ -1,7 +1,7 @@
 'use client';
 
 import { useContext, createContext, useState, useEffect } from "react";
-import { signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 import { auth } from "./firebase";
 import { useRouter } from "next/navigation";
 import { useUserData } from "./userData-context";
@@ -23,8 +23,10 @@ export const AuthContextProvider = ({ children }) => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
+    let result;
+
     try {
-      const result = await signInWithPopup(auth, provider);
+      result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken(true);
 
       const userWithToken = {
@@ -35,12 +37,52 @@ export const AuthContextProvider = ({ children }) => {
       setUser(userWithToken);
       return result;
     } catch (error) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        return "cancelled"; 
+      }
       console.error("Google Sign In Error:", error);
-      throw error;
+      toast.error(error.message || "Google Sign In failed: unknown error occurred");
     } finally {
       setIsProcessingAuth(false);
     }
   };
+
+
+  const microsoftSignIn = async () => {
+    if (isProcessingAuth) return;
+    setIsProcessingAuth(true);
+
+    const provider = new OAuthProvider("microsoft.com");
+    provider.setCustomParameters({ prompt: 'select_account' });   
+
+    let result;
+
+    try {
+      result = await signInWithPopup(auth, provider);
+      const token = await result.user.getIdToken(true);
+
+      const userWithToken = {
+        ...result.user,
+        currentToken: token,
+      };
+
+      setUser(userWithToken);
+      return result;
+    } catch (error) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        result = 'cancelled';
+        return result;
+      }
+      console.error("Microsoft Sign In Error:", error);
+      toast.error(error.message || "Microsoft Sign In failed: unknown error occurred");
+    } finally {
+      setIsProcessingAuth(false);
+    }
+  };
+
+
+
+
 
   const clearLocalStorage = () => {
     localStorage.removeItem("user");
@@ -57,6 +99,8 @@ export const AuthContextProvider = ({ children }) => {
       if (googleAuth) {
         await googleAuth.signOut();
       }
+
+
     } catch (error) {
       console.error("Sign Out Error:", error);
       throw error;
@@ -357,6 +401,7 @@ export const AuthContextProvider = ({ children }) => {
         authUserLoading,
         updateAuthUser,
         googleSignIn,
+        microsoftSignIn,
         signOutAll,
         signOutFirebase,
         getIdToken,
