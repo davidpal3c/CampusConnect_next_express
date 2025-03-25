@@ -22,10 +22,10 @@ function EventEditor({
   location,
   audience,
   description,
-  host,
-  capacity,
   programs,
+  host,
   contact,
+  capacity,
   updateFields,
 }: EventProps) {
   const dummyAud = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];

@@ -7,7 +7,7 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 import EventEditor from "@/app/components/PageComponents/Admin/Events/EventEditor";
 import EventListView from "@/app/components/PageComponents/Admin/Events/EventListView";
 import EventForm from "@/app/components/PageComponents/Admin/Events/EventForm"
-import EventCalendarView from "@/app/components/PageComponents/Admin/Events/EventCalendarView";
+// import EventCalendarView from "@/app/components/PageComponents/Admin/Events/EventCalendarView";
 import Loader from "@/app/components/Loader/Loader";
 import { MultistepForm } from "@/app/components/PageComponents/Admin/Events/MultistepForm";
 
@@ -74,7 +74,7 @@ const Events = () => {
 
 //Multi Step Form handling and shetttt
 const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = MultistepForm([
-  <EventEditor {...data} updateFields={updateFields}/>, 
+  <EventEditor audience={""} contact={""} {...data} updateFields={updateFields}/>, 
   <EventForm /> //Will have to change it for the form instead of using the Event data
 ])
 
@@ -202,65 +202,66 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
                       animate={{ x: 0 }}
                       exit={{ x: "100vh" }}
                       transition={{ duration: 0.7, ease: "easeInOut" }}
-                      className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
+                      className="fixed top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50 overflow-y-auto"
                     >
-                      <form onSubmit={(e) => {
-                          e.preventDefault();
-                          if (isLastStep) {
-                            handlePublish();
-                          } else {
-                            handleEventSubmission();
-                          }
-                        }}>
-                        <div>
-                          {/* Can make this look better than just numbers */}
-                          <p dir="rtl">Steps: {currentStepIndex + 1} / {steps.length}</p>
+                      <div className="flex flex-col min-h-full">
+                        {/* Header with close button and step indicator */}
+                        <div className="flex justify-between items-center mb-6">
+                          <h2 className="text-xl font-semibold">
+                            {action} Event
+                          </h2>
+                          
+                          {/* Step progress indicator */}
+                          <div className="flex items-center gap-2">
+                            <div className="w-32 bg-gray-200 rounded-full h-2.5">
+                              <div 
+                                className="bg-blue-600 h-2.5 rounded-full" 
+                                style={{ width: `${((currentStepIndex + 1) / steps.length) * 100}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium text-gray-700">
+                              Step {currentStepIndex + 1} of {steps.length}
+                            </span>
+                          </div>
 
-                          {/* Button to close editor style could use some work*/}
-                          <ActionButton
-                          title="Close Event"
-                          type="button"
-                          onClick={handleCloseCreatePanel}
-                          textColor="text-saitBlue"
-                          borderColor="border-saitBlue"
-                          hoverBgColor="bg-saitBlue"
-                          hoverTextColor="text-saitWhite"
-                          />
+                          <button
+                            type="button"
+                            onClick={handleCloseCreatePanel}
+                            className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
                         </div>
-                        <div>
-                          {step}
-                          {!isFirstStep && 
-                            <ActionButton 
-                              onClick={back}
-                              title="Back"
-                              type="button"
-                              textColor="text-saitBlue"
-                              borderColor="border-saitBlue"
-                              hoverBgColor="bg-saitBlue"
-                              hoverTextColor="text-saitWhite" 
-                            ></ActionButton>}
-                          { isLastStep ?
-                            <ActionButton  
-                              title="Publish"
-                              textColor="text-saitBlue"
-                              borderColor="border-saitBlue"
-                              hoverBgColor="bg-saitBlue"
-                              hoverTextColor="text-saitWhite"  
-                            ></ActionButton>
-                            
-                          :
-                            <ActionButton  
-                              title="Next"
-                              //Could work on the handling to get rid of this error but it seems to be working okay for now
-                              textColor="text-saitBlue"
-                              borderColor="border-saitBlue"
-                              hoverBgColor="bg-saitBlue"
-                              hoverTextColor="text-saitWhite"  
-                            ></ActionButton>
-                          }
+
+                        {/* Form content */}
+                        <div className="flex-grow">
+                          <form onSubmit={(e) => {
+                            e.preventDefault();
+                            if (isLastStep) {
+                              handlePublish();
+                            } else {
+                              handleEventSubmission();
+                            }
+                          }}>
+                            {step}
+                          </form>
                         </div>
-                      
-                      </form>
+
+                        {/* Navigation buttons - fixed at bottom */}
+                        <div className="sticky bottom-4 mx-auto w-64 max-w-lg bg-white py-3 px-6 rounded-lg shadow-md border border-gray-200 flex justify-center gap-4">
+                          {!isFirstStep && (
+                            <button type="button" onClick={back} className="px-4 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                              Back
+                            </button>
+                          )}
+                          
+                          <button onClick={handleEventSubmission} className="w-28 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                            {isLastStep ? 'Publish' : 'Next'}
+                          </button>
+                        </div>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

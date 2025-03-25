@@ -8,29 +8,26 @@ datasource db {
 }
 
 model User {
-  user_id     String   @id @unique
-  email       String   @unique
-  password    String?
-  first_name  String
-  middle_name String?
-  last_name   String
-  role        Role
-  image_url   String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  // Relations
+  user_id       String             @id @unique
+  email         String             @unique
+  password      String?
+  first_name    String
+  last_name     String
+  role          Role
+  created_at    DateTime           @default(now())
+  updated_at    DateTime           @updatedAt
+  middle_name   String?
+  image_url     String?
   Admin         Admin?
-  Student       Student?
   Alumni        Alumni?
-  Notifications UserNotification[]
-  UserEvents    UserEvent[]
-  UserGroups    UserGroup[]
+  Articles      Article[]
   Groups        Group[]
   MessagesSent  Message[]
-  Articles      Article[]
+  Student       Student?
+  UserEvents    UserEvent[]
+  UserGroups    UserGroup[]
+  Notifications UserNotification[]
   Forms         Form[]
-  //EventsOwned Event[]   
 
   @@index([email, user_id])
 }
@@ -38,23 +35,19 @@ model User {
 model Admin {
   user_id     String  @id @unique
   permissions String?
-
-  // Relation
-  User User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  User        User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model Student {
-  user_id     String   @id @unique
-  program_id  String?       // if null, reflect student status  
-  department_id   String           
-  intake_year Int?    
-  intake      String?
-  status      Status
- 
-  // Relations
-  User       User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  Program    Program?   @relation(fields: [program_id], references: [program_id])
-  Department Department @relation(fields: [department_id], references: [department_id])
+  user_id       String     @id @unique
+  program_id    String?
+  department_id String
+  status        Status
+  intake        String?
+  intake_year   Int?
+  Department    Department @relation(fields: [department_id], references: [department_id])
+  Program       Program?   @relation(fields: [program_id], references: [program_id])
+  User          User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model Alumni {
@@ -63,9 +56,7 @@ model Alumni {
   credentials      String?
   current_position String?
   company          String?
-
-  // Relation
-  User User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  User             User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model Program {
@@ -85,47 +76,40 @@ model Department {
   Students      Student[]
 }
 
-// Content Models
 model Article {
-  article_id      String    @id @unique @default(uuid())
-  title           String
-  content         String    @db.Text
-  type_id         String
-  imageUrl        String?
-  datePublished   DateTime? @default(now())
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  author          String?
-  author_id       String
-  audience        Json?                // stores array of audience types and categories using JSONB
-  tags            String?   
-  status          ArticleStatus
-  Categories      ArticleCategory[]
-
-  //Relation  
-  User User?       @relation(fields: [author_id], references: [user_id], onDelete: SetNull)
-  type ArticleType @relation(fields: [type_id], references: [type_id])
+  article_id    String            @id @unique @default(uuid())
+  title         String
+  datePublished DateTime?         @default(now())
+  content       String
+  imageUrl      String?
+  audience      Json?
+  created_at    DateTime          @default(now())
+  updated_at    DateTime          @updatedAt
+  status        ArticleStatus
+  author_id     String
+  author        String?
+  type_id       String
+  tags          String?
+  User          User              @relation(fields: [author_id], references: [user_id], onDelete: SetNull)
+  type          ArticleType       @relation(fields: [type_id], references: [type_id])
+  Categories    ArticleCategory[]
 }
 
 model ArticleType {
-  type_id    String   @id @unique @default(uuid())
-  name       String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  isDefault  Boolean? @default(false)
-
-  // Relation
-  articles Article[]
+  type_id    String    @id @unique @default(uuid())
+  name       String    @unique
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  isDefault  Boolean?  @default(false)
+  articles   Article[]
 }
 
 model ArticleCategory {
-  id          String @id @unique @default(uuid())
+  id          String   @id @unique @default(uuid())
   article_id  String
   category_id String
-
-  //Relation
-  Article  Article  @relation(fields: [article_id], references: [article_id])
-  Category Category @relation(fields: [category_id], references: [category_id])
+  Article     Article  @relation(fields: [article_id], references: [article_id])
+  Category    Category @relation(fields: [category_id], references: [category_id])
 }
 
 model Event {
@@ -151,26 +135,31 @@ model Event {
   @@index([host])
 }
 
+//Made changes to this
 model Form {
-  form_id    String   @id @unique @default(uuid())
-  title      String
-  questions  Json
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  event_id   String?  @unique
-  Event      Event?
-  user_id    String?
-  User       User?    @relation(fields: [user_id], references: [user_id])
+  id          String   @id @default(uuid())
+  title       String
+  fields      Json     // Stores form structure (e.g., [{ type: "text", title: "Name" }])
+  isDraft     Boolean @default(true)
+  createdAt   DateTime @default(now())
+  submissions FormSubmission[]
+}
+
+//User Side for them to see the form... Hopefully
+model FormSubmission {
+  id        String   @id @default(uuid())
+  form      Form     @relation(fields: [formId], references: [id])
+  formId    String
+  data      Json     // Stores user responses (e.g., { q1: "John" })
+  createdAt DateTime @default(now())
 }
 
 model EventCategory {
-  id          String @id @unique @default(uuid())
+  id          String   @id @unique @default(uuid())
   event_id    String
   category_id String
-
-  //Relation
-  Event    Event    @relation(fields: [event_id], references: [event_id])
-  Category Category @relation(fields: [category_id], references: [category_id])
+  Category    Category @relation(fields: [category_id], references: [category_id])
+  Event       Event    @relation(fields: [event_id], references: [event_id])
 }
 
 model Category {
@@ -183,10 +172,10 @@ model Category {
 model Group {
   group_id      String      @id @unique @default(uuid())
   name          String
-  owner_id      String //user_id    
-  owner         User        @relation(fields: [owner_id], references: [user_id])
+  owner_id      String
   audience      Json
-  allowed_users Json? // Optional: List of specific user IDs allowed 
+  allowed_users Json?
+  owner         User        @relation(fields: [owner_id], references: [user_id])
   Messages      Message[]
   UserGroups    UserGroup[]
 }
@@ -204,13 +193,12 @@ model Message {
 model UserEvent {
   id         String   @id @unique @default(uuid())
   user_id    String
-  user_email String //not referenced to User (yet)
   event_id   String
   rsvp       Boolean  @default(false)
+  user_email String
   owned      Boolean? @default(false)
-
-  User  User  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  Event Event @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+  Event      Event    @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+  User       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@index([user_email])
 }
@@ -219,26 +207,26 @@ model UserGroup {
   id       String @id @unique @default(uuid())
   user_id  String
   group_id String
-  User     User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   Group    Group  @relation(fields: [group_id], references: [group_id], onDelete: Cascade)
+  User     User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model Notification {
   notification_id   String             @id @unique @default(uuid())
-  type              NotificationType // Type(enum) of notification (Article, Event, Group/Message, etc.)
   description       String
   audience          Json
   created_at        DateTime           @default(now())
+  type              NotificationType
   UserNotifications UserNotification[]
 }
 
 model UserNotification {
   id              String       @id @unique @default(uuid())
-  user_id         String //fk
+  user_id         String
   notification_id String
   accessed        Boolean      @default(false)
-  User            User         @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   Notification    Notification @relation(fields: [notification_id], references: [notification_id], onDelete: Cascade)
+  User            User         @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 enum Role {
