@@ -115,12 +115,10 @@ export default function Users() {
         }
     }
 
-
     // Handle Users View 
     const handleUsersView = (view: string) => {
         console.log("View: ", view);
         setUsersView(view);
-
     }
 
     // Create User Panel
@@ -128,15 +126,10 @@ export default function Users() {
         setIsPanelVisible(!isPanelVisible);
     };
 
-    // useEffect(() => {   
-    //     fetchUserData();
-    // }, []);
-    
-
     return (
         <div className="bg-saitWhite h-screen">
             {isLoading ? (
-                <Loader isLoading={true} />
+                <Loader isLoading={isLoading} />
             ) : (
                 <div className="w-full h-full">               
                     <PageHeader 

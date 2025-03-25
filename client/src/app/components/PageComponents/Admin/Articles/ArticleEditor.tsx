@@ -25,7 +25,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 
 type CreateArticleProps = { 
-    closeOnClick: any,
+    closeOnClick?: any,
     action: string,
     articleObject?: any,
     closeArticleEditor: any,
