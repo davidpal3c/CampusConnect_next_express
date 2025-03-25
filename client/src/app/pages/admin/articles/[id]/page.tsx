@@ -138,7 +138,7 @@ export default function Article() {
                         </button>
                     </div>
                     <div className="mt-10 flex flex-col">
-                        <p>Article Audience: {articleData.audience}</p>
+                        {/* <p>Article Audience: {articleData.audience}</p> */}
                         <p className="font-semibold">Read Time</p>
                         <p className="font-semibold">Readability</p>
                         <p className="font-semibold">SEO Score</p>

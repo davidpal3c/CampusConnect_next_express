@@ -3,7 +3,6 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { toast } from "react-toastify";
-import { set } from 'react-hook-form';
 
 type ArticleDeleteModalProps = {
     articleIds: string[];
@@ -47,7 +46,7 @@ export default function ArticleDeleteMultipleModal({ articlesData, articleIds, o
                 return;
             }
 
-            toast.success(data.message);      
+            toast.info(data.message);      
             if(reFetchArticles) reFetchArticles();
         } catch (error) {
             toast.error(`Unknown error occurred deleting article! : ` + error, {

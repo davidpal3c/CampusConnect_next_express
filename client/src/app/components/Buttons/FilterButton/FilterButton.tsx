@@ -23,7 +23,7 @@ export function FilterInput({ title, icon, handleChange }: FilterInputProps) {
                 onChange={(event) => handleChange(event.target.value)}
                 type="text" 
                 placeholder={title} 
-                className="flex-1 text-saitGray text-sm bg-transparent w-60 focus:outline-none" 
+                className="flex-1 text-saitGray text-sm bg-transparent w-auto focus:outline-none" 
             />
             {icon}
         </div>
