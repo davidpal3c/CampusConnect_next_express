@@ -1,6 +1,6 @@
 import { useUserAuth } from "@/app/_utils/auth-context";
-import { useState } from "react";
-import * as React from 'react';
+import { useUserData } from "@/app/_utils/userData-context";
+import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsIcon from '@mui/icons-material/Settings';
-
+import Image from 'next/image';
 import { Tooltip } from "@mui/material";
 
 
@@ -21,6 +21,7 @@ type HeaderProps = {
 export default function Header({ handleSidebarToggle, shouldShowButton }: HeaderProps) {
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
+    const { userData } = useUserData();
     const router = useRouter();
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -45,7 +46,6 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
             console.log("Sign Out error:", err);
         }
     }
-    
 
     return (
         <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-2 -mt-2 w-full">
@@ -78,9 +78,15 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
                         onClick={handleMenuClick}
                         className="flex items-center mr-3 active:scale-75 transition-shadow duration-300 ease-in-out">
 
-                        <img src={user.photoURL} alt="user-avatar-photo" className="w-[2.6rem] h-[2.6rem] ml-3 mr-2 rounded-full border border-slate-500" />
-                        {/* <p className="text-sm text-gray-950">Hello,<span className="ml-1 font-semibold">{user.displayName}!</span></p> */}
+                        <Image 
+                            src={userData?.image_url || user?.photoURL || 'https://i.ibb.co/5g3zzK2s/avatar-generic.jpg'} 
+                            alt="user-avatar-photo" 
+                            width={36}
+                            height={36}
+                            className="ml-3 mr-2 rounded-full border border-slate-500" 
+                        />
                     </button>
+                    
                 </Tooltip>
             ) : (
                 <div>
