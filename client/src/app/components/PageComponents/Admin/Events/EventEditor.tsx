@@ -129,7 +129,7 @@ function EventEditor({
           </div>
 
           <div>
-            <label className="block mb-2">Target Department(s)</label>
+            <label className="block mb-2">Target Audience(s)</label>
             <select
               value={audience}
               onChange={(e) => updateFields({ audience: e.target.value })}
