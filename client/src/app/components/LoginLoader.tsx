@@ -74,9 +74,10 @@ export default function LoaderPage({ result, backdrop, routeType }: LoaderPagePr
     // }, [isMounted]);
 
     // user contexts debug logging 
-    useEffect(() => {
-        console.log("User-Authentication state updated:", user);    
-    }, [user]);
+    
+    // useEffect(() => {
+    //     console.log("User-Authentication state updated:", user);    
+    // }, [user]);
 
     useEffect(() => {
         console.log("UserData state updated:", userData);    

@@ -173,11 +173,9 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
             await prisma.alumni.create({
                 data: {
                     user_id: user_id,
-                    graduation_year: parseInt(graduation_year, 10),
-                    credentials: credentials,
                     current_position: current_position || null,
                     company: company || null,
-                }
+                } as any
             });
         } else if (role === 'Admin') {
             const { permissions } = req.body;
@@ -235,15 +233,14 @@ export const updateUser = async (req: Request, res: Response) : Promise<void> =>
                 }
             });
         } else if (role === 'Alumni') {
-            const { graduation_year, credentials, current_position, company } = req.body;
+            const { current_position, company } = req.body;
 
             await prisma.alumni.create({
                 data: {
                     user_id: id,
-                    graduation_year: graduation_year,
-                    credentials: credentials,
                     current_position: current_position || null,
-                }
+                    company: company || null,   
+                } as any
             });
         }
 

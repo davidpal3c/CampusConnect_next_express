@@ -118,10 +118,6 @@ export default function Article() {
         }
       }, [articleData]);
 
-    useEffect(() => {
-        console.log("Article Audience: ", articleData);
-    }, [articleData])
-
     return(
         <div className="bg-saitWhite h-screen">
             {isLoading ? (
