@@ -33,7 +33,7 @@ export default function ArticleTypeDeleteModal({ articleType, openDeleteModal, h
                 return;
             }
 
-            toast.success(responseData.message);         
+            toast.info(responseData.message);         
             console.log("Article type deleted successfully", responseData);
 
             await reFetchArticleTypes();  

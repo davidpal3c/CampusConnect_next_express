@@ -55,6 +55,8 @@ export const getArticleTypes = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error fetching article types', error: error });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -70,6 +72,8 @@ export const getArticleCountByType = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error fetching article count by type', error: error });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -129,6 +133,8 @@ export  const getArticleCountsByType = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error fetching article type count', error: error });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -166,6 +172,8 @@ export const getArticlesByType = async (req: Request, res: Response) => {
         console.log('Error fetching articles by type:', error);
         res.status(500).json({ message: 'Server Error: error fetching articles by type', error: error });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -258,6 +266,8 @@ export const createArticleType = async (req: Request, res: Response) => {
         res.status(201).json({ message: 'Article type created successfully' });
     } catch(error) {
         res.status(500).json({ message: 'Server Error: error creating article type', error: error });
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -287,8 +297,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (type_id) updateArticleData.type_id = type_id;
         if (tags) updateArticleData.tags = tags;
 
-        // console.log("Image: ", imageUrl);
-        // console.log("Update Article Data: ", updateArticleData);
+        console.log('Article audience : ', audience);
 
         await prisma.article.update({
             where: { article_id: id },
@@ -299,6 +308,8 @@ export const updateArticle = async (req: Request, res: Response) => {
     } catch (error) {
         console.log('Error updating article:', error);
         res.status(500).json({ message: 'Server Error: error updating article', error: error });
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -371,6 +382,9 @@ export const updateArticleType = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'An unexpected error occurred while updating the article type.', error: error });
         return;
+
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -387,6 +401,9 @@ export const deleteArticle = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error deleting article', error: error });
         return;
+
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -413,6 +430,9 @@ export const deleteArticles = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error deleting articles', error: error });   
         return;
+
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -459,5 +479,8 @@ export const deleteArticleType = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error deleting article type', error: error });
         return;
+
+    } finally {
+        await prisma.$disconnect();
     }
 };

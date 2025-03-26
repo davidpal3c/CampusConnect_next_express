@@ -38,7 +38,7 @@ export default function ArticleDeleteModal({ articleId, openDeleteModal, handleD
                 return;
             }
 
-            toast.success(data.message);         
+            toast.info(data.message);         
             
             if(reFetchArticles) reFetchArticles();  
         } catch (error) {
