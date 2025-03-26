@@ -195,10 +195,9 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
         </div>
       </header>
           <div className="bg-saitWhite h-screen">
-            {/* {isLoading ? (
+            {isLoading ? (
               <Loader isLoading={true} />
-              ) : (
-              } */}
+            ) : (
               <div>
                   <div className="flex justify-end mb-4">
                     <button 
@@ -274,7 +273,14 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
 
                         {/* Form content */}
                         <div className="flex-grow">
-                          <form>
+                          <form onSubmit={(e) => {
+                            e.preventDefault();
+                            if (isLastStep) {
+                              handlePublish();
+                            } else {
+                              handleEventSubmission();
+                            }
+                          }}>
                             {step}
                           </form>
                         </div>
@@ -286,9 +292,8 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
                               Back
                             </button>
                           )}
-
-                          {isLastStep ?  
                           
+<<<<<<< HEAD
                           <button onClick={handlePublish} 
                           className="w-32 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"> 
                           Publish Event
@@ -300,13 +305,18 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
                           Next
                           </button>}
                          
+=======
+                          <button onClick={handleEventSubmission} className="w-28 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                            {isLastStep ? 'Publish' : 'Next'}
+                          </button>
+>>>>>>> parent of c19efcd (Worked on the publish and submit function a bit and can edit now)
                         </div>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
-            
+            )}
           </div>
         </div>
     </main>
@@ -314,6 +324,19 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
 };
 
 export default Events;
+
+const events = [
+  {
+    title: "Meeting",
+    start: new Date(2025, 0, 25, 10, 0),
+    end: new Date(2025, 0, 25, 11, 0),
+  },
+  {
+    title: "Lunch Break",
+    start: new Date(2025, 0, 25, 12, 0),
+    end: new Date(2025, 0, 25, 13, 0),
+  },
+];
 
 
     {/** Form and Calendar
