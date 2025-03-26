@@ -27,23 +27,23 @@ export default function Sidebar(props: SidebarProps) {
           <SidebarButton href={"/admin"} icon={HomeIcon}>
             Dashboard
           </SidebarButton>
+          <SidebarButton href={"/admin/articles"} icon={ArticleIcon}>
+            Articles
+          </SidebarButton>
           <SidebarButton href={"/admin/events"} icon={EventIcon}>
             Events
-          </SidebarButton>
-          <SidebarButton href={"/admin/notifications"} icon={NotificationIcon}>
-            Notifications
           </SidebarButton>
           <SidebarButton href={"/admin/groups"} icon={GroupIcon}>
             Groups
           </SidebarButton>
-          <SidebarButton href={"/admin/users"} icon={StudentIcon}>
-            Users
+          <SidebarButton href={"/admin/notifications"} icon={NotificationIcon}>
+            Notifications
           </SidebarButton>
           <SidebarButton href={"/admin/analytics"} icon={AnalyticIcon}>
             Analytics
           </SidebarButton>
-          <SidebarButton href={"/admin/articles"} icon={ArticleIcon}>
-            Articles
+          <SidebarButton href={"/admin/users"} icon={StudentIcon}>
+            User Management
           </SidebarButton>
         </div>
         <div className="flex flex-col items-center gap-2 my-auto">

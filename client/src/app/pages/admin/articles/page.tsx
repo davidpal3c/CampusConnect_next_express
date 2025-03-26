@@ -29,6 +29,7 @@ import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
 import { BsFiletypePdf } from "react-icons/bs";
+import { set } from "react-hook-form";
 
 export default function Articles() {
 
@@ -55,13 +56,25 @@ export default function Articles() {
   const [ articlesView, setArticlesView ] = useState("Simple");
   const [ selectedArticle, setSelectedArticle ] = useState({}); 
 
+  const [message, setMessage] = useState("Loading...");
+
   // Loader
   const [isLoading, setIsLoading] = useState(true);
 
+
   useEffect(() => {
+    // console.log("Articles: ", articles);
       if (articles.length > 0) {
         setIsLoading(false);
       }
+
+      // if (articles.length === 0) {
+      //   setMessage("No articles found.");
+      // } else if (articles.length > 0) {
+      //   setMessage ("");
+      // }else {
+      //   setMessage("Loading...");
+      // }
     }, [articles]);
 
 
@@ -118,6 +131,7 @@ export default function Articles() {
     setArticlesView("Extended"); 
   };
 
+  // Create/Edit Article Panel open/close
   const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
   const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
   
@@ -417,7 +431,7 @@ export default function Articles() {
                       </div>
                     ))
                   ) : (
-                    <p className="text-black">Loading.....</p>
+                    <p className="text-black">{message}</p>
                   )}
                 </div>
                 

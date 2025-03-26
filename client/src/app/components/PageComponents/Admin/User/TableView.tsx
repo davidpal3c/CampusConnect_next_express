@@ -2,16 +2,19 @@
 
 // React & Next
 import { useState, useEffect } from "react";
-
+import Image from "next/image";
 // Components
 import { ViewButton, DeleteButton } from "@/app/components/Buttons/Buttons";
 import { DeleteDialog } from "@/app/components/Dialogs/Dialogs";
 
+import { useRouter } from "next/navigation";
 // MUI Components
 import { DataGrid } from "@mui/x-data-grid";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-
-
+import { Tooltip, IconButton } from "@mui/material";
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
 export default function TableView({ users, filteredRole }) {
     // State Management
@@ -21,6 +24,11 @@ export default function TableView({ users, filteredRole }) {
     const [openDialog, setOpenDialog] = useState(false);
     const [userId, setUserId] = useState(null);
 
+    const router = useRouter();
+
+    const handleViewUser= (userId: string) => {
+        router.push(`/admin/users/${userId}`);
+    };
 
     // Delete function for users
     const deleteUser = async (userId: string) => {
@@ -43,13 +51,13 @@ export default function TableView({ users, filteredRole }) {
 
     // Filter users based on search input
     useEffect(() => {
-        const filtered = users.filter((user) =>
+        const filtered = users.filter((user: any) =>
             `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredUsers(filtered);
     }, [searchTerm, users]);
 
-    const handleOnDelete = (selectedUserId) => {
+    const handleOnDelete = (selectedUserId: string) => {
         setUserId(selectedUserId);
         setOpenDialog(true);
     };
@@ -72,9 +80,56 @@ export default function TableView({ users, filteredRole }) {
         { field: "actions", headerName: "Actions", type: "actions", minWidth: 120, flex: 1, renderCell: (params) => {
             const userId = params.row.user_id;
             return (
-                <div className="flex items-center justify-center w-full h-full">
-                    <ViewButton href={`/admin/users/${userId}`} />
-                    <DeleteButton onClick={() => handleOnDelete(userId)} />
+                // <div className="flex items-center justify-center w-full h-full">
+                //     <ViewButton href={`/admin/users/${userId}`} />
+                //     <DeleteButton onClick={() => handleOnDelete(userId)} />
+                // </div>
+                <div className="flex items-center justify-center w-full h-full space-x-1">
+                    <Tooltip title="Delete Article" arrow>
+                        <IconButton onClick={() => handleOnDelete(userId)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                    color: '#932728',                                     // Button hover color
+                                    '& .MuiSvgIcon-root': {
+                                color: '#932728',                                       // Icon hover color
+                                    },
+                                },
+                                }}
+                        >
+                            <DeleteRoundedIcon sx={{ fontSize: 23, color: '#666666' }}/>
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Article" arrow>
+                        <IconButton onClick={() => console.log(`Edit User ${userId}`)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                  color: '#5c2876', 
+                                  '& .MuiSvgIcon-root': {
+                                    color: '#5c2876', 
+                                  },
+                                },
+                              }}    
+                        >
+                            <EditRoundedIcon sx={{ fontSize: 23, color: '#666666' }} />   
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="View Article" arrow>
+                        <IconButton onClick={() => handleViewUser(userId)}
+                            sx={{
+                                color: '#666666',
+                                '&:hover': {
+                                    color: '#2b64ae', 
+                                    '& .MuiSvgIcon-root': {
+                                    color: '#2b64ae', 
+                                    },
+                                },
+                            }}    
+                        >
+                            <VisibilityIcon sx={{ fontSize: 23, color: '#666666' }} />
+                        </IconButton>
+                    </Tooltip>
                 </div>
             );
         }},
@@ -84,7 +139,8 @@ export default function TableView({ users, filteredRole }) {
             return (
                 <div className="flex items-center justify-center w-full h-full">
                     {imageUrl ? (
-                        <img src={imageUrl} alt="User" className="w-8 h-8 rounded-full border-saitBlack border" />
+                        // <img src={imageUrl} alt="User" className="w-8 h-8 rounded-full border-saitBlack border" />
+                        <Image src={imageUrl} alt="User" width={32} height={32} className="rounded-full border-saitBlack border" />
                     ) : (
                         <AccountCircleIcon className="text-gray-500 w-8 h-8" />
                     )}

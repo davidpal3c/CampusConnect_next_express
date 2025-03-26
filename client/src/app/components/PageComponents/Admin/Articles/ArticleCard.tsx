@@ -18,7 +18,7 @@ export default function ArticleCard({ article } : { article: any }) {
         }
     }
 
-    const [articleTitleReduced] = useState(truncateText(article.title, 32) || "Title not available");
+    const [articleTitleReduced] = useState(truncateText(article.title, 45) || "Title not available");
     const [articleAuthorReduced] = useState(truncateText(article.author, 25) || "Author not available");
     const [ref, isVisible] = useLazyLoad(); 
 
