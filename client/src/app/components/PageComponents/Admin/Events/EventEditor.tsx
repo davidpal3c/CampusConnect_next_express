@@ -24,8 +24,8 @@ function EventEditor({
   description,
   programs,
   host,
-  contact,
   capacity,
+  contact,
   updateFields,
 }: EventProps) {
   const dummyAud = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];

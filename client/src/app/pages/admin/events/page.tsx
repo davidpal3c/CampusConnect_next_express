@@ -6,10 +6,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import EventEditor from "@/app/components/PageComponents/Admin/Events/EventEditor";
 import EventListView from "@/app/components/PageComponents/Admin/Events/EventListView";
+import EventCardView from "@/app/components/PageComponents/Admin/Events/EventCardView";
 import EventForm from "@/app/components/PageComponents/Admin/Events/EventForm"
 // import EventCalendarView from "@/app/components/PageComponents/Admin/Events/EventCalendarView";
 import Loader from "@/app/components/Loader/Loader";
 import { MultistepForm } from "@/app/components/PageComponents/Admin/Events/MultistepForm";
+
+// For the icons and Views
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import { DeleteIcon } from "lucide-react";
+import { Tooltip } from '@mui/material';
+import { ViewModuleRounded, ViewListRounded } from '@mui/icons-material';
 
 
 type EventData = {
@@ -43,6 +50,7 @@ const Events = () => {
   const [showEventEditor, setShowEventEditor] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [action, setAction] = useState("Create");
+  const [viewMode, setViewMode] = useState<'list' | 'card'>('card');
 
   useEffect(() => {
     fetchEvents();
@@ -181,6 +189,7 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
               borderColor="border-saitBlue"
               hoverBgColor="bg-saitBlue"
               hoverTextColor="text-saitWhite"
+              
             />
           </div>
         </div>
@@ -190,9 +199,36 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
               <Loader isLoading={true} />
             ) : (
               <div>
+                  <div className="flex justify-end mb-4">
+                    <button 
+                      onClick={() => setViewMode('list')} 
+                      className={`p-2 ${viewMode === 'list' ? 'text-blue-600' : 'text-gray-500'}`}
+                    >
+                      <ViewListRounded />
+                    </button>
+                    <button 
+                      onClick={() => setViewMode('card')} 
+                      className={`p-2 ${viewMode === 'card' ? 'text-blue-600' : 'text-gray-500'}`}
+                    >
+                      <ViewModuleRounded />
+                    </button>
+                  </div>
 
-                {/* Event List View */}
-                <EventListView events={events} onEventSelect={handleEventSelect} onEventDelete={handleDeleteEvent}/>
+                  {/* Conditional Rendering of Views */}
+                  {viewMode === 'list' ? (
+                    <EventListView 
+                      events={events} 
+                      onEventSelect={handleEventSelect} 
+                      onEventDelete={handleDeleteEvent}
+                    />
+                  ) : (
+                    <EventCardView 
+                      events={events} 
+                      onEventSelect={handleEventSelect} 
+                      onEventDelete={handleDeleteEvent}
+                      isAdminView={true}
+                    />
+                  )}
 
                 {/* Event Editor Panel */}
                 <AnimatePresence>

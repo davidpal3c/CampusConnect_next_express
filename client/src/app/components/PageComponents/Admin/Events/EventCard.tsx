@@ -1,71 +1,92 @@
 "use client";
-// TODO: import ActionButton component
-import { useState, useEffect } from "react";
-import { adjustDateLetters, adjustDateOnlyNumerical } from "@/app/_utils/dateUtils"
-// import { adjustDateLetters, adjustDateOnlyNumerical } from "../../../../_utils/dateUtils"
-import Link from 'next/link';
+import { useState } from "react";
+import { adjustDateLetters } from "@/app/_utils/dateUtils";
+import { Tooltip } from '@mui/material';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import { DeleteIcon } from "lucide-react";
 
+type EventCardProps = {
+  event: any;
+  onEventSelect?: (event: any) => void;
+  onEventDelete?: (event: any) => void;
+  isAdminView?: boolean;
+};
 
-export default function EventCard({ event } : { event: any }) {
-
-    const [dateReadable ] = useState(adjustDateLetters(event.date) || "");   
-    // const [contentReduced] = useState(article.content.substring(0, 54) || "Content not available");
-
-    const truncateText = (text: string, maxLength: number) => {
-        if (text.length > maxLength) {
-            return text.substring(0, maxLength) + "...";
-        } else {
-            return text;    
-        }
+export default function EventCard({ event, onEventSelect, onEventDelete, isAdminView = false }: EventCardProps) {
+  const [dateReadable] = useState(adjustDateLetters(event.date) || "");
+  
+  const truncateText = (text: string, maxLength: number) => {
+    if (!text) return "Not available";
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + "...";
     }
+    return text;
+  };
 
-    const [eventTitleReduced] = useState(truncateText(event.title, 32) || "Title not available");
-    const [eventAuthorReduced] = useState(truncateText(event.author, 25) || "Author not available");
+  const eventNameReduced = truncateText(event.name, 32);
+  const eventLocationReduced = truncateText(event.location, 25);
+  const eventHostReduced = truncateText(event.host, 25);
 
+  return (
+    <div className="flex flex-col p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow h-full">
+      {event ? (
+        <div className="flex flex-col h-full">
+          {/* Status and Date */}
+          <div className="flex justify-between items-start mb-2">
+            <span className="text-xs font-semibold px-2 py-1 bg-green-100 text-green-800 rounded">
+              Published
+            </span>
+            <p className="text-sm text-gray-600">{dateReadable}</p>
+          </div>
 
-    // useEffect(() => {
-    //     if(article.imageUrl) {
-    //         console.log("ArticleCard article", article);
-    //     }
-    // }, []);
+          {/* Category/Tag */}
+          <span className="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-800 rounded mb-3 self-start">
+            {event.departments || "General"}
+          </span>
 
-    return (
-        <Link href={`/admin/articles/${event.event_id}`}>
-            <div className="flex flex-col p-4">
-                {event ? (
-                    <div>
-                        <div className="rounded-lg overflow-hidden h-36">
-                            <img
-                                src={event.imageUrl ? event.imageUrl : "/img_placeholder.png"} // Use the correct `imageURL` field
-                                alt={`${event.title}-image` || "Placeholder image"} // Add a fallback for the `alt` attribute
-                                className="object-cover w-full h-full overflow-hidden"
-                                onError={(e) => (e.currentTarget.src = "/img_placeholder.png")} // Handle image loading errors
-                            />
-                        </div>
-                        <div className="flex flex-col h-16 ">
-                            <div className="flex justify-between items-center mt-2">
-                                <h2 className="text-lg font-bold flex flex-wrap">{eventTitleReduced}</h2>
-                                <p className="text-sm text-gray-600">{dateReadable}</p>
-                            </div>
-                        </div>
-   
-                        <div className="flex flex-col justify-end mt-1">
-                            <p className="text-sm text-gray-600 flex justify-start"><span className="font-semibold mr-4">Author:</span>{eventAuthorReduced}</p>        
-                            <p className="text-sm text-gray-600 flex justify-start"><span className="font-semibold mr-4">Category:</span>{event.category}</p>        
-                            {/* <div className="flex flex-wrap relative">
-                                <p className="text-sm text-gray-600">{`${contentReduced}...`}</p>
-                            </div> */}
-                        </div>      
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center h-40 w-40 bg-gray-200 rounded-lg">
-                        Event Data Not Available
-                    </div>
-                )}
+          {/* Event Content */}
+          <div className="flex-grow">
+            <h2 className="text-lg font-bold mb-2">{eventNameReduced}</h2>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Location:</span> {eventLocationReduced}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Host:</span> {eventHostReduced}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Capacity:</span> {event.capacity || "N/A"}
+              </p>
             </div>
-        </Link>
-    );
+          </div>
+
+          {/* Admin Actions */}
+          {isAdminView && (
+            <div className="flex justify-end space-x-2 mt-4">
+              <button 
+                className="group border p-1 rounded-full hover:bg-blue-600 hover:text-white transition-colors"
+                onClick={() => onEventSelect?.(event)}
+              >
+                <Tooltip title="Edit Event">
+                  <EditRoundedIcon sx={{ fontSize: 18 }} />
+                </Tooltip>
+              </button>
+              <button 
+                className="group border p-1 rounded-full hover:bg-red-600 hover:text-white transition-colors"
+                onClick={() => onEventDelete?.(event)}
+              >
+                <Tooltip title="Delete Event">
+                  <DeleteIcon size={18} />
+                </Tooltip>
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex items-center justify-center h-40 bg-gray-100 rounded-lg">
+          Event Data Not Available
+        </div>
+      )}
+    </div>
+  );
 }
-
-
-

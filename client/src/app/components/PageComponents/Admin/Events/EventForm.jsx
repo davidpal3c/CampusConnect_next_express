@@ -38,11 +38,12 @@ function EventForm({ mode = "creator", formId = null }) {
     }
   }, [formName, fields, formId]);
 
+
   // Field management functions
   const addQuestion = (type) => {
     const newQuestion = {
       type,
-      title: `Question ${fields.length + 1}`,
+      title: `Question ${fields.length + 1}`, 
       name: `q${fields.length + 1}`,
       required: false,
       options: type === 'radio' || type === 'checkbox' 
@@ -74,6 +75,12 @@ function EventForm({ mode = "creator", formId = null }) {
   const removeOption = (fieldIndex, optionIndex) => {
     const updatedFields = [...fields];
     updatedFields[fieldIndex].options.splice(optionIndex, 1);
+    setFields(updatedFields);
+  };
+
+  const updateQuestionTitle = (fieldIndex, newTitle) => {
+    const updatedFields = [...fields];
+    updatedFields[fieldIndex].title = newTitle;
     setFields(updatedFields);
   };
 
@@ -204,9 +211,23 @@ function EventForm({ mode = "creator", formId = null }) {
         {fields.map((field, index) => (
           <div key={field.name} className="mb-6 p-4 bg-gray-50 rounded">
             <div className="flex justify-between items-center mb-2">
+              {mode === 'creator' ? (
+                <input
+                type="text"
+                value={field.title}
+                onChange={(e) => updateQuestionTitle(index, e.target.value)}
+                ></input>
+              ) : (
+                <label className='font-medium'>
+                  {field.title} {field.required && <span className='text-red-500'>*</span>}
+                </label>
+              )}
+
               <label className="font-medium">
                 {field.title} {field.required && <span className="text-red-500">*</span>}
               </label>
+              
+              {/* Remove button creator only */}
               {mode === 'creator' && (
                 <button
                   type="button"
