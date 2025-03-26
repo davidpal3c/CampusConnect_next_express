@@ -290,13 +290,13 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
                           {isLastStep ?  
                           
                           <button onClick={handlePublish} 
-                          className="w-28 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"> 
-                          Publish
+                          className="w-32 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"> 
+                          Publish Event
                           </button> 
                           
                           :  
                           <button onClick={handleEventSubmission} 
-                          className="w-28 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"> 
+                          className="w-32 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"> 
                           Next
                           </button>}
                          
