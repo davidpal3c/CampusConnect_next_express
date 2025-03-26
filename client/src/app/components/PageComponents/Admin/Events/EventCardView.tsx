@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import EventCard from "./EventCard";
-import { ViewModuleRoundedIcon, ViewListRoundedIcon } from '@mui/icons-material';
+
 
 const EventCardView = ({ events, onEventSelect, onEventDelete, isAdminView = false }) => {
   const [currentPage, setCurrentPage] = useState(1);

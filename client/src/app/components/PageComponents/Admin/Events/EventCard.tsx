@@ -33,6 +33,8 @@ export default function EventCard({ event, onEventSelect, onEventDelete, isAdmin
         <div className="flex flex-col h-full">
           {/* Status and Date */}
           <div className="flex justify-between items-start mb-2">
+            
+            {/* Have to make the change in the database to allow for drafts */}
             <span className="text-xs font-semibold px-2 py-1 bg-green-100 text-green-800 rounded">
               Published
             </span>
