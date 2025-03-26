@@ -138,10 +138,6 @@ export default function AudienceSelectionModal({
         setSelectedUserTypes(userTypes);
     };
 
-    useEffect(() => {
-        console.log(selectedUserTypes);
-    }, [selectedUserTypes]);
-
     return (
         <div>
             <Modal
@@ -156,17 +152,17 @@ export default function AudienceSelectionModal({
                 <Box sx={modalStyle}>
                 <div className="flex flex-col items-center justify-center w-auto">
                     <div className="flex flex-row items-center justify-between p-4 mt-1 w-full">
-                    <div></div>
-                    <div>
-                        <h1 className="text-xl font-bold">Select Audience</h1>
-                    </div>
-                    <div className="">
-                        <Tooltip title="Close">
-                            <IconButton onClick={handleAudienceSelectionClose}>
-                                <CloseRoundedIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
+                        <div></div>
+                        <div>
+                            <h1 className="text-xl font-bold">Select Audience</h1>
+                        </div>
+                        <div className="">
+                            <Tooltip title="Close">
+                                <IconButton onClick={handleAudienceSelectionClose}>
+                                    <CloseRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </div>
 
                     <div className="w-full">

@@ -5,7 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-import { maxHeaderSize } from 'http';
+
 interface CriteriaAccordionProps {
     criteria: any;
 }
