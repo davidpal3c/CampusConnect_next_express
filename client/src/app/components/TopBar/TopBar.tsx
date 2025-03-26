@@ -52,25 +52,15 @@ export default function TopNavBar() {
             fetchArticlesData();
             populateUserData();
     
-            console.log("User:", userData);
-            console.log("User ID:", userId);
-            console.log("User Image:", imageUrl);
+            // console.log("User:", userData);
+            // console.log("User ID:", userId);
+            // console.log("User Image:", imageUrl);
         } else if (!authUserLoading && !userData) {
             setIsLoading(false);
         }
 
     }, [userData, authUserLoading]);
 
-    // useEffect(() => {
-    //     fetchArticlesData();
-    //     populateUserData();
-
-    //     console.log ("User:", userData);
-    //     console.log("User ID:", userId);
-    //     console.log("User Image:", imageUrl);
-    // }, [userData]);
-
-        
 
     const [anchorEl, setAnchorEl] = useState(null);
     const handleMenu = (event: any) => setAnchorEl(event.currentTarget);
@@ -86,10 +76,6 @@ export default function TopNavBar() {
         }
    }
 
-    useEffect(() => {
-        console.log("TopNavBar: userData", userData);
-    }, [userData]);
-    
 
     return (
         <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { containsHTML } from "@/app/_utils/text-service";
 import { formatToDateTime } from "@/app/_utils/dateUtils";
@@ -9,17 +10,41 @@ import Loader from "@/app/components/Loader/Loader";
 import ArticleEditor from "@/app/components/PageComponents/Admin/Articles/ArticleEditor";
 import ResourceShareModal from "@/app/components/PageComponents/Admin/ResourceShareModal";
 
+// dynamic imports : code splitting
+// import dynamic from 'next/dynamic';
+
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import { Tooltip } from '@mui/material';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 
+// audience grouping dropdown
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+
 import { toast } from "react-toastify";
 import { AnimatePresence, motion } from "framer-motion";
 import { BsShare } from "react-icons/bs";
 import { BsFiletypePdf } from "react-icons/bs";
+import { Label } from "@radix-ui/react-select";
 
 export default function Article() {
+
+    // const ArticleEditor = dynamic(
+    //     () => import('@/app/components/PageComponents/Admin/Articles/ArticleEditor'),
+    //         { 
+    //         loading: () => <Loader isLoading={true} />,
+    //         ssr: false 
+    //         }
+    // );
+      
+    // const ResourceShareModal = dynamic(
+    //     () => import('@/app/components/PageComponents/Admin/ResourceShareModal'),
+    //     { 
+    //         loading: () => <Loader isLoading={true} />,
+    //         ssr: false 
+    //     }
+    // );
 
     const [articleData, setArticleData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -93,10 +118,6 @@ export default function Article() {
         }
       }, [articleData]);
 
-    useEffect(() => {
-        console.log("Article Audience: ", articleData);
-    }, [articleData])
-
     return(
         <div className="bg-saitWhite h-screen">
             {isLoading ? (
@@ -122,8 +143,13 @@ export default function Article() {
 
                                     <div className="flex justify-between items-center mt-4">
                                         <div className="flex items-center flex-row">
-                                            <img src="/avatar-generic.jpg" alt="article-author"
-                                                className="object-contain mr-1" style={{ maxHeight: 60 }}></img>
+                                            <Image src="/avatar-generic.jpg" alt="article-author"
+                                                className="object-contain mr-1" style={{ maxHeight: 60 }}
+                                                width={60} 
+                                                height={60}
+                                                loading='lazy'
+                                            >
+                                            </Image>
                                             <div className="-space-y-1">
                                                 <p className="text-lg">{articleData.author}</p>
                                                 <p className="text-saitGray ">{formatToDateTime(articleData.datePublished)}</p>
@@ -140,8 +166,11 @@ export default function Article() {
                                     </div>
 
                                     <div className="w-full flex max-w-full h-auto object-contain mb-4 mt-6">
-                                        <img src={articleData?.imageUrl || null} alt={articleData.title} 
+                                        <Image src={articleData?.imageUrl || null} alt={articleData.title} 
                                             style={{ maxHeight: "400px"}} className="w-10/12 h-96 object-cover rounded-md"    
+                                            loading='lazy'
+                                            width={800}
+                                            height={400}
                                         />
                                         {/* <caption></caption> */}
                                     </div>
@@ -170,7 +199,6 @@ export default function Article() {
                                 </button>
                             </div>
                             <div className="mt-10 flex flex-col">
-                                <p>Article Audience: </p>
                                 <p className="font-semibold">Read Time</p>
                                 <p className="font-semibold">Readability</p>
                                 <p className="font-semibold">SEO Score</p>
@@ -179,6 +207,38 @@ export default function Article() {
                                 <p className="font-semibold">Article Tags:</p>
                                 <p className="font-thin">{articleData?.tags || ""}</p>
                                 
+                                <div className="flex flex-col my-4">
+                                    <p className="font-semibold">Article Audience: </p>
+                                    <InputLabel htmlFor="grouped-native-select">Select Audience</InputLabel>
+                                    <Select native id="grouped-native-select" 
+                                        className="mt-2" style={{ width: "100%" }}
+                                    >
+                                        <option aria-label="None" value="" />
+                                        {articleData?.audience.userTypes && articleData?.audience.userTypes.length > 0 && (
+                                            <optgroup label='User Types'>
+                                                {articleData?.audience.userTypes.map((userType, index) => (
+                                                    <option key={`userType.id-${index}`} value={userType}>{userType}</option>
+                                                ))}
+                                            </optgroup>
+                                        )}
+                                        {articleData?.audience.programs && articleData?.audience.programs.length > 0 && (
+                                            <optgroup key='programs' label='Programs'>
+                                                {articleData?.audience.programs.map((p) => (
+                                                    <option key={p.program_id} value={p.program_id}>{p.name}</option>
+                                                ))}
+                                            </optgroup>
+                                        )}
+                                        {articleData?.audience.departments && articleData?.audience.departments.length > 0 && (
+                                            <optgroup key='department' label="Departments">
+                                                {articleData?.audience.departments.map((d) => (
+                                                    <option key={d.department_id} value={d.department_id}>{d.name}</option>
+                                                ))}
+                                            </optgroup>
+                                        )}
+                                    </Select>
+                                </div>
+
+
                                 <div className="flex justify-center items-center">
                                     <button className="flex flex-wrap w-64 justify-center items-center border border-saitBlue rounded-full p-2 mt-4">
                                         <p className="font-semibold">Preview as User</p>
