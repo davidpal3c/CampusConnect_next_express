@@ -69,7 +69,7 @@ export default function EventCard({ event, onEventSelect, onEventDelete, isAdmin
                 className="group border p-1 rounded-full hover:bg-blue-600 hover:text-white transition-colors"
                 onClick={() => onEventSelect?.(event)}
               >
-                <Tooltip title="Edit Event">
+                <Tooltip title="Edit Event" arrow>
                   <EditRoundedIcon sx={{ fontSize: 18 }} />
                 </Tooltip>
               </button>
@@ -77,7 +77,7 @@ export default function EventCard({ event, onEventSelect, onEventDelete, isAdmin
                 className="group border p-1 rounded-full hover:bg-red-600 hover:text-white transition-colors"
                 onClick={() => onEventDelete?.(event)}
               >
-                <Tooltip title="Delete Event">
+                <Tooltip title="Delete Event" arrow>
                   <DeleteIcon size={18} />
                 </Tooltip>
               </button>

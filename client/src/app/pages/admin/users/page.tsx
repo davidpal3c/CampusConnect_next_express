@@ -142,14 +142,14 @@ export default function Users() {
                                 {/* Left side container for filters */}
                                 <div className="flex flex-1 items-center justify-center gap-4 px-4">
                                     <div className="flex flex-row w-[4.3rem] h-10 items-center justify-evenly bg-white border-2 rounded-lg p-1">
-                                        <Tooltip title="List View">
+                                        <Tooltip title="List View" arrow>
                                             <button onClick={() => handleUsersView("List")}>
                                                 <ViewModuleRoundedIcon sx={usersView === "List" ? { color: '#2b64ae', fontSize: 26 } :
                                                     { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
                                                 />
                                             </button>
                                         </Tooltip>
-                                        <Tooltip title="Table View">
+                                        <Tooltip title="Table View" arrow>
                                             <button onClick={() => handleUsersView("Table")}>
                                                 <ViewListRoundedIcon sx={usersView === "Table" ? { color: '#2b64ae', fontSize: 26 } :
                                                     { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
@@ -170,7 +170,7 @@ export default function Users() {
                                 </div>
 
                                 <div className="flex items-center justify-evenly gap-4 md:w-full">
-                                    <Tooltip title="Add User">
+                                    <Tooltip title="Add User" arrow>
                                         <div>
                                             <ActionButton title="Add" icon={<AddRoundedIcon />} 
                                                 onClick={handlePanel} borderColor="border-saitBlue" textColor="text-saitGray" 
@@ -184,7 +184,7 @@ export default function Users() {
               
 
                                      {/* Right side container for the Add button */}
-                                    <Tooltip title="Import Users from Excel">
+                                    <Tooltip title="Import Users from Excel" arrow>
                                         <div>
                                             <ActionButton title="Import Excel" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
                                                 onClick={handlePanel} borderColor="border-saitPurple" textColor="text-saitGray" 

@@ -157,7 +157,7 @@ export default function AudienceSelectionModal({
                             <h1 className="text-xl font-bold">Select Audience</h1>
                         </div>
                         <div className="">
-                            <Tooltip title="Close">
+                            <Tooltip title="Close" arrow>
                                 <IconButton onClick={handleAudienceSelectionClose}>
                                     <CloseRoundedIcon />
                                 </IconButton>

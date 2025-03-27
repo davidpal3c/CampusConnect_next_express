@@ -314,7 +314,7 @@ export default function Articles() {
               
               <div className="flex flex-col sm:flex-row md:space-x-2 sm:space-x-2">
                 <div className="flex flex-row w-[4.3rem] items-center justify-evenly bg-white border-2 rounded-lg p-1">
-                  <Tooltip title="Simple View">
+                  <Tooltip title="Simple View" arrow>
                     <button className="" onClick={handleSimpleView}>
                       <ViewModuleRoundedIcon sx={
                         articlesView === "Simple" ? { color: '#2b64ae', fontSize: 26 } :
@@ -322,7 +322,7 @@ export default function Articles() {
                         }/>
                     </button>
                   </Tooltip>
-                  <Tooltip title="Extended View">
+                  <Tooltip title="Extended View" arrow>
                     <button className="" onClick={handleExtendedView}>
                       <ViewListRoundedIcon sx={
                         articlesView === "Extended" ? { color: '#2b64ae', fontSize: 26 } :
@@ -379,7 +379,7 @@ export default function Articles() {
               </div>
               
               <div className="flex flex-col xs:flex-row xs:space-x-3 md:space-x-2 sm:space-x-6">
-                <Tooltip title="New Article">
+                <Tooltip title="New Article" arrow>
                   <div>              
                     <ActionButton title="Create" icon={<AddRoundedIcon />} 
                       onClick={handleCreateArticle} borderColor="border-saitBlue" textColor="text-saitGray" 
@@ -409,7 +409,7 @@ export default function Articles() {
                     currentArticles.map((article) => (
                       <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
                         <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitBlue p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
-                          <Tooltip title="Edit Article">    
+                          <Tooltip title="Edit Article" arrow>    
                             <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#f7f7f7] transition-colors duration-300" />
                           </Tooltip>
                         </button>

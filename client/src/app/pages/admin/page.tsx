@@ -133,7 +133,7 @@ export default function AdminPage() {
           <div className="bg-white p-4 rounded-xl shadow-md flex flex-col space-y-2 cursor-pointer">
             <h2 className="text-lg font-semibold mb-4">Articles</h2>
 
-            <div className="flex flex-row items-center justify-between bg-saitBlue text-white rounded-md p-4">
+            <div className="flex flex-row items-center justify-between border border-saitBlue bg-saitWhite text-saitBlack rounded-md p-4">
               <div className="flex flex-col w-4/5">
                 <h3 className="font-bold">Upon Arrival in Canada</h3>
                 <p className="text-sm">Published: 11/1/2024</p>
@@ -148,7 +148,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="flex flex-row items-center justify-between bg-saitBlue text-white rounded-md p-4">
+            <div className="flex flex-row items-center justify-between border border-saitBlue bg-saitWhite text-saitBlack rounded-md p-4">
               <div className="flex flex-col w-4/5">
                 <h3 className="font-bold">Upon Arrival in Canada</h3>
                 <p className="text-sm">Published: 11/1/2024</p>
