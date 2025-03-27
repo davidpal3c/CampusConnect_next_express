@@ -34,11 +34,14 @@ export const getAllAudience = async (req: Request, res: Response) => {
 
         const intakeYears = intakeYearsObj.map((year) => year.intake_year);
 
+        const userTypes = ["Students", "Prospective", "Alumni"];
+    
         const audienceData = {
             departments, 
             programs, 
             intakeSeasons, 
-            intakeYears
+            intakeYears,
+            userTypes
         }
 
         // console.log("Audience Data: ", audienceData);

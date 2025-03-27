@@ -1,3 +1,4 @@
+import { Department, AlumniStudy } from './../../node_modules/.prisma/client/index.d';
 import { Request, Response, NextFunction } from 'express';
 import { initializeFirebaseAdmin } from '../config/firebase';
 import admin from 'firebase-admin';
@@ -64,15 +65,51 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
 
         // retrieve user fields based on role (Student/Alumni) from db
         if (user?.role === "Student") {
+            // const studentFields = await prisma.student.findUnique({
+            //     where: { user_id: userId },
+            // });
+
             const studentFields = await prisma.student.findUnique({
                 where: { user_id: userId },
+                include: {
+                    Program: {
+                        include: {
+                            Department: true
+                        }
+                    }
+                }
             });
             
             req.user = { ...req.user, dbUser: user, studentFields: studentFields };
 
         } else if (user?.role === "Alumni") {
-            const alumniFields = await prisma.alumni.findUnique({ where: { user_id: user.user_id } });
-            
+            const alumniFields = await prisma.alumni.findUnique({ 
+                where: { user_id: user.user_id }, 
+                select: {
+                    current_position: true,
+                    company: true,
+                    AlumniStudy: {
+                        select: {
+                            graduation_year: true,
+                            Program: {
+                                select: {
+                                    name: true,
+                                    program_id: true
+                                }
+                            },
+                            Department: {
+                                select: {
+                                    name: true,
+                                    department_id: true
+                                }
+                            }
+                        }
+                    }
+                } as any
+            });
+        
+            console.log("Alumni Fields: ", alumniFields);
+        
             req.user = { ...req.user, dbUser: user, alumniFields: alumniFields };
 
         } else {

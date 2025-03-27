@@ -23,7 +23,7 @@ export default function UserItem({ user_id, name, role, email, created_at}: User
 
     return (
         <Link href={`users/${user_id}`} passHref> 
-            <div className="flex items-center justify-between bg-white shadow-md rounded-md p-4 m-4 border-2 hover:border-saitLighterBlue transition-colors duration-300">
+            <div className="flex items-center justify-between bg-white shadow-md rounded-xl p-4 m-4 border-2 hover:border-saitLighterBlue transition-colors duration-300">
                 <div>
                     <h2 className="text-xl font-bold">{name}</h2>
                     <p className={`text-sm capitalize ${roleClass}`}>{role}</p>

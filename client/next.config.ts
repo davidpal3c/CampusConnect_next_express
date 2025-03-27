@@ -1,6 +1,23 @@
 import type { NextConfig } from "next";
+import { hostname } from "os";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ibb.co', 
+      },
+    ]
+  },
   async rewrites() {
     return [
 
@@ -25,7 +42,6 @@ const nextConfig: NextConfig = {
       { source: '/user/articles/:id', destination: '/pages/user/articles/:id'},
     ];
   },
-
 };
 
 export default nextConfig;

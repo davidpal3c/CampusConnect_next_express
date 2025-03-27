@@ -18,51 +18,79 @@ import StudentPageBtn from "@/app/components/Buttons/StudentPageButton/StudentLo
 
 export default function AdminLogin() {
 
-    const { googleSignIn, signOutFirebase } = useUserAuth();
+    const { googleSignIn, microsoftSignIn, signOutFirebase } = useUserAuth();
     const [backdrop, setBackdrop] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loadingGoogle, setLoadingGoogle] = useState(false);
+    const [loadingMicrosoft, setLoadingMicrosoft] = useState(false);
+    const [provider, setProvider] = useState("");
 
     const [loaderBackdrop, setLoaderBackdrop] = useState(false);
     const [authRoleType, setAuthRoleType] = useState("");
     const [userResultProp, setUserResultProp] = useState(false);
 
+    const handleLoaderOpen = (provider: string) => {
+        setBackdrop(true);
+        if (provider === "google") {
+            setLoadingGoogle(true);
+        } 
 
-    const handleLoaderClose = () => {
-        setBackdrop(false);
-        setLoading(false);
+        if (provider === "microsoft") {
+            setLoadingMicrosoft(true);
+        }
     };
 
-    const handleLoaderOpen = () => {
-        setBackdrop(true);
-        setLoading(true);
+    const handleLoaderClose = (provider: string) => {
+        setBackdrop(false);
+
+        if (provider === "google") {
+            setLoadingGoogle(false);
+        } 
+
+        if (provider === "microsoft") {
+            setLoadingMicrosoft(false);
+        }
     };
 
 
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    async function handleSignIn() {
+    async function handleSignIn(provider: string) {
         console.log("handle sign in clicked");
-        handleLoaderOpen();
+        handleLoaderOpen(provider);
         await delay(500);
+
+        console.log("Sign in with: ", provider);
 
         const currentUser = auth.currentUser;
         if (currentUser) {
-            // console.log("Existing session found, signing out first...", currentUser);
             await signOutFirebase();
         }
 
         try {
-            const result = await googleSignIn();
+            let result = null;
+            if (provider === "google") {
+                result = await googleSignIn();
+            }
+            
+            if (provider === "microsoft") {
+                result = await microsoftSignIn();
+            }
+
+            if (result === 'cancelled' || window.closed) {
+                handleLoaderClose(provider);
+                return;
+            }
+
             setUserResultProp(result);
 
             setAuthRoleType("user");
             setLoaderBackdrop(true);
-            handleLoaderClose();
+            handleLoaderClose(provider);
             
         } catch (error: any) {
             console.log("Sign In error: ", error);
             signOutFirebase();  
-            handleLoaderClose();
+            handleLoaderClose(provider);
         }
     }
 
@@ -73,7 +101,7 @@ export default function AdminLogin() {
 
             if (window.closed) {
                 signOutFirebase();
-                handleLoaderClose();
+                handleLoaderClose(provider);
                 clearInterval(interval);
             }
         }, 1);
@@ -164,18 +192,16 @@ export default function AdminLogin() {
                                 className="text-saitWhite text-md"
                             >Or Sign in with</p>
                         </div>
-                        <button className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
+                        <button onClick={() => handleSignIn('microsoft')} className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
                             <img src="/microsoft.png" alt="Microsoft Logo" className="w-8 h-auto mr-auto" />
-                            <p
-                                className="w-40 font-normal text-saitWhite"
-                            >{loading ? "Signing in..." : "Sign in with Microsoft"}</p>
+                            <p className=" w-40 font-normal text-saitWhite"
+                            >{loadingMicrosoft? "Signing in..." : "Sign in with Microsoft"}</p>
                         </button>
 
-                        <button onClick={handleSignIn} className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
+                        <button onClick={() => handleSignIn('google')} className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
                             <img src="/google-logo.png" alt="Google Logo" className="w-10 h-auto mr-auto" />
-                            <p
-                                className=" w-40 font-normal text-saitWhite"
-                            >{loading ? "Signing in..." : "Sign in with Google"}</p>
+                            <p className=" w-40 font-normal text-saitWhite"
+                            >{loadingGoogle ? "Signing in..." : "Sign in with Google"}</p>
                         </button>                       
                     </div>
                     

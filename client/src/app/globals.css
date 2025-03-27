@@ -30,6 +30,10 @@ body {
   font-display: swap;
 }
 
+.text-xxs {
+  font-size: 0.6rem;
+  line-height: 0.8rem;
+}
 
 /* Overall Toast Container */
 .custom-toast {

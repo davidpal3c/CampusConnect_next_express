@@ -21,7 +21,6 @@ type NavigatorButtonProps = {
 
 export default function TopBarNavigator({ userId }: { userId: string }) {
 
-    
     const currentRoute = usePathname();
 
     const routeArray = [];

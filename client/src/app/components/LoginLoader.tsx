@@ -33,7 +33,6 @@ export default function LoaderPage({ result, backdrop, routeType }: LoaderPagePr
                     processAdminSignIn(result, closeLoaderBackdrop);    
                     break;
                 case "user":
-                    console.log("User sign in result:");
                     processUserSignIn(result, closeLoaderBackdrop);                
                     break;
                 default:
@@ -51,17 +50,34 @@ export default function LoaderPage({ result, backdrop, routeType }: LoaderPagePr
     useEffect(() => {
         if (isMounted) {
             const timer = setTimeout(() => {
-                processSignIn();
+                if (!result) {
+                    console.log("No sign-in result found. Redirecting to login page...");
+                    toast.info("Sign-in process was cancelled. Redirecting...", { autoClose: 2000 });
+                    router.push("/");
+                } else {
+                    processSignIn();
+                }
             }, 2000); 
 
             return () => clearTimeout(timer);
         }
     }, [isMounted]);
 
+    // useEffect(() => {
+    //     if (isMounted) {
+    //         const timer = setTimeout(() => {
+    //             processSignIn();
+    //         }, 2000); 
+
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [isMounted]);
+
     // user contexts debug logging 
-    useEffect(() => {
-        console.log("User-Authentication state updated:", user);    
-    }, [user]);
+    
+    // useEffect(() => {
+    //     console.log("User-Authentication state updated:", user);    
+    // }, [user]);
 
     useEffect(() => {
         console.log("UserData state updated:", userData);    

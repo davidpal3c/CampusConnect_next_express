@@ -25,7 +25,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 
 type CreateArticleProps = { 
-    closeOnClick: any,
+    closeOnClick?: any,
     action: string,
     articleObject?: any,
     closeArticleEditor: any,
@@ -455,7 +455,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                         ) : (
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className={formStyling.labelStyling} htmlFor="author">Author</label>
+                                    <label className={formStyling.labelStyling} htmlFor="author">Author <span className="text-saitRed text-xs italic">(*defaults to current user)</span></label>
                                     <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
                                         {...register("author")}
                                     />
@@ -555,7 +555,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                             <textarea className={formStyling.inputStyling} id="content" cols={200} rows={10}
                                 {...register("content", { 
                                     required: 'Content is Required',
-                                    maxLength: { value: 15000, message: 'Content should not exceed 6000 characters' }
+                                    // maxLength: { value: 15000, message: 'Content should not exceed 15000 characters' }
                                 })}
                             />
                             {errors.content && <p className={formStyling.errorStyle}>{errors.content.message}</p>}
