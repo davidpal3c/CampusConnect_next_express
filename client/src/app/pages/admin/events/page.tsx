@@ -316,22 +316,22 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
 export default Events;
 
 
-    {/** Form and Calendar
-          <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
-            <EventForm/>
-          </div>
-         
-          
-
-       <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 500 }}
-          onSelectEvent={handleEventSelect}
-        />
-      </div> 
+{/** Form and Calendar
+      <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
+        <EventForm/>
+      </div>
       
-      */}
+      
+
+    <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
+    <Calendar
+      localizer={localizer}
+      events={events}
+      startAccessor="start"
+      endAccessor="end"
+      style={{ height: 500 }}
+      onSelectEvent={handleEventSelect}
+    />
+  </div> 
+  
+  */}
