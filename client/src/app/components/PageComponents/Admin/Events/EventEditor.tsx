@@ -1,261 +1,218 @@
-"use client"
+import React from 'react';
 
-import React, { useState, useEffect } from 'react';
-import { useForm } from "react-hook-form";
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import ActionButton from "../../../Buttons/ActionButton";
-import { getTodayDate } from "@/app/_utils/dateUtils";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import CloseIcon from '@mui/icons-material/Close';
-import { Tooltip } from '@mui/material';
-
-const locales = {
-  'en-US': require('date-fns/locale/en-US')
+type EventData = {
+  name: string;
+  date: string;
+  location: string;
+  audience: string;
+  programs: string;
+  description: string;
+  host: string;
+  contact: string;
+  capacity: number;
 };
 
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales
-});
-
-type CreateEventProps = {
-  closeOnClick: any;
-  action: string;
-  eventObject?: any;
-  closeEventEditor: any;
+type EventProps = EventData & {
+  updateFields: (fields: Partial<EventData>) => void;
 };
 
-const EventEditor: React.FC<CreateEventProps> = ({ 
-  closeOnClick, 
-  action, 
-  eventObject, 
-  closeEventEditor 
-}) => {
-  const [userFullName, setUserFullName] = useState("");
+function EventEditor({
+  name,
+  date,
+  location,
+  audience,
+  description,
+  programs,
+  host,
+  capacity,
+  contact,
+  updateFields,
+}: EventProps) {
+  const dummyAud = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];
+  const dummyContact = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];
+  const dummyPrograms = ['Program A', 'Program B', 'Program C', 'Program D'];
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
-    defaultValues: {
-      name: "",
-      date: getTodayDate(),
-      location: "",
-      audience: "",
-      host: "",
-      contact: "",
-      capacity: 0,
-      current_attendees: 0
-    },
-  });
-
-  useEffect(() => {
-    if (action === "Edit" && eventObject) {
-      reset({
-        name: eventObject.name || "",
-        date: eventObject.date || getTodayDate(),
-        location: eventObject.location || "",
-        audience: eventObject.audience || "",
-        host: eventObject.host || "",
-        contact: eventObject.contact || "",
-        capacity: eventObject.capacity || 0,
-        current_attendees: eventObject.current_attendees || 0
-      });
-    }
-  }, [action, eventObject, reset]);
-
-  const submitForm = async (data: any) => {
-    const eventData = {
-      name: data.name,
-      date: new Date(data.date).toISOString(),
-      location: data.location,
-      audience: JSON.stringify(data.audience.split(',')),
-      host: data.host,
-      contact: data.contact,
-      capacity: parseInt(data.capacity),
-      current_attendees: parseInt(data.current_attendees)
-    };
-    
-    console.log("Event Data: ", eventData);
-
-    if (action === "Create") {
-      await processCreateEvent(eventData);
-    } else {
-      await processUpdateEvent(eventData);
-    }
+  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = e.target.value; // Already in the correct format for datetime-local
+    const isoDate = new Date(selectedDate).toISOString(); // Convert to ISO-8601 for the backend
+    updateFields({ date: isoDate });
   };
 
-  const processCreateEvent = async (eventData: any) => {
-    try {
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(eventData),
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        toast.error(data.message || "An Error occurred creating event.");
-        return;
-      }
-
-      toast.success(data.message);
-      closeEventEditor();
-
-    } catch (error) {
-      console.error(error);
-      toast.error(`Error creating event: ${error}`);
-    }
-  };
-
-  const processUpdateEvent = async (eventData: any) => {
-    try {
-      const eventId = eventObject.event_id;
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${eventId}`, {
-        method: "PATCH",
-        headers: {
-          "content-type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(eventData),
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        toast.error(data.message || "An Error occurred updating event.");
-        return;
-      }
-
-      toast.success(data.message);
-      closeEventEditor();
-
-    } catch (error) {
-      console.error(error);
-      toast.error(`Error updating event: ${error}`);
-    }
-  };
+  // Format the date for the datetime-local input
+  const formattedDate = date ? new Date(date).toISOString().slice(0, 16) : '';
 
   return (
-    <main className="h-full w-full">
-      <header className="flex justify-between items-center bg-white p-5 rounded-lg mb-6 shadow-md">
-        <h1 className="font-semibold">{action === "Create" ? "Create Event" : "Edit Event"}</h1>
-        <Tooltip title="Close Editor" arrow>
-          <button onClick={closeOnClick}>
-            <CloseIcon />
-          </button>
-        </Tooltip>
-      </header>
-      
-      <section className="bg-white p-4 rounded-lg shadow-md">
+    <div className="flex p-4 gap-4 bg-gray-100 min-h-screen">
+      {/* Preview Panel */}
+      <div className="w-1/4 bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-bold mb-4">Preview</h2>
         
-        {/**Form for event creation */}
-        <form onSubmit={handleSubmit(submitForm)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-light">Event Name</label>
-              <input 
-                {...register("name", { required: "Event name is required" })}
-                className="w-full p-2 border rounded mt-1"
-              />
-              {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-            </div>
-
-            <div>
-              <label className="text-sm font-light">Date & Time</label>
-              <input 
-                type="datetime-local"
-                {...register("date", { required: "Date is required" })}
-                className="w-full p-2 border rounded mt-1"
-              />
-              {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
-            </div>
-
-            <div>
-              <label className="text-sm font-light">Location</label>
-              <input 
-                {...register("location", { required: "Location is required" })}
-                className="w-full p-2 border rounded mt-1"
-              />
-              {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
-            </div>
-
-            <div>
-              <label className="text-sm font-light">Audience (comma-separated)</label>
-              <input 
-                {...register("audience", { required: "Audience is required" })}
-                className="w-full p-2 border rounded mt-1"
-              />
-              {errors.audience && <p className="text-red-500 text-sm">{errors.audience.message}</p>}
-            </div>
-
-            <div>
-              <label className="text-sm font-light">Host</label>
-              <input 
-                {...register("host")}
-                className="w-full p-2 border rounded mt-1"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-light">Contact</label>
-              <input 
-                {...register("contact", { required: "Contact is required" })}
-                className="w-full p-2 border rounded mt-1"
-              />
-              {errors.contact && <p className="text-red-500 text-sm">{errors.contact.message}</p>}
-            </div>
-
-            <div>
-              <label className="text-sm font-light">Capacity</label>
-              <input 
-                type="number"
-                {...register("capacity", { 
-                  required: "Capacity is required",
-                  min: { value: 1, message: "Capacity must be at least 1" }
-                })}
-                className="w-full p-2 border rounded mt-1"
-              />
-              {errors.capacity && <p className="text-red-500 text-sm">{errors.capacity.message}</p>}
-            </div>
-
-            {action === "Edit" && (
-              <div>
-                <label className="text-sm font-light">Current Attendees</label>
-                <input 
-                  type="number"
-                  {...register("current_attendees")}
-                  className="w-full p-2 border rounded mt-1"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-center space-x-4 mt-6">
-            <ActionButton 
-              title={action === "Create" ? "Create Event" : "Update Event"}
-              onClick={handleSubmit(submitForm)}
-              textColor="text-saitBlue"
-              borderColor="border-saitBlue"
-              hoverBgColor="bg-saitBlue"
-              hoverTextColor="text-saitWhite"
+        <p className="font-medium mt-4">Name:</p>
+        <p className="text-gray-600">{name || 'Name field is required.'}</p>
+        
+        <p className="font-medium mt-4">Date:</p>
+        <p className="text-gray-600">{date || 'Date field is required.'}</p>
+        
+        <p className="font-medium mt-4">Location:</p>
+        <p className="text-gray-600">{location || 'Location is required.'}</p>
+        
+        <p className="font-medium mt-4">Audience:</p>
+        <p className="text-gray-600">{audience}</p>
+        
+        <p className="font-medium mt-4">Programs:</p>
+        <p className="text-gray-600">{programs}</p>
+        
+        <p className="font-medium mt-4">Description:</p>
+        <p className="text-gray-600">{description || 'Default description is empty.'}</p>
+        
+        <p className="font-medium mt-4">Host:</p>
+        <p className="text-gray-600">{host}</p>
+        
+        <p className="font-medium mt-4">Capacity:</p>
+        <p className="text-gray-600">{capacity || 'Capacity is required.'}</p>
+        
+        <p className="font-medium mt-4">Image File:</p>
+        <p className="text-gray-600">Default Image File is empty.</p>
+      </div>
+      
+      {/* Form */}
+      <div className="w-3/4 bg-white p-6 rounded-lg shadow">
+        <div className="grid grid-cols-2 gap-6">
+          {/* Name and Image */}
+          <div>
+            <label className="block mb-2">
+              Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter name"
+              value={name}
+              onChange={(e) => updateFields({ name: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
-        </form>
-      </section>
-    </main>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2">Image</label>
+              <button className="bg-blue-400 text-white p-2 rounded w-full">Upload File</button>
+            </div>
+            <div>
+              <label className="block mb-2">
+                Date <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="datetime-local"
+                  name="date"
+                  value={formattedDate} // Use the formatted date
+                  onChange={handleDateTimeChange}
+                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Location and Target Department */}
+          <div>
+            <label className="block mb-2">
+              Location <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="location"
+              placeholder="Enter Location"
+              value={location}
+              onChange={(e) => updateFields({ location: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2">Target Audience(s)</label>
+            <select
+              value={audience}
+              onChange={(e) => updateFields({ audience: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="">Select Department</option>
+              {dummyAud.map((aud, index) => (
+                <option key={index} value={aud}>{aud}</option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Target Program */}
+          <div>
+            <label className="block mb-2">Target Program(s)</label>
+            <select
+              value={programs}
+              onChange={(e) => updateFields({ programs: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="">Select Program</option>
+              {dummyPrograms.map((prog, index) => (
+                <option key={index} value={prog}>{prog}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <label className="block mb-2">Contact(s)</label>
+            <select
+              value={contact}
+              onChange={(e) => updateFields({ contact: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="">Select Department</option>
+              {dummyContact.map((aud, index) => (
+                <option key={index} value={aud}>{aud}</option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Description */}
+          <div className="col-span-2">
+            <label className="block mb-2">Description</label>
+            <textarea
+              name="description"
+              placeholder="Enter Description"
+              value={description}
+              onChange={(e) => updateFields({ description: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 h-40"
+            ></textarea>
+          </div>
+
+          {/* Host and Capacity in their own row */}
+          <div>
+            <label className="block mb-2">Host</label>
+            <input
+              type="text"
+              name="host"
+              placeholder="Enter Host Name"
+              value={host}
+              onChange={(e) => updateFields({ host: e.target.value })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">
+              Capacity <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="capacity"
+              placeholder="Enter Number"
+              value={capacity}
+              onChange={(e) => updateFields({ capacity: parseInt(e.target.value, 10) })}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
+}
 
 export default EventEditor;

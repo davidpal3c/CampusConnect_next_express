@@ -24,13 +24,16 @@
   "homepage": "https://github.com/davidpal3c/CampusConnect_next_express.git#readme",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.3.0",
+    "@prisma/client": "^6.5.0",
     "axios": "^1.7.9",
+    "bootstrap": "^5.3.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "firebase-admin": "^13.0.2"
+    "firebase-admin": "^13.0.2",
+    "react-hook-form": "^7.54.2",
+    "reactstrap": "^9.2.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
@@ -39,7 +42,7 @@
     "@types/express-session": "^1.18.1",
     "@types/node": "^22.10.7",
     "nodemon": "^3.1.9",
-    "prisma": "^6.3.0",
+    "prisma": "^6.5.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }
