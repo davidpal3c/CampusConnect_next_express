@@ -108,7 +108,7 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
                 } as any
             });
         
-            console.log("Alumni Fields: ", alumniFields);
+            // console.log("Alumni Fields: ", alumniFields);
         
             req.user = { ...req.user, dbUser: user, alumniFields: alumniFields };
 
