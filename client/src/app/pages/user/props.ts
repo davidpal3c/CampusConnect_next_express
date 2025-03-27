@@ -17,7 +17,7 @@ export interface ArticleInterface {
     updated_at: string;
     author: string;
     author_id: string;
-    audience: string;
+    audience: Record<string, any>;
     status: string;
     type: ArticleTypeInterface;
   }

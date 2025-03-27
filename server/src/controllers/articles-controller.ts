@@ -186,6 +186,14 @@ export const getArticleById = async (req: Request, res: Response) => {
             include: {
                 type: {
                     select: { name: true }
+                },
+                User: {
+                    select: {
+                        user_id: true,
+                        first_name: true,
+                        last_name: true,
+                        image_url: true
+                    }
                 }
             } as any
         });

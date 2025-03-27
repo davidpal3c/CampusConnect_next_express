@@ -3,7 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useMemo } from "react";
 import ArticleList from "@/app/components/PageComponents/User/Articles/ArticleList";
-import { fetchArticleTypes, fetchAllArticles } from "../articles/articles";
+import { useArticlesContext} from "@/app/_utils/articles-context";
+import ArticlesLayout from "./ArticlesLayout";
 import { ArticleTypeInterface} from "../props";
 import ArticleTypeButton from "@/app/components/PageComponents/User/Articles/ArticleTypeButton";
 
@@ -11,13 +12,12 @@ type TypesCount = {
   [key: string]: number;
 };
 
-export default function Articles() {
+const Articles = () => {
   const searchParams = useSearchParams();
   const paramsType = searchParams.get("type");
 
-  const [typeName, setTypeName] = useState(paramsType || "All");
-  const [articleTypes, setArticleTypes] = useState([]);
-  const [allArticles, setAllArticles] = useState([]); 
+  const [typeName, setTypeName] = useState(paramsType || "All Articles");
+  const { allArticles, articleTypes } = useArticlesContext();
 
   const [articleCounts, setArticleCounts] = useState<TypesCount>({});
 
@@ -40,7 +40,6 @@ export default function Articles() {
         result[typeId] = count;
     });
 
-    // console.log(">>>> result: ", result);
     return result;
   };
 
@@ -48,34 +47,11 @@ export default function Articles() {
     setArticleCounts(getArticleCountsByType(allArticles, articleTypes));
   }, [allArticles, articleTypes]);
 
-  useEffect(() => {
-    // Fetch article types
-    const fetchTypes = async () => {
-      try {
-        const data = await fetchArticleTypes();
-        if (data) setArticleTypes(data);
-      } catch (error) {
-        console.error("Error fetching article types:", error);
-      }
-    };
-
-    // Fetch all articles once
-    const fetchArticles = async () => {
-      try {
-        const data = await fetchAllArticles();
-        if (data) setAllArticles(data);
-      } catch (error) {
-        console.error("Error fetching articles:", error);
-      }
-    };
-
-    fetchTypes();
-    fetchArticles();
-  }, []);
 
   // Filter articles based on selected type (computed on re-render)
-  const filteredArticles = useMemo(() => {                                                                //useMemo is used to memoize the result of a function. Memoize is
-    if (typeName === "All") return allArticles;
+  const filteredArticles = useMemo(() => {                                                               
+    if (typeName === "All Articles") return allArticles;
+
     const selectedType = articleTypes.find((t) => t.name === typeName);
     return selectedType ? allArticles.filter(article => article.type_id === selectedType.type_id) : [];
   }, [typeName, allArticles, articleTypes]);
@@ -83,6 +59,7 @@ export default function Articles() {
   return (
     <div className="m-8">
       <div className="flex flex-row space-x-4">
+        <ArticleTypeButton articleType={{ type_id: 0, name: "All Articles" }} type={typeName} setType={setTypeName} />
         {articleTypes.map((articleType: ArticleTypeInterface) => (
           articleCounts[articleType.type_id] > 0 && (
             <ArticleTypeButton
@@ -99,4 +76,12 @@ export default function Articles() {
       <ArticleList articles={filteredArticles} />
     </div>
   );
-}
+};
+
+const ArticlesPage = () => (
+  <ArticlesLayout>
+    <Articles />
+  </ArticlesLayout>
+);
+
+export default ArticlesPage;

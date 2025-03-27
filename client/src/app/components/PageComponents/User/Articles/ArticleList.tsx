@@ -21,8 +21,6 @@ export default function ArticleList({ articles }: { articles: ArticleInterface[]
     const mostRecentArticle = articles.reduce((latest, article) => 
         new Date(article.created_at) > new Date(latest.created_at) ? article : latest, articles[0]);
 
-    console.log("Most recent article:", mostRecentArticle);
-
     return (
         <div className="py-6">
             <ArticleFeaturedCard {...mostRecentArticle} />

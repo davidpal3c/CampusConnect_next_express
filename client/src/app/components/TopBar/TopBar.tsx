@@ -9,6 +9,7 @@ import { fetchArticleTypes } from "@/app/pages/user/articles/articles";
 import { useUser } from "@/app/_utils/user-context";
 import TopBarNavigator from "./TopBarNavigator";
 import { ArticleTypeInterface } from "@/app/pages/user/props";
+import { toast } from "react-toastify";
 
 
 export default function TopNavBar() {
@@ -16,29 +17,7 @@ export default function TopNavBar() {
 
     const { user, loadingUser } = useUser();
     const { image_url, user_id } = user?.user || {};
-    const [articleTypes, setArticleTypes] = useState([]);
 
-    const [loading, setLoading] = useState(true);
-    
-    useEffect(() => {
-        if (!loadingUser) {  // Only proceed once `loadingUser` is false
-            const fetchData = async () => {
-                try {
-                    const articleTypes = await fetchArticleTypes();
-
-                    if (articleTypes) setArticleTypes(articleTypes);
-
-                    console.log("articleTypes", articleTypes);
-                } catch (error) {
-                    console.error("Error fetching article types:", error);
-                } finally {
-                    setLoading(false); 
-                }
-            };
-
-            fetchData();
-        }
-    }, [loadingUser]);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const handleMenu = (event) => setAnchorEl(event.currentTarget);
@@ -46,12 +25,9 @@ export default function TopNavBar() {
 
     if (!loadingUser) {
         const userKeys = Object.keys(user || {});
-        console.log("Available properties:", userKeys);
-        console.log("User:", user.user);
     }
     
 
-    if (loading) return <Loader isLoading={loading} />;
     return (
     <div>
         <div className="bg-side-red-gradient text-white shadow-xl relative z-10">
@@ -71,23 +47,7 @@ export default function TopNavBar() {
                     <TopBarButton href={"/user/"}>Dashboard</TopBarButton>
                     <TopBarButton href={"/user/events/"}>Events</TopBarButton>
                     <TopBarButton href={"/user/groups/"}>Groups</TopBarButton>
-                    <TopBarDropdown 
-                    children={
-                        <div>
-                            {articleTypes.map((type: ArticleTypeInterface) => (
-                                <TopBarDropdownOption 
-                                    key={type.type_id} 
-                                    href={{
-                                        pathname: "/user/articles",
-                                        query: { type: type.name }  
-                                    }}
-                                >
-                                    {type.name}
-                                </TopBarDropdownOption>
-                             ))}  
-                        </div>
-                    } buttonText="Articles"
-                    />
+                    <TopBarButton href={"/user/articles/"}>Articles</TopBarButton>
                 </nav>
 
                 {/* Profile Icon / Mobile Menu */}

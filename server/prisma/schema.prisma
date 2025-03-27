@@ -47,7 +47,7 @@ model Student {
   user_id     String   @id @unique
   program_id  String?       // if null, reflect student status  
   department_id   String           
-  intake_year Int     
+  intake_year Int?    
   intake      String?
   status      Status
  
@@ -59,14 +59,29 @@ model Student {
  
 model Alumni {
   user_id           String   @id @unique
-  graduation_year   Int
-  credentials       String?
   current_position  String?
   company           String?
  
   // Relation
   User              User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  AlumniStudy     AlumniStudy[]
 }
+
+model AlumniStudy {
+  id              String   @id @unique @default(uuid())
+  alumni_id       String
+  program_id      String?
+  department_id   String
+  graduation_year Int?
+  
+  // Relations
+  Alumni          Alumni    @relation(fields: [alumni_id], references: [user_id], onDelete: Cascade)
+  Program         Program?  @relation(fields: [program_id], references: [program_id])
+  Department      Department @relation(fields: [department_id], references: [department_id])
+
+  @@unique([alumni_id, program_id, department_id, graduation_year]) 
+}
+
  
 model Program {
   program_id    String  @id 
@@ -74,6 +89,7 @@ model Program {
   department_id String
   Department    Department @relation(fields: [department_id], references: [department_id])
   Students      Student[]
+  AlumniStudies AlumniStudy[]
 }
  
 model Department {
@@ -83,6 +99,7 @@ model Department {
   contact_phone String
   Programs      Program[]
   Students      Student[]
+  AlumniStudies AlumniStudy[]
 }
 
 // Content Models
@@ -251,5 +268,4 @@ enum ArticleStatus {
   Draft
   Published
 }
-
 

@@ -3,10 +3,12 @@ import HomeIcon from '@mui/icons-material/Home';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import SchoolIcon from '@mui/icons-material/School';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 import { ArticleType } from "@/app/pages/user/props";
 
 const ICON_MAP: Record<ArticleType["name"], React.ComponentType<{ className?: string }>> = {
+  "All Articles": LibraryBooksIcon,
   "Pre-Arrival": FlightLandIcon,
   "News": NewspaperIcon,
   "General Information": HomeIcon,
