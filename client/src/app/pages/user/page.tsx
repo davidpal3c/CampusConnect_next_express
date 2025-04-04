@@ -56,7 +56,6 @@ export default function UserPage() {
   const testOverviewItems = [
     { title: "Upcoming Events", icon: "/event.png", number: 4, text: "-" },
     { title: "New Articles", icon: "/article.png", number: 5, text: "-" },
-    { title: "Active Groups", icon: "/group.png", number: 3, text: "-" },
     {
       title: "Unread Messages",
       icon: "/unreadmessage.png",
@@ -210,7 +209,7 @@ export default function UserPage() {
   );
 
   const authorizedPage = (
-    <main className="m-8 flex-col">
+    <main className="m-8 flex-col text-saitBlack">
       <div className="flex justify-between items-center h-full">
         <div className="flex-col">
           <h1 className="text-4xl font-bold">Welcome back, {first_name}!</h1>
@@ -291,4 +290,3 @@ export default function UserPage() {
 
   return !userData ? unauthorized : authorizedPage;
 }
-
