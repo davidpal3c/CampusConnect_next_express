@@ -10,6 +10,7 @@ import ArticleEditor from "@/app/components/PageComponents/Admin/Articles/Articl
 import ArticlesTableDetailed from "@/app/components/PageComponents/Admin/Articles/ArticlesTableDetailed";
 import { useArticleTypes } from "@/app/_utils/articleTypes-context";
 import ArticleTypesModal from "@/app/components/PageComponents/Admin/Articles/Modals/ArticleTypesModal";
+import Loader from "@/app/components/Loader/Loader";
 import { toast } from "react-toastify";
 
 // mui 
@@ -28,6 +29,7 @@ import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
 import { BsFiletypePdf } from "react-icons/bs";
+import { set } from "react-hook-form";
 
 export default function Articles() {
 
@@ -53,6 +55,28 @@ export default function Articles() {
 
   const [ articlesView, setArticlesView ] = useState("Simple");
   const [ selectedArticle, setSelectedArticle ] = useState({}); 
+
+  const [message, setMessage] = useState("Loading...");
+
+  // Loader
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  useEffect(() => {
+    // console.log("Articles: ", articles);
+      if (articles.length > 0) {
+        setIsLoading(false);
+      }
+
+      // if (articles.length === 0) {
+      //   setMessage("No articles found.");
+      // } else if (articles.length > 0) {
+      //   setMessage ("");
+      // }else {
+      //   setMessage("Loading...");
+      // }
+    }, [articles]);
+
 
 
   const fetchArticleData = async () => {
@@ -107,6 +131,7 @@ export default function Articles() {
     setArticlesView("Extended"); 
   };
 
+  // Create/Edit Article Panel open/close
   const handleOpenCreatePanel = () => setIsCreatePanelVisible(true);
   const handleCloseCreatePanel = () => setIsCreatePanelVisible(false);  
   
@@ -277,178 +302,183 @@ export default function Articles() {
 
 
   return(
-    <main className="bg-saitWhite h-screen p-4 xl:pr-8">
-      <div className="">
-        <header className="flex flex-col items-center justify-between border-b-2 border-saitBlack pb-3 lg:flex-row md:space-y-3 xs:space-y-3">
-          <h1 className="text-2xl font-bold">Articles</h1>
-          
-          <div className="flex flex-col sm:flex-row md:space-x-2 sm:space-x-2">
-            <div className="flex flex-row w-[4.3rem] items-center justify-evenly bg-white border-2 rounded-lg p-1">
-              <Tooltip title="Simple View">
-                <button className="" onClick={handleSimpleView}>
-                  <ViewModuleRoundedIcon sx={
-                    articlesView === "Simple" ? { color: '#2b64ae', fontSize: 26 } :
-                    { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}
-                    }/>
-                </button>
-              </Tooltip>
-              <Tooltip title="Extended View">
-                <button className="" onClick={handleExtendedView}>
-                  <ViewListRoundedIcon sx={
-                    articlesView === "Extended" ? { color: '#2b64ae', fontSize: 26 } :
-                    { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}
-                    }/>
-                </button>
-              </Tooltip>
-            </div>
 
-            {articlesView === "Simple" && (
-              <div className="flex flex-row space-x-2">
+    <div className="bg-saitWhite h-screen">
+      {isLoading ? (
+          <Loader isLoading={isLoading} />
+      ) : (
+        <main className="bg-saitWhite h-screen p-4 xl:pr-8">
+          <div className="">
+            <header className="flex flex-col items-center justify-between border-b-2 border-saitBlack pb-3 lg:flex-row md:space-y-3 xs:space-y-3">
+              <h1 className="text-2xl font-bold">Articles</h1>
               
-                <div className="flex flex-row w-[9.2rem] items-center bg-white border-2 rounded-lg p-1">
-                  <select
-                      className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
-                      value={sortOption}
-                      onChange={(e) => handleSort(e.target.value)}
-                  >
-                    <option value="">Sort By</option>  
-                    <option value="Published ASC">Last Published</option>
-                    <option value="Last Updated">Last Updated</option>
-                    <option value="Date DCS">Least Recent (created)</option>
-                    <option value="Date ASC">Most Recent (created)</option>   
-                    <option value="Title ASC">Title (A to Z)</option> 
-                    <option value="Title DSC">Title (Z to A)</option> 
-                  </select>
+              <div className="flex flex-col sm:flex-row md:space-x-2 sm:space-x-2">
+                <div className="flex flex-row w-[4.3rem] items-center justify-evenly bg-white border-2 rounded-lg p-1">
+                  <Tooltip title="Simple View" arrow>
+                    <button className="" onClick={handleSimpleView}>
+                      <ViewModuleRoundedIcon sx={
+                        articlesView === "Simple" ? { color: '#2b64ae', fontSize: 26 } :
+                        { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}
+                        }/>
+                    </button>
+                  </Tooltip>
+                  <Tooltip title="Extended View" arrow>
+                    <button className="" onClick={handleExtendedView}>
+                      <ViewListRoundedIcon sx={
+                        articlesView === "Extended" ? { color: '#2b64ae', fontSize: 26 } :
+                        { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}
+                        }/>
+                    </button>
+                  </Tooltip>
                 </div>
 
-                <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 w-32">
-                  <select
-                      className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
-                      onChange={(e) => handleFilterByType(e.target.value)}
-                  >
-                    <option value="">Filter By Type</option>
-                    {articleTypes.map((type: any, index: number) => (
-                      <option key={index} value={type}>
-                        {type}
-                      </option>
-                    ))}        
-                  </select>
+                {articlesView === "Simple" && (
+                  <div className="flex flex-row space-x-2">
+                  
+                    <div className="flex flex-row w-[9.2rem] items-center bg-white border-2 rounded-lg p-1">
+                      <select
+                          className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
+                          value={sortOption}
+                          onChange={(e) => handleSort(e.target.value)}
+                      >
+                        <option value="">Sort By</option>  
+                        <option value="Published ASC">Last Published</option>
+                        <option value="Last Updated">Last Updated</option>
+                        <option value="Date DCS">Least Recent (created)</option>
+                        <option value="Date ASC">Most Recent (created)</option>   
+                        <option value="Title ASC">Title (A to Z)</option> 
+                        <option value="Title DSC">Title (Z to A)</option> 
+                      </select>
+                    </div>
+
+                    <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 w-32">
+                      <select
+                          className="flex-1 text-saitGray text-sm bg-transparent border-none focus:outline-none lg:w-20"
+                          onChange={(e) => handleFilterByType(e.target.value)}
+                      >
+                        <option value="">Filter By Type</option>
+                        {articleTypes.map((type: any, index: number) => (
+                          <option key={index} value={type}>
+                            {type}
+                          </option>
+                        ))}        
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 w-48">
+                  <input 
+                      type="text" 
+                      placeholder="Search"      //Name, Article ID, Author, Date Published 
+                      className="flex-1 text-saitGray text-sm bg-transparent w-48 focus:outline-none p-1" 
+                      onChange={(e) => handleSearch(e.target.value)}
+                  />
+                  <SearchOutlinedIcon className="text-saitGray" fontSize="small" />
                 </div>
               </div>
+              
+              <div className="flex flex-col xs:flex-row xs:space-x-3 md:space-x-2 sm:space-x-6">
+                <Tooltip title="New Article" arrow>
+                  <div>              
+                    <ActionButton title="Create" icon={<AddRoundedIcon />} 
+                      onClick={handleCreateArticle} borderColor="border-saitBlue" textColor="text-saitGray" 
+                      hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
+                    />
+                  </div>
+                </Tooltip>
+                <div>
+                  <OptionsButton icon={<MoreVertRoundedIcon />} optionHandler={articlesPageOptionHandlers} />
+                </div>
+              </div>
+              <ArticleTypesModal 
+                articlesData={originalArticles} 
+                openArticleTypesModal={openArticleTypesModal} 
+                setOpenArticleTypesModal={setOpenArticleTypesModal} 
+                fetchArticleData={fetchArticleData}
+              />
+            </header>
+
+
+                    
+            {articlesView === "Simple" ? (
+              //* Simplified Article View */
+              <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+                  {currentArticles.length > 0 ? (
+                    currentArticles.map((article) => (
+                      <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
+                        <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitBlue p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
+                          <Tooltip title="Edit Article" arrow>    
+                            <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#f7f7f7] transition-colors duration-300" />
+                          </Tooltip>
+                        </button>
+                        {article.status === "Draft" ? (
+                          // <div className="absolute top-[0.9rem] -rotate-45 left-0 z-10 shadow-md bg-purple-200 border px-3 py-1 relative before:absolute before:-left-2 before:top-0 before:w-2 before:h-full before:bg-purple-200 before:transform before:skew-y-45 after:absolute after:-right-2 after:top-0 after:w-2 after:h-full after:bg-purple-200 after:transform after:-skew-y-45">
+                          //   <p className="text-purple-600 text-sm">Draft</p>
+                          // </div>
+                          <div className="absolute top-2 left-2 z-10 shadow-md bg-purple-200 border px-3 py-1 rounded-full">
+                            <p className="text-purple-600 text-sm">Draft</p>
+                          </div>
+                        ) : (
+                          <div className="absolute top-2 left-2 z-10 shadow-lg bg-blue-100 border text-blue-600 px-3 py-1 rounded-full">
+                            <p className="text-blue-600 text-sm">Published</p>
+                          </div>
+                        )}
+                        <button>
+                          <ArticleCard article={article} />
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-black">{message}</p>
+                  )}
+                </div>
+                
+                {/* pagination */}
+                <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
+                  <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<ArrowLeftRoundedIcon />} iconFirst={true}
+                    borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
+                  />
+                  <span className='text-sm'>
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<ArrowRightRoundedIcon />} 
+                    borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
+                  />
+                </div>
+              </div>
+            ) : (
+              // Extended Article View
+              <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData} />
             )}
 
-            <div className="flex flex-row items-center bg-white border-2 rounded-lg p-1 w-48">
-              <input 
-                  type="text" 
-                  placeholder="Search"      //Name, Article ID, Author, Date Published 
-                  className="flex-1 text-saitGray text-sm bg-transparent w-48 focus:outline-none p-1" 
-                  onChange={(e) => handleSearch(e.target.value)}
-              />
-              <SearchOutlinedIcon className="text-saitGray" fontSize="small" />
+              {/* Create Article Panel */}
+              <AnimatePresence>
+                {isCreatePanelVisible &&
+                  <motion.div
+                    ref={articleEditorRef}
+                    initial={{ x: "100vh" }}
+                    animate={{ x: 0 }}                                                        //final state of animation
+                    exit={{ x: "100vh" }}                                                      // exit animation
+                    transition={{ duration: 0.7, ease: "easeInOut" }}
+                    // transition={{ type: "easing", stiffness: 150, damping: 40 }}
+                    className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
+                  >
+                    <div className="">
+                      <ArticleEditor closeOnClick={handleCloseCreatePanel} action={panelTask} 
+                      closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle} reFetchArticles={fetchArticleData} />
+                    </div>
+                  </motion.div>
+                }
+              </AnimatePresence>
+
+            <div className="mt-6">
+              <p className="text-black">Total Articles: {articles.length}</p>
             </div>
           </div>
-          
-          <div className="flex flex-col xs:flex-row xs:space-x-3 md:space-x-2 sm:space-x-6">
-            <Tooltip title="New Article">
-              <div>              
-                <ActionButton title="Create" icon={<AddRoundedIcon />} 
-                  onClick={handleCreateArticle} borderColor="border-saitBlue" textColor="text-saitGray" 
-                  hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
-                />
-              </div>
-            </Tooltip>
-            <div>
-              <OptionsButton icon={<MoreVertRoundedIcon />} optionHandler={articlesPageOptionHandlers} />
-            </div>
-          </div>
-          <ArticleTypesModal 
-            articlesData={originalArticles} 
-            openArticleTypesModal={openArticleTypesModal} 
-            setOpenArticleTypesModal={setOpenArticleTypesModal} 
-            fetchArticleData={fetchArticleData}
-          />
-        </header>
-
-
-                
-        {articlesView === "Simple" ? (
-          //* Simplified Article View */
-          <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
-              {currentArticles.length > 0 ? (
-                currentArticles.map((article) => (
-                  <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
-                    <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitBlue p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
-                      <Tooltip title="Edit Article">    
-                        <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#f7f7f7] transition-colors duration-300" />
-                      </Tooltip>
-                    </button>
-                    {article.status === "Draft" ? (
-                      // <div className="absolute top-[0.9rem] -rotate-45 left-0 z-10 shadow-md bg-purple-200 border px-3 py-1 relative before:absolute before:-left-2 before:top-0 before:w-2 before:h-full before:bg-purple-200 before:transform before:skew-y-45 after:absolute after:-right-2 after:top-0 after:w-2 after:h-full after:bg-purple-200 after:transform after:-skew-y-45">
-                      //   <p className="text-purple-600 text-sm">Draft</p>
-                      // </div>
-                      <div className="absolute top-2 left-2 z-10 shadow-md bg-purple-200 border px-3 py-1 rounded-full">
-                        <p className="text-purple-600 text-sm">Draft</p>
-                      </div>
-                    ) : (
-                      <div className="absolute top-2 left-2 z-10 shadow-lg bg-blue-100 border text-blue-600 px-3 py-1 rounded-full">
-                        <p className="text-blue-600 text-sm">Published</p>
-                      </div>
-                    )}
-                    <button>
-                      <ArticleCard article={article} />
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p className="text-black">Loading.....</p>
-              )}
-            </div>
-            
-             {/* pagination */}
-            <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
-              <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<ArrowLeftRoundedIcon />} iconFirst={true}
-                borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
-              />
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-              <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<ArrowRightRoundedIcon />} 
-                borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
-              />
-            </div>
-          </div>
-          
-        ) : (
-          // Extended Article View
-          <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData} />
-        )}
-
-          {/* Create Article Panel */}
-          <AnimatePresence>
-            {isCreatePanelVisible &&
-              <motion.div
-                ref={articleEditorRef}
-                initial={{ x: "100vh" }}
-                animate={{ x: 0 }}                                                        //final state of animation
-                exit={{ x: "100vh" }}                                                      // exit animation
-                transition={{ duration: 0.7, ease: "easeInOut" }}
-                // transition={{ type: "easing", stiffness: 150, damping: 40 }}
-                className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
-              >
-                <div className="">
-                  <ArticleEditor closeOnClick={handleCloseCreatePanel} action={panelTask} 
-                  closeArticleEditor={handleCloseCreatePanel} articleObject={selectedArticle} reFetchArticles={fetchArticleData} />
-                </div>
-              </motion.div>
-            }
-          </AnimatePresence>
-
-        <div className="mt-6">
-          <p className="text-black">Total Articles: {articles.length}</p>
-        </div>
-      </div>
-    </main>
-  );
-
-}
+        </main>
+      )}; 
+    </div>
+  )
+};

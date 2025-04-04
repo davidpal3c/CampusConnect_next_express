@@ -26,7 +26,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
     } finally {
         await prisma.$disconnect(); 
     }
-
 }
 
 // GET /api/users/:id - Get a single user by ID
@@ -73,6 +72,19 @@ export const getUserById = async (req: Request, res: Response) : Promise<void> =
         await prisma.$disconnect(); 
     }
 }
+
+// GET /api/users/:role - Get user fields by role
+export const getUserFieldsByRole = async (req: Request, res: Response) : Promise<void> => {
+    try {
+        const role = req.params.role;
+        console.log("role", role);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+        return; 
+    } finally { 
+        await prisma.$disconnect(); 
+    }
+};
 
 // GET /api/users/me - Get current user
 export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
@@ -132,6 +144,8 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
         return;
+    } finally {
+        await prisma.$disconnect(); 
     }
 }
 
@@ -173,11 +187,9 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
             await prisma.alumni.create({
                 data: {
                     user_id: user_id,
-                    graduation_year: parseInt(graduation_year, 10),
-                    credentials: credentials,
                     current_position: current_position || null,
                     company: company || null,
-                }
+                } as any
             });
         } else if (role === 'Admin') {
             const { permissions } = req.body;
@@ -235,15 +247,14 @@ export const updateUser = async (req: Request, res: Response) : Promise<void> =>
                 }
             });
         } else if (role === 'Alumni') {
-            const { graduation_year, credentials, current_position, company } = req.body;
+            const { current_position, company } = req.body;
 
             await prisma.alumni.create({
                 data: {
                     user_id: id,
-                    graduation_year: graduation_year,
-                    credentials: credentials,
                     current_position: current_position || null,
-                }
+                    company: company || null,   
+                } as any
             });
         }
 

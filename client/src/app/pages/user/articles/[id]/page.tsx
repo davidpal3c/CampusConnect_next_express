@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect, use } from "react";
 import { fetchArticleById } from "../articles";
+import Image from "next/image";
 
-export default function ArticleContent({ params }) {
-    const unwrappedParams = use(params); // Unwrap params
-    const articleId = unwrappedParams?.id; // Safely access id
+
+export default function ArticleContent({ params }: { params: Promise<{ id: string }> }) {
+    const unwrappedParams = use(params);
+    const articleId = unwrappedParams?.id; 
 
     const [article, setArticle] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -33,16 +35,23 @@ export default function ArticleContent({ params }) {
         getArticle();
     }, [articleId]);
 
+    useEffect(() => {
+        console.log("Article:", article);
+    }, [article]);
+
     if (loading) return <p className="py-6 px-16">Loading...</p>;
     if (error) return <p className="py-6 px-16 text-red-500">{error}</p>;
+    if (!article) return <p className="py-6 px-16">Article not found</p>;
 
     return (
         <main className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white shadow-lg rounded-lg max-w-3xl w-full overflow-hidden">
                 {/* Article Image with Fallback */}
-                <img 
+                <Image 
                     src={article.imageUrl || "/img_placeholder.png"} 
                     alt={article.title} 
+                    width={600}
+                    height={300}
                     className="w-full h-64 object-cover"
                 />
 
@@ -68,7 +77,7 @@ export default function ArticleContent({ params }) {
                     {/* Tags and ID */}
                     <div className="mt-6 flex justify-between text-sm text-gray-500">
                         <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full">
-                            {article.type}
+                            {article?.type.name}
                         </span>
                         <span>Article ID: {article.article_id}</span>
                     </div>

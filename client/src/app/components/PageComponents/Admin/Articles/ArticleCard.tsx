@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { adjustDateLetters, adjustDateOnlyNumerical } from "@/app/_utils/dateUtils"
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLazyLoad } from "@/app/hooks/useLazyLoad";
 
 
@@ -17,7 +18,7 @@ export default function ArticleCard({ article } : { article: any }) {
         }
     }
 
-    const [articleTitleReduced] = useState(truncateText(article.title, 32) || "Title not available");
+    const [articleTitleReduced] = useState(truncateText(article.title, 36) || "Title not available");
     const [articleAuthorReduced] = useState(truncateText(article.author, 25) || "Author not available");
     const [ref, isVisible] = useLazyLoad(); 
 
@@ -27,11 +28,14 @@ export default function ArticleCard({ article } : { article: any }) {
                 {article ? (
                     <div>
                         <div className="rounded-lg overflow-hidden h-36">
-                            <img
+                            <Image
                                 ref={ref}
                                 src={isVisible ? (article.imageUrl ? article.imageUrl : "/img_placeholder.png") : "/img_placeholder.png"}
                                 alt={`${article.title}-image` || "Placeholder image"}
                                 className="object-cover w-full h-full overflow-hidden"
+                                width={300}
+                                height={150}
+                                lazy="true"
                                 onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
                             />
                             {/* <img

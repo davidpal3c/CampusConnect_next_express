@@ -55,6 +55,8 @@ export const getArticleTypes = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error fetching article types', error: error });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -70,67 +72,71 @@ export const getArticleCountByType = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error fetching article count by type', error: error });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
 
 // GET /api/articles/type/counts - Get article type counts
-export  const getArticleCountsByType = async (req: Request, res: Response) => {
-    try {
-        // // fetch article counts grouped by type_id
-        // const typeCounts = await prisma.article.groupBy({
-        //     by: ['type_id'],
-        //     _count: {
-        //         article_id: true
-        //     }
-        // });
+// export  const getArticleCountsByType = async (req: Request, res: Response) => {
+//     try {
+//         // // fetch article counts grouped by type_id
+//         // const typeCounts = await prisma.article.groupBy({
+//         //     by: ['type_id'],
+//         //     _count: {
+//         //         article_id: true
+//         //     }
+//         // });
 
-        // // fetch all article types to map type_id to type name
-        // const articleTypes = await prisma.articleType.findMany({
-        //     select: {
-        //         type_id: true,
-        //         name: true,
-        //     }
-        // })
+//         // // fetch all article types to map type_id to type name
+//         // const articleTypes = await prisma.articleType.findMany({
+//         //     select: {
+//         //         type_id: true,
+//         //         name: true,
+//         //     }
+//         // })
 
-        // // map of type_id (key) to type name (value)
-        // const typeMap = articleTypes.reduce((acc: any, type: any) => {
-        //     acc[type.type_id] = type.name;
-        //     return acc;
-        // }, {});
+//         // // map of type_id (key) to type name (value)
+//         // const typeMap = articleTypes.reduce((acc: any, type: any) => {
+//         //     acc[type.type_id] = type.name;
+//         //     return acc;
+//         // }, {});
 
-        // // transform result to include type names
-        // // map over the typeCounts array to include the type_name in the result using the typeMap.
-        // const result = typeCounts.map((count: any) => ({
-        //     type_id: count.type_id,
-        //     type_name: typeMap[count.type_id],
-        //     count: count._count.article_id 
-        // }));
+//         // // transform result to include type names
+//         // // map over the typeCounts array to include the type_name in the result using the typeMap.
+//         // const result = typeCounts.map((count: any) => ({
+//         //     type_id: count.type_id,
+//         //     type_name: typeMap[count.type_id],
+//         //     count: count._count.article_id 
+//         // }));
 
-        // // console.log("Type Counts: ", typeCounts);   
-        // console.log("Article Type Counts: ", result);
+//         // // console.log("Type Counts: ", typeCounts);   
+//         // console.log("Article Type Counts: ", result);
 
-        const result = await prisma.$queryRaw`
-            SELECT t.name AS type_name, COUNT(a.article_id) AS count
-            FROM "Article" a
-            JOIN "Type" t ON a.type_id = t.type_id
-            GROUP BY t.name
-        `;
+//         const result = await prisma.$queryRaw`
+//             SELECT t.name AS type_name, COUNT(a.article_id) AS count
+//             FROM "Article" a
+//             JOIN "Type" t ON a.type_id = t.type_id
+//             GROUP BY t.name
+//         `;
 
-        // [
-        //     { type_name: "Pre-Arrival", count: 2 },
-        //     { type_name: "Campus Life", count: 2 },
-        //     { type_name: "General", count: 1 },
-        // ]
+//         // [
+//         //     { type_name: "Pre-Arrival", count: 2 },
+//         //     { type_name: "Campus Life", count: 2 },
+//         //     { type_name: "General", count: 1 },
+//         // ]
 
-        console.log("Type Counts with Names: ", result);
-        res.status(200).json(result);
-        return;
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error: error fetching article type count', error: error });
-        return;
-    }
-};
+//         console.log("Type Counts with Names: ", result);
+//         res.status(200).json(result);
+//         return;
+//     } catch (error) {
+//         res.status(500).json({ message: 'Server Error: error fetching article type count', error: error });
+//         return;
+//     } finally {
+//         await prisma.$disconnect();
+//     }
+// };
 
 // GET /api/articles/type/:typeId - Get all articles of a specific type
 export const getArticlesByType = async (req: Request, res: Response) => {
@@ -166,6 +172,8 @@ export const getArticlesByType = async (req: Request, res: Response) => {
         console.log('Error fetching articles by type:', error);
         res.status(500).json({ message: 'Server Error: error fetching articles by type', error: error });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -258,6 +266,8 @@ export const createArticleType = async (req: Request, res: Response) => {
         res.status(201).json({ message: 'Article type created successfully' });
     } catch(error) {
         res.status(500).json({ message: 'Server Error: error creating article type', error: error });
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -272,7 +282,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         const { title, datePublished, content, imageUrl, audience, status, 
             author_id, author, type_id, tags } = req.body;
 
-        console.log("Audience: ", audience);
+        // console.log("Audience: ", audience);
         
         const updateArticleData: any = {};
 
@@ -287,8 +297,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (type_id) updateArticleData.type_id = type_id;
         if (tags) updateArticleData.tags = tags;
 
-        // console.log("Image: ", imageUrl);
-        // console.log("Update Article Data: ", updateArticleData);
+        console.log('Article audience : ', audience);
 
         await prisma.article.update({
             where: { article_id: id },
@@ -299,6 +308,8 @@ export const updateArticle = async (req: Request, res: Response) => {
     } catch (error) {
         console.log('Error updating article:', error);
         res.status(500).json({ message: 'Server Error: error updating article', error: error });
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -371,6 +382,9 @@ export const updateArticleType = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'An unexpected error occurred while updating the article type.', error: error });
         return;
+
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -387,6 +401,9 @@ export const deleteArticle = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error deleting article', error: error });
         return;
+
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -413,6 +430,9 @@ export const deleteArticles = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error deleting articles', error: error });   
         return;
+
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -459,5 +479,8 @@ export const deleteArticleType = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Server Error: error deleting article type', error: error });
         return;
+
+    } finally {
+        await prisma.$disconnect();
     }
 };

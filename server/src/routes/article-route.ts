@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifySession, adminRoute, validatePermissions } from '../middleware/user-middleware';
-import { getAllArticles, getArticleTypes ,getArticlesByType, getArticleCountsByType, getArticleById, 
+import { getAllArticles, getArticleTypes ,getArticlesByType, getArticleById, 
     createArticle, createArticleType, updateArticle, updateArticleWhole, updateArticleType, 
     deleteArticle, deleteArticles, deleteArticleType} from '../controllers/articles-controller';
 
@@ -16,7 +16,7 @@ router.get('/types/', verifySession, getArticleTypes);
 // router.get('/type/:typeName/count', verifySession, getArticleCountByType);
 
 // GET /api/articles/type/counts - Get article counts by type
-router.get('/types/counts', verifySession, getArticleCountsByType);
+// router.get('/types/counts', verifySession, getArticleCountsByType);
 
 // GET /api/articles/type/:typeId - Get all articles of a specific type
 router.get('/types/:typeId', verifySession, getArticlesByType);

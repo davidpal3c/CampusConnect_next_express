@@ -11,7 +11,7 @@ import ArticleDeleteModal from './Modals/ArticleDeleteModal';
 import RichTextEditor from './RichTextEditor';
 import AudienceSelectionModal from '@/app/components/PageComponents/Admin/Articles/AudienceSelectionModal';
 import CriteriaAccordion from './CriteriaAccordion';
-
+import { uploadImage } from '@/app/api/upload-image'
 import { toast } from "react-toastify";
 
 //mui
@@ -25,7 +25,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 
 type CreateArticleProps = { 
-    closeOnClick: any,
+    closeOnClick?: any,
     action: string,
     articleObject?: any,
     closeArticleEditor: any,
@@ -103,6 +103,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         },
     });
     
+
     useEffect(() => {
         if (action === "Edit" && articleObject) {
             reset({
@@ -146,50 +147,6 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         reset({ ...articleObject, imageUrl: null });
     }
 
-    // upload image to imgbb API
-    const handleImageUpload = async(file: File) => {
-        if (!file) {
-            return null;
-        }
-
-        const formData = new FormData();
-        formData.append("image", file);
-
-        // const base64image = await fileToBase64(file);
-
-        try {
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`, {
-                method: "POST",
-                body: formData,
-            });
-
-            const responseData = await response.json();
-
-            if(!response.ok) {
-                console.log("Error uploading image: ", responseData);
-                toast.error("An error occurred uploading image");
-                return;
-            }
-
-            console.log("Image upload response: ", responseData)
-            if (responseData.success) {
-                return responseData.data.url; // Return the image URL
-            } else {
-                // console.log(responseData.error?.message || 'Image upload failed');
-                toast.error(responseData.error?.message || 'Image upload failed');
-                return null;
-            }
-        } catch (error) {
-            console.log("Error: ", error);
-            toast.error("An error occurred uploading image");
-
-            return null;
-        }
-        // finally {
-        //     // set loader to false
-        // }
-    }
-
     const submitForm = async (data: any, type:  "publish" | "save-preview" | "update" ) => {
         handleLoaderOpen();
 
@@ -201,10 +158,16 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         let imageUrl = data.imageUrl;
 
         if (data.imageUrl && data.imageUrl[0] instanceof File) {                                        //only runs if a new image is uploaded
-            imageUrl = await handleImageUpload(data.imageUrl[0]);
+            imageUrl = await uploadImage(data.imageUrl[0]);
+            
             if (!imageUrl) {
                 toast.error('Failed to upload image. creating article without image. Please contact support.');
-                // return; 
+                return; 
+            }
+
+            if (typeof imageUrl === 'object' && imageUrl.error) {
+                toast.error(imageUrl.error || 'Failed to upload image. creating article without image. Please contact support.');
+                return;  
             }
         }
 
@@ -229,6 +192,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         } else {
             processUpdateArticle(articleData);
         }
+
         handleLoaderClose();
     }
 
@@ -447,18 +411,32 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                         {/* author name */}
                         {action === "Create" ? (
                             <div>
-                                <label className={formStyling.labelStyling} htmlFor="author">Author</label>
+                                <label className={formStyling.labelStyling} htmlFor="author">Author <span className="text-saitRed text-xs italic">(*defaults to user)</span></label>
                                 <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
-                                    {...register("author")}
+                                    {...register("author", {
+                                        required: false,
+                                        pattern: {
+                                            value: /^[a-zA-Z\s]*$/,
+                                            message: "Author name should only contain letters and spaces",
+                                        }
+                                    })}
                                 />
+                                {errors.author && (<p className={formStyling.errorStyle}>{errors.author.message}</p>)}
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className={formStyling.labelStyling} htmlFor="author">Author</label>
-                                    <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
-                                        {...register("author")}
+                                    <input className={formStyling.inputStyling} type="text" id="author" placeholder={articleObject.author || "Enter Author's Name" }
+                                        {...register("author", {
+                                            required: false,
+                                            pattern: {
+                                                value: /^[a-zA-Z\s]*$/,
+                                                message: "Author name should only contain letters and spaces",
+                                            }
+                                        })}
                                     />
+                                    {errors.author && (<p className={formStyling.errorStyle}>{errors.author.message}</p>)}
                                 </div>
                                 <div>
                                     <label className={formStyling.labelStyling} htmlFor="status">Status</label>
@@ -555,7 +533,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                             <textarea className={formStyling.inputStyling} id="content" cols={200} rows={10}
                                 {...register("content", { 
                                     required: 'Content is Required',
-                                    maxLength: { value: 15000, message: 'Content should not exceed 6000 characters' }
+                                    // maxLength: { value: 15000, message: 'Content should not exceed 15000 characters' }
                                 })}
                             />
                             {errors.content && <p className={formStyling.errorStyle}>{errors.content.message}</p>}
@@ -567,8 +545,13 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                         <div className="flex flex-row items-center justify-between w-full space-x-5">
                             <ActionButton title="Publish" onClick={handleSubmit((data) => submitForm(data, "publish"))}    
                             textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
-                            <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
-                                textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
+
+                            <Tooltip title="Save as Draft" arrow>
+                                <div>
+                                    <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
+                                        textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
+                                </div>
+                            </Tooltip>
                         </div>
                     ) : (
                         <div className="flex flex-row items-center justify-between w-full ">

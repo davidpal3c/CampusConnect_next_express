@@ -34,11 +34,14 @@ export const getAllAudience = async (req: Request, res: Response) => {
 
         const intakeYears = intakeYearsObj.map((year) => year.intake_year);
 
+        const userTypes = ["Students", "Prospective", "Alumni"];
+    
         const audienceData = {
             departments, 
             programs, 
             intakeSeasons, 
-            intakeYears
+            intakeYears,
+            userTypes
         }
 
         // console.log("Audience Data: ", audienceData);
@@ -46,5 +49,7 @@ export const getAllAudience = async (req: Request, res: Response) => {
         res.status(200).json({ data: audienceData, message: 'Audience retrieved successfully!' });
     } catch (error) {
         res.status(500).send('Something went wrong retrieving Audience!');
+    } finally {
+        await prisma.$disconnect();
     }
 };

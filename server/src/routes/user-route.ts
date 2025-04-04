@@ -15,6 +15,10 @@ router.get('/me', verifySession, getMyUser);
 // GET /api/users/:id - Get a single user by ID
 router.get('/:id', verifySession, adminRoute, validatePermissions(['Read-Write', 'Full Access']), getUserById);
     
+
+// GET /api/users/role/:role - Get user fields by role
+// router.get('/:role', verifySession, adminRoute, validatePermissions(['Read-Only', 'Read-Write', 'Full Access']), getUserFieldsByRole);
+
 // POST: /api/users/ - Create a new user
 router.post('/', verifySession, adminRoute, validatePermissions(['Read-Write', 'Full Access']), createUser);
 

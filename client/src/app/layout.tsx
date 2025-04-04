@@ -29,9 +29,8 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased` }>
-        
         <UserDataProvider>
           <ToastContainer 
             position="top-center" 

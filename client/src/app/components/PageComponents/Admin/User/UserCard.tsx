@@ -16,7 +16,7 @@ export default function UserCard({
   const truncatedArticles = articles.slice(0, 3); // take top 3 articles
 
   return (
-    <div className={`bg-blue-200 p-2 rounded-xl shadow-md`}>
+    <div className={`bg-blue-200 p-2 rounded-3xl shadow-md`}>
       <div className="flex">
         <h2 className={`text-lg text-blue-600 font-semibold`}>{title}</h2>
         <button

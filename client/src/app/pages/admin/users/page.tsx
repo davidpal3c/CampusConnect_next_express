@@ -14,10 +14,12 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 
 // Icons 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import ViewModuleRoundedIcon from '@mui/icons-material/FormatListBulleted';
-import ViewListRoundedIcon from '@mui/icons-material/TableChart';
+import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
+import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
+// import ViewModuleRoundedIcon from '@mui/icons-material/FormatListBulleted';
+// import ViewListRoundedIcon from '@mui/icons-material/TableChart';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import AddIcon from '@mui/icons-material/Add';
+import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded';
 
 // libraries
 import { toast } from "react-toastify";
@@ -34,6 +36,7 @@ export default function Users() {
     const [usersView, setUsersView] = useState("List");
     const [isPanelVisible, setIsPanelVisible] = useState(false);
     const userEditorRef = useRef(null);
+    const [fieldsByRole, setFieldsByRole] = useState({});
     
     useEffect(() => {
        fetchUserData();
@@ -83,7 +86,6 @@ export default function Users() {
         }
     };
     
-
     // Search and filter functions
     const searchByName = (searchValue: string) => {
         if (searchValue === "") {
@@ -99,7 +101,6 @@ export default function Users() {
             });
             
             setUsers(filteredUsers);
-            
         }
     };
 
@@ -115,12 +116,10 @@ export default function Users() {
         }
     }
 
-
     // Handle Users View 
     const handleUsersView = (view: string) => {
         console.log("View: ", view);
         setUsersView(view);
-
     }
 
     // Create User Panel
@@ -128,24 +127,80 @@ export default function Users() {
         setIsPanelVisible(!isPanelVisible);
     };
 
-    // useEffect(() => {   
-    //     fetchUserData();
-    // }, []);
-    
+
+    // fetch fields by role
+    const fetchFieldsByRole = async (role: string) => {
+        try {       
+            console.log(">>>Fetching fields by role: ", role);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${role}`, {
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                },
+                credentials: "include",
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                toast.error(errorData.message || "An Error occurred fetching fields by role.");
+                return;
+            }
+
+            setFieldsByRole(data); // Reset fieldsByRole state
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Unknown error occurred fetching fields by role! : " + error, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
+        }
+    };
+
+    useEffect(() => {
+        if (roleToFilter) {
+            fetchFieldsByRole(roleToFilter);
+        }
+    }, [roleToFilter]);
 
     return (
         <div className="bg-saitWhite h-screen">
             {isLoading ? (
-                <Loader isLoading={true} />
+                <Loader isLoading={isLoading} />
             ) : (
-                <div>               
-                    <PageHeader title="Users" 
+                <div className="w-full h-full">               
+                    <PageHeader 
                         filter={
-                            <div className="grid grid-cols-[1fr_auto] lg:grid-cols-2 w-full gap-4 ">
+                            <div className="flex flex-col md:flex-row w-full justify-between items-center gap-4 md:space-y-3 xs:space-y-3">
+
+                                <h1 className="text-2xl font-bold">Users</h1>
                                 {/* Left side container for filters */}
-                                <div className="flex items-center space-x-2">
+                                <div className="flex flex-1 items-center justify-center gap-4 px-4">
+                                    <div className="flex flex-row w-[4.3rem] h-10 items-center justify-evenly bg-white border-2 rounded-lg p-1">
+                                        <Tooltip title="List View" arrow>
+                                            <button onClick={() => handleUsersView("List")}>
+                                                <ViewModuleRoundedIcon sx={usersView === "List" ? { color: '#2b64ae', fontSize: 26 } :
+                                                    { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
+                                                />
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip title="Table View" arrow>
+                                            <button onClick={() => handleUsersView("Table")}>
+                                                <ViewListRoundedIcon sx={usersView === "Table" ? { color: '#2b64ae', fontSize: 26 } :
+                                                    { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
+                                                />
+                                            </button>
+                                        </Tooltip>
+                                    </div>
                                     <FilterInput 
-                                        title="Name" 
+                                        title="Search"
                                         icon={<SearchOutlinedIcon className="text-saitGray" fontSize="small" />} 
                                         handleChange={searchByName}
                                     />
@@ -154,41 +209,28 @@ export default function Users() {
                                         options={["Admin", "Student", "Alumni", "Prospective Student"]}
                                         handleSelect={filterByRole}
                                     />
-                                    <div className="flex flex-row w-20 h-10 items-center justify-evenly bg-white border-2 rounded-lg p-1">
-                                    <Tooltip title="List View">
-                                            <button onClick={() => handleUsersView("List")}>
-                                                <ViewModuleRoundedIcon sx={usersView === "List" ? { color: '#2b64ae', fontSize: 26 } :
-                                                    { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
-                                                />
-                                            </button>
-                                        </Tooltip>
-                                        <Tooltip title="Table View">
-                                            <button onClick={() => handleUsersView("Table")}>
-                                                <ViewListRoundedIcon sx={usersView === "Table" ? { color: '#2b64ae', fontSize: 26 } :
-                                                    { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}}
-                                                />
-                                            </button>
-                                        </Tooltip>
-                                    </div>
                                 </div>
-                        
-                                {/* Right side container for the Add button */}
-                                <div className="flex items-center justify-end ml-auto">
-                                    <Tooltip title="Add User">
+
+                                <div className="flex items-center justify-evenly gap-4 md:w-full">
+                                    <Tooltip title="Import Users from Excel" arrow>
                                         <div>
-                                            <ActionButton title="Add" icon={<AddRoundedIcon />} 
-                                                onClick={handlePanel} borderColor="border-saitBlue" textColor="text-saitGray" 
-                                                hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                                            <ActionButton title="Import" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
+                                                onClick={() => console.log("import from excel button")} borderColor="border-saitPurple" textColor="text-saitGray" 
+                                                hoverBgColor="bg-saitPurple" hoverTextColor="text-saitWhite" textSize="text-sm"
                                             />
                                         </div>
                                     </Tooltip>
-                                    {/* <button onClick={handlePanel} className="bg-white border-2 border-gray-300 rounded-lg p-2 flex items-center justify-center hover:bg-gray-100 hover:border-green-500">
-                                        <AddIcon className="text-green-500 w-5 h-5" />
-                                    </button> */}
+                                    <Tooltip title="Add User" arrow>
+                                        <div>
+                                            <ActionButton title="Add" icon={<AddRoundedIcon />} 
+                                                onClick={handlePanel} borderColor="border-saitBlue" textColor="text-saitGray" 
+                                                hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
+                                            />
+                                        </div>
+                                    </Tooltip>
                                 </div>
                             </div>
-                        }                                          
-                                     
+                        }                                            
                      />
 
                     {/* Display Users */}
@@ -215,11 +257,9 @@ export default function Users() {
                             </div>
                         </motion.div>
                         }
-                    </AnimatePresence>
-                    
+                    </AnimatePresence>   
                 </div>
             )}
         </div>
-        
     );
 }

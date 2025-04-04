@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { IconButton } from "@mui/material";
 import { Tooltip } from '@mui/material';
+import { set } from 'react-hook-form';
 
 type AudienceSelectionModalProps = {
     openAudienceSelectionModal: boolean;
@@ -34,6 +35,7 @@ export default function AudienceSelectionModal({
     const [selectedDepartments, setSelectedDepartments] = useState<Item[]>([]);
     const [selectedIntakeSeasons, setSelectedIntakeSeasons] = useState<string[]>([]);
     const [selectedIntakeYears, setSelectedIntakeYears] = useState<string[]>([]);
+    const [selectedUserTypes, setSelectedUserTypes] = useState<string[]>([]);
 
     const [isLoading, setIsLoading] = useState(false);
     const [availableAudience, setAvailableAudience] = useState<any>({});
@@ -42,6 +44,7 @@ export default function AudienceSelectionModal({
     const [departmentsData, setDepartmentsData] = useState<Item[]>([]);
     const [intakeSeasons, setIntakeSeasons] = useState<string[]>([]);
     const [intakeYears, setIntakeYears] = useState<string[]>([]);
+    const [userTypes, setUserTypes] = useState<string[]>([]);
 
     useEffect(() => {
         fetchAvailableAudience();
@@ -53,6 +56,7 @@ export default function AudienceSelectionModal({
         setSelectedDepartments(currentAudienceCriteria.departments || []);
         setSelectedIntakeSeasons(currentAudienceCriteria.intakeSeasons || []);
         setSelectedIntakeYears(currentAudienceCriteria.intakeYear || []);
+        setSelectedUserTypes(currentAudienceCriteria.userTypes || []);
         }
     }, [currentAudienceCriteria]);
 
@@ -81,6 +85,7 @@ export default function AudienceSelectionModal({
             setDepartmentsData(audienceData.data.departments);
             setIntakeSeasons(audienceData.data.intakeSeasons);
             setIntakeYears(audienceData.data.intakeYears);
+            setUserTypes(audienceData.data.userTypes);
             
         } catch (error: any) {
             console.error("Error fetching Audience Selection: ", error);
@@ -104,6 +109,7 @@ export default function AudienceSelectionModal({
         departments: selectedDepartments,
         intakeSeasons: selectedIntakeSeasons.includes('All') ? ['All'] : selectedIntakeSeasons,
         intakeYear: selectedIntakeYears.includes('All') ? ['All'] : selectedIntakeYears,
+        userTypes: selectedUserTypes.includes('All') ? ['All'] : selectedUserTypes,
         };
 
         saveAudienceCriteria(audienceCriteria);
@@ -128,6 +134,10 @@ export default function AudienceSelectionModal({
         setSelectedIntakeYears(years);
     };
 
+    const handleUserTypesSelection = (userTypes: string[]) => {
+        setSelectedUserTypes(userTypes);
+    };
+
     return (
         <div>
             <Modal
@@ -142,17 +152,17 @@ export default function AudienceSelectionModal({
                 <Box sx={modalStyle}>
                 <div className="flex flex-col items-center justify-center w-auto">
                     <div className="flex flex-row items-center justify-between p-4 mt-1 w-full">
-                    <div></div>
-                    <div>
-                        <h1 className="text-xl font-bold">Select Audience</h1>
-                    </div>
-                    <div className="">
-                        <Tooltip title="Close">
-                            <IconButton onClick={handleAudienceSelectionClose}>
-                                <CloseRoundedIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
+                        <div></div>
+                        <div>
+                            <h1 className="text-xl font-bold">Select Audience</h1>
+                        </div>
+                        <div className="">
+                            <Tooltip title="Close" arrow>
+                                <IconButton onClick={handleAudienceSelectionClose}>
+                                    <CloseRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </div>
 
                     <div className="w-full">
@@ -160,46 +170,56 @@ export default function AudienceSelectionModal({
                         <p>Loading Audience...</p>
                     ) : programsData?.length > 0 || departmentsData?.length > 0 || intakeSeasons?.length > 0 || intakeYears?.length > 0 ? (
                         <div className='flex flex-row items-center justify-center px-6 my-2 w-full gap-4'>
-                        <div className="flex-1">
-                            <label className="block text-md font-semibold mb-2">Departments</label>
-                            <ScrollableListForObjects
-                                items={departmentsData}
-                                selectedItems={selectedDepartments}
-                                onSelect={handleDepartmentSelection}
-                                idObjKey="department_id"
-                                currentAudienceCriteria={currentAudienceCriteria?.departments}
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <label className="block text-md font-semibold mb-2">Programs</label>
-                            <ScrollableListForObjects
-                                items={programsData}
-                                selectedItems={selectedPrograms}
-                                onSelect={handleProgramSelection}
-                                idObjKey="program_id"
-                                currentAudienceCriteria={currentAudienceCriteria?.programs}
-                            />
-                        </div>
-                        <div className="w-1/6">
-                            <label className="block text-md font-semibold mb-2">Intake Season</label>
-                            <ScrollableList
-                                items={intakeSeasons}
-                                selectedItems={selectedIntakeSeasons}
-                                onSelect={handleIntakeSeasonSelection}
-                                includeAllOption={true}
-                                currentAudienceCriteria={currentAudienceCriteria?.intakeSeasons}
-                            />
-                        </div>
-                        <div className="w-1/6">
-                            <label className="block text-md font-semibold mb-2">Intake Year</label>
-                            <ScrollableList
-                                items={intakeYears}
-                                selectedItems={selectedIntakeYears}
-                                onSelect={handleIntakeYearSelection}
-                                includeAllOption={true}
-                                currentAudienceCriteria={currentAudienceCriteria?.intakeYear}
-                            />
-                        </div>
+                            <div className="w-1/6">
+                                <label className="block text-md font-semibold mb-2">Users</label>
+                                <ScrollableList
+                                    items={userTypes}
+                                    selectedItems={selectedUserTypes}
+                                    onSelect={handleUserTypesSelection}
+                                    includeAllOption={true}
+                                    currentAudienceCriteria={currentAudienceCriteria?.userTypes}
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label className="block text-md font-semibold mb-2">Departments</label>
+                                <ScrollableListForObjects
+                                    items={departmentsData}
+                                    selectedItems={selectedDepartments}
+                                    onSelect={handleDepartmentSelection}
+                                    idObjKey="department_id"
+                                    currentAudienceCriteria={currentAudienceCriteria?.departments}
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label className="block text-md font-semibold mb-2">Programs</label>
+                                <ScrollableListForObjects
+                                    items={programsData}
+                                    selectedItems={selectedPrograms}
+                                    onSelect={handleProgramSelection}
+                                    idObjKey="program_id"
+                                    currentAudienceCriteria={currentAudienceCriteria?.programs}
+                                />
+                            </div>
+                            <div className="w-1/6">
+                                <label className="block text-md font-semibold mb-2">Intake Season</label>
+                                <ScrollableList
+                                    items={intakeSeasons}
+                                    selectedItems={selectedIntakeSeasons}
+                                    onSelect={handleIntakeSeasonSelection}
+                                    includeAllOption={true}
+                                    currentAudienceCriteria={currentAudienceCriteria?.intakeSeasons}
+                                />
+                            </div>
+                            <div className="w-1/6">
+                                <label className="block text-md font-semibold mb-2">Intake Year</label>
+                                <ScrollableList
+                                    items={intakeYears}
+                                    selectedItems={selectedIntakeYears}
+                                    onSelect={handleIntakeYearSelection}
+                                    includeAllOption={true}
+                                    currentAudienceCriteria={currentAudienceCriteria?.intakeYear}
+                                />
+                            </div>
                         </div>
                     ) : (
                         <p>No Audience Data Available</p>
@@ -266,7 +286,7 @@ const modalStyle = {
     //                     </div>
 
     //                     {/* Scrollable Lists for Selection */}
-    //                     <div className="flex flex-row items-center justify-center px-6 my-2 w-full border border-green-400 gap-4">
+    //                     <div className="flex flex-row items-center justify-center px-6 my-2 w-full gap-4">
 
     //                         <div className="flex-1">
     //                             <label className="block text-sm font-medium mb-2">Programs</label>

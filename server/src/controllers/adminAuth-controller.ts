@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import admin from 'firebase-admin';
 import { decode } from 'punycode';
+import { prisma } from '../config/prismaClient';
 
 
 export interface AuthenticatedRequest extends Request {
@@ -53,7 +54,9 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error' });
-    } 
+    } finally { 
+        await prisma.$disconnect();
+    }
 };
 
 export const checkSession = async (req: AuthenticatedRequest, res: Response) => {
@@ -75,6 +78,8 @@ export const checkSession = async (req: AuthenticatedRequest, res: Response) => 
     } catch (error) {
         console.error("Error verifying session:", error);
         res.status(403).json({ status: 'error', message: 'Unauthorized' });
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -91,5 +96,7 @@ export const logout = async (req: AuthenticatedRequest, res: Response) => {
     } catch (error) {
         console.error("Error clearing session cookie:", error);
         res.status(500).json({ status: 'error', message: 'Error logging out' });
+    } finally {
+        await prisma.$disconnect();
     }
 };

@@ -10,61 +10,91 @@ import { useEffect } from "react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import LoginLoader from "@/app/components/LoginLoader";
-import { sign } from "crypto";
 import { auth } from "@/app/_utils/firebase";
 
-
+import { Tooltip } from "@mui/material";
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
+import IconButton from "@mui/material/IconButton";
 
 export default function AdminLogin() {
 
-    const { googleSignIn, signOutFirebase } = useUserAuth();
+    const { googleSignIn, microsoftSignIn, signOutFirebase } = useUserAuth();
     const [backdrop, setBackdrop] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loadingGoogle, setLoadingGoogle] = useState(false);
+    const [loadingMicrosoft, setLoadingMicrosoft] = useState(false);
+    const [provider, setProvider] = useState("");
+
+    const router = useRouter();
 
     //loader props
     const [loaderBackdrop, setLoaderBackdrop] = useState(false);
     const [authRoleType, setAuthRoleType] = useState("");
     const [userResultProp, setUserResultProp] = useState(false);
 
-
-    const handleLoaderClose = () => {
-        setBackdrop(false);
-        setLoading(false);
-    };
-
-    const handleLoaderOpen = () => {
+    const handleLoaderOpen = (provider: string) => {
         setBackdrop(true);
-        setLoading(true);
+        if (provider === "google") {
+            setLoadingGoogle(true);
+        } 
+
+        if (provider === "microsoft") {
+            setLoadingMicrosoft(true);
+        }
     };
 
+    const handleLoaderClose = (provider: string) => {
+        setBackdrop(false);
+
+        if (provider === "google") {
+            setLoadingGoogle(false);
+        } 
+
+        if (provider === "microsoft") {
+            setLoadingMicrosoft(false);
+        }
+    };
 
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    async function handleSignIn() {
-        handleLoaderOpen();
+    async function handleSignIn(provider: string) {
+        setProvider(provider);
+        handleLoaderOpen(provider);
         await delay(500);
 
         const currentUser = auth.currentUser;
-        if (currentUser) {
-            // console.log("Existing session found, signing out first...", currentUser);
+        if (currentUser) {                                          // sign out first if user is already signed in
             await signOutFirebase();
         }
 
         try {
-            const result = await googleSignIn();
-            setUserResultProp(result);
+            let result = null;
+            if (provider === "google") {
+                result = await googleSignIn();
+            }
+            
+            if (provider === "microsoft") {
+                result = await microsoftSignIn();
+            }
 
-            // const idToken = await getIdToken();
-            // console.log("ID Token - initial login: ", idToken);
-            // setAdminRoute("/admin/");
+            if (result === 'cancelled' || window.closed) {
+                handleLoaderClose(provider);
+                return;
+            }
+
+            setUserResultProp(result);
+            
             setAuthRoleType("admin");
             setLoaderBackdrop(true);
-            handleLoaderClose();
+            handleLoaderClose(provider);
             
         } catch (error: any) {
+            if (error.code === "auth/popup-closed-by-user") {
+                console.log("Popup closed by user");
+                return;
+            } 
             console.log("Sign In error: ", error);
             signOutFirebase();  
-            handleLoaderClose();
+            handleLoaderClose(provider);
         }
     }
 
@@ -72,10 +102,9 @@ export default function AdminLogin() {
     // checks if window is closed to sign out the user 
     useEffect(() => {
         const interval = setInterval(() => {
-
             if (window.closed) {
                 signOutFirebase();
-                handleLoaderClose();
+                handleLoaderClose(provider);
                 clearInterval(interval);
             }
         }, 1);
@@ -85,6 +114,15 @@ export default function AdminLogin() {
 
     return (
         <div className="bg-blue-gradient flex flex-col md:flex-row h-screen">
+
+            <div className="absolute top-5 left-5 flex justify-between items-center">
+                <Tooltip title="Back to Homepage" arrow>
+                    <IconButton onClick={() => router.push("/")} className="flex items-center mb-6 hover:bg-opacity-10 hover:text-saitPurple">
+                        <ArrowBackIosRoundedIcon />
+                    </IconButton>
+                </Tooltip>
+            </div>
+            
             <Backdrop
                 sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
                 open={backdrop}
@@ -173,20 +211,16 @@ export default function AdminLogin() {
                             >Or Sign in with</p>
                         </div>
 
-                        <button className="h-24 w-full flex flex-row justify-center items-center bg-saitBlue hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl">
+                        <button onClick={() => handleSignIn('microsoft')} className="h-24 w-full flex flex-row justify-center items-center bg-saitBlue hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl">
                             <img src="/microsoft.png" alt="Microsoft Logo" className="w-10 h-auto  " />
-                            <p
-                                // className="w-40 font-light text-saitWhite -ml-16"        // original : out of contrast with blue gradient    
-                                className="w-40 font-normal text-saitWhite ml-4"
-                            >Sign In with Microsoft</p>
+                            <p className=" w-40 font-normal text-saitWhite"
+                            >{loadingMicrosoft? "Signing in..." : "Sign in with Microsoft"}</p>
                         </button>
 
-                        <button onClick={handleSignIn} className="h-24 w-full flex flex-row justify-center items-center bg-saitBlue hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl">
+                        <button onClick={() => handleSignIn('google')} className="h-24 w-full flex flex-row justify-center items-center bg-saitBlue hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl">
                             <img src="/google-logo.png" alt="Google Logo" className="w-10 h-auto " />
-                            <p
-                                // className=" w-40 font-light text-saitWhite"
-                                className=" w-40 font-normal text-saitWhite"
-                            >{loading ? "Signing in..." : "Sign in with Google"}</p>
+                            <p className=" w-40 font-normal text-saitWhite"
+                            >{loadingGoogle ? "Signing in..." : "Sign in with Google"}</p>
                         </button>                       
                     </div>
                     

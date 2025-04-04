@@ -3,10 +3,9 @@ import { formatToDateTime } from "@/app/_utils/dateUtils";
 import { useRouter } from "next/navigation";
 import ArticleDeleteModal from "./Modals/ArticleDeleteModal";
 import ArticleDeleteMultipleModal from "./Modals/ArticleDeleteMultipleModal";
+import ArticleAudienceModal from "./Modals/ArticleAudienceModal";
 import ArticleEditor from "./ArticleEditor";
 import ActionButton from "@/app/components/Buttons/ActionButton";
-import { deleteButton, getButtonClasses } from "@/app/assets/styles/buttonStyles";
-import { toast } from "react-toastify";
 // import { useAppDispatch } from "@/app/hooks";
 // import { setArticles } from "@/app/slices/articlesSlice";
 // import { useAppSelector } from "@/app/hooks";       
@@ -53,6 +52,13 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
     // Article Delete Multiple Modal
     const [openDeleteMultipleModal, setOpenDeleteMultipleModal] = useState(false);
     const handleDeleteMultipleModalClose = () => setOpenDeleteMultipleModal(false);
+
+    // Article Audience Modal
+    const [articleAudience, setArticleAudience] = useState({});
+    const [openArticleAudienceModal, setOpenArticleAudienceModal] = useState(false);
+    const handleArticleAudienceModalClose = () => setOpenArticleAudienceModal(false);    
+
+
 
     // Article Editor
     const articleEditorRef = useRef(null);
@@ -168,29 +174,75 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
         { field: 'title', headerName: 'Title', width: 200 },
         { field: 'status', headerName: 'Status', width: 110, renderCell: (params) => { 
             const status = params.row.status;
-            let className = "bg-saitBlack";
+            const statusStyle = status === "Published" ? "bg-saitBlue" : "bg-saitPurple";
 
-            if (status === "Published") {
-                className = "bg-saitBlue"
-                return <span className={`${className} font-normal text-saitWhite p-2 rounded-xl`}>{status}</span>;
-              
-            } else {
-                className = "bg-saitPurple"
-                return <span className={`${className} font-normal text-saitWhite p-2 rounded-xl`}>{status}</span>;             
-            }
+            return(
+                <div className={`flex items-center justify-center ${statusStyle} rounded-2xl mt-3 h-8 w-20 border border-saitPurple`}>
+                    <span className="font-normal text-saitWhite rounded-xl">{status}</span>
+                </div> 
+            );
+
         }},
         { field: 'type', headerName: 'Type', width: 108, renderCell: (params) => {
             return <span>{params.row.type?.name || "Unknown"}</span>;
         }},
-        { field: 'audience', headerName: 'Audience', width: 110 },
-        // { field: 'audience', headerName: 'Audience', width: 110, renderCell: (params) => {
-        //     return <span>{params.row.audience?.join(', ') || ""}</span>;
-        //     return(
-        //         <div className="flex items-center justify-center w-full h-full">
-        //             < />
-        //         </div>
-        //     );
-        // } },
+        // { field: 'audience', headerName: 'Audience', width: 110 },
+        { field: 'audience', headerName: 'Audience', width: 110, renderCell: (params) => {
+            const criteria = params.row.audience;
+            const status = params.row.status;
+
+            const hasDepartments = criteria?.departments && criteria.departments.length > 0;
+            const hasPrograms = criteria?.programs && criteria.programs.length > 0;
+            const hasIntakeSeasons = criteria?.intakeSeasons && criteria.intakeSeasons.length > 0;
+            const hasIntakeYears = criteria?.intakeYears && criteria.intakeYears.length > 0;
+
+            const tooltipContent = (
+                <div className="p-2">
+                    {/* {status === "Draft" && 
+                        <div className="flex items-center justify-center bg-saitDarkPurple rounded w-20 mb-2">
+                            <p className="text-saitWhite">Draft Article</p>
+                        </div>
+                    } */}
+                    {hasDepartments && (
+                        <div>
+                            <span className="font-semibold">Departments:</span>
+                            {criteria.departments.map((d: any) => (
+                                <div key={d.department_id}>* {d.name}</div>
+                            ))}
+                        </div>
+                    )}
+                    {hasPrograms && (
+                        <div>
+                            <span className="font-semibold">Programs:</span>
+                            {criteria.programs.map((p: any) => (
+                                <div key={p.program_id}>* {p.name}</div>
+                            ))}
+                        </div>
+                    )}
+                    {hasIntakeSeasons && (
+                        <div>
+                            <span className="font-semibold">Intake Seasons:</span> {criteria.intakeSeasons.join(", ")}
+                        </div>
+                    )}
+                    {hasIntakeYears && (
+                        <div>
+                            <span className="font-semibold">Intake Years:</span> {criteria.intakeYears.join(", ")}
+                        </div>
+                    )}
+                    {!hasDepartments && !hasPrograms && !hasIntakeSeasons && !hasIntakeYears && (
+                        <div>No audience criteria set. Defaults to "All".</div>
+                    )}
+                </div>
+            );
+
+            return (
+                <Tooltip title={tooltipContent} arrow>
+                    <div className="flex items-center justify-center rounded-2xl mt-3 h-8 w-20 border border-saitPurple cursor-pointer hover:border-saitBlue group transition-colors duration-300"> 
+                        <span className="font-normal text-saitBlack group-hover:text-saitBlue rounded-xl transition-colors duration-300">View</span>
+                    </div>
+                </Tooltip>
+            );
+        } },
         { field: 'author', headerName: 'Author', width: 125 },
         { field: 'author_id', headerName: 'Author ID', width: 90, renderCell: (params) => { 
             return(
@@ -207,9 +259,9 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
         }},
         { field: 'datePublished', headerName: 'Date Published', width: 210, renderCell: (params) => { 
             if(params.row.status === "Draft") {
-                return <span className="font-normal text-saitLightPurple p-2 rounded-xl">Not Published</span>;
+                return <span className="font-normal text-saitLightPurple p-2">Not Published</span>;
             } else {    
-            return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.datePublished)}</span>;
+                return <span className="font-normal text-saitBlack p-2">{formatToDateTime(params.row.datePublished)}</span>;
             }
         }},
         { field: 'imageUrl', headerName: 'Image URL', width: 200, renderCell: (params) => {

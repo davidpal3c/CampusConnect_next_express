@@ -5,7 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-import { maxHeaderSize } from 'http';
+
 interface CriteriaAccordionProps {
     criteria: any;
 }
@@ -22,7 +22,8 @@ const CriteriaAccordion: React.FC<CriteriaAccordionProps> = ({ criteria }) => {
         (criteria?.departments?.length || 0) +
         (criteria?.programs?.length || 0) +
         (criteria?.intakeSeasons?.length || 0) +
-        (criteria?.intakeYear?.length || 0);
+        (criteria?.intakeYear?.length || 0) + 
+        (criteria?.userTypes?.length || 0);
 
         setTotalCriteria(totalSelectedItems);
     }    
@@ -74,6 +75,13 @@ const CriteriaAccordion: React.FC<CriteriaAccordionProps> = ({ criteria }) => {
                 {criteria && Object.keys(criteria).length > 0 ? (   
                     // <div className="bg-white p-2 border-gray-400 border rounded-md">
                     <div>
+                        {criteria.userTypes && criteria.userTypes.length > 0 && (
+                            <AccordionDetails sx={accordionStyle.details}>
+                                <Typography variant="body2" component="div" sx={accordionStyle.content}>
+                                    <span className="font-semibold">User Types:</span> {criteria.userTypes.join(", ")}
+                                </Typography>
+                            </AccordionDetails>
+                        )}
                         {criteria.departments && criteria.departments.length > 0 && (
                             <AccordionDetails sx={accordionStyle.details}>
                             <Typography variant="body2" component="div" sx={accordionStyle.content}>

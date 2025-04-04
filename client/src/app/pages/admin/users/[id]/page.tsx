@@ -2,13 +2,14 @@
 
 // React & Next
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 // Components
 import Loader from "@/app/components/Loader/Loader";
-import { UpdateDialog } from "@/app/components/Dialogs/Dialogs";
+import ActionButton from "@/app/components/Buttons/ActionButton";
 
 // Icons
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import Grid3x3Icon from "@mui/icons-material/Grid3x3";
 import SchoolIcon from "@mui/icons-material/School";
@@ -17,13 +18,15 @@ import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import GradeIcon from '@mui/icons-material/Grade';
 import WorkIcon from '@mui/icons-material/Work';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import { Tooltip } from '@mui/material';
 
 export default function UserDetails() {
 
     // State Management
     const [user, setUser] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
-
+    const router = useRouter();
 
     // Get the user ID from the URL
     const params = useParams();
@@ -66,7 +69,7 @@ export default function UserDetails() {
   // Display the date in a more readable format
     const formatDate = (date: string) => new Date(date).toDateString();
 
-    if (!user) return <Loader isLoading={true} />;
+    if (!user) return <Loader isLoading={isLoading} />;
 
     const {
         first_name,
@@ -104,85 +107,100 @@ export default function UserDetails() {
     };
 
     return (
-        <div className="bg-saitWhite h-screen flex items-center justify-center">      
-            <div className="flex flex-row mb-28">
-                <div className="mr-12">
-                    {imageUrl ? (
-                        <img src={imageUrl.replace(/=s\d+-c$/, "=s400-c")} alt="User Photo" className="w-96 ml-3 mr-2 rounded-full border border-slate-500" />
-                    ) : (
-                        <img src="/face.png" alt="User Photo" className="w-96 ml-3 mr-2 rounded-full border border-slate-500" />
-                    )}
-                </div>
-                <div>
-                    <h1 className="text-5xl font-bold text-saitBlack">{first_name + " " + last_name}</h1>
-                    <p className="text-lg font-semibold text-saitLighterBlue">{role}</p>
+        <div className="p-4">        
+            <div className="flex justify-between items-center">
+                <Tooltip title="Back to Users" arrow>
+                    <IconButton onClick={() => router.push("/admin/users")} className="flex items-center mb-6 hover:bg-opacity-10 hover:text-saitPurple">
+                        <ArrowBackIosRoundedIcon />
+                    </IconButton>
+                </Tooltip>
 
-                    <div className="space-y-6 my-16">
-                        <div className="flex flex-row space-x-4 items-center">
-                            <AlternateEmailIcon className="text-saitBlack text-4xl" />
-                            <p className="text-lg text-saitBlack underline">{email}</p>
-                        </div>
-                        <div className="flex flex-row space-x-4 items-center">
-                            <Grid3x3Icon className="text-saitBlack text-4xl" />
-                            <p className="text-lg text-saitBlack">{user_id}</p>
-                        </div>
+                <Tooltip title="Update User Information" arrow>
+                    <div className="flex justify-between items-center">
+                        <ActionButton title="Edit User" onClick={() => console.log("Edit User")}
+                            textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>      
+                    </div>
+                </Tooltip>
+            </div>
 
-                        {/** Role Specific Fields */}
-
-                        {role == "Admin" && (
-                            <div className="flex flex-row space-x-4 items-center">
-                                <WorkspacePremiumIcon className="text-saitBlack text-4xl" />
-                                <p className="text-lg text-saitBlack">
-                                    Permissions: {permissions}
-                                </p>
-                            </div>
+            <div className="bg-saitWhite flex flex-col items-center justify-center p-12 rounded-lg shadow-md border border-slate-300">    
+                <div className="flex flex-row pt-20 pb-20 items-center justify-center">
+                    <div className="mr-20">
+                        {imageUrl ? (
+                            <img src={imageUrl.replace(/=s\d+-c$/, "=s400-c")} alt="User Photo" className="w-64 ml-3 mr-2 rounded-full border border-slate-500" />
+                        ) : (
+                            <img src="/face.png" alt="User Photo" className="w-64 ml-3 mr-2 rounded-full border border-slate-500" />
                         )}
+                    </div>
+                    <div>
+                        <h1 className="text-4xl font-bold text-saitBlack mb-4">{first_name + " " + last_name}</h1>
+                        <p className="text-lg font-semibold text-saitLighterBlue">{role}</p>
 
-                        {role == "Student" && (
+                        <div className="">
                             <div className="flex flex-row space-x-4 items-center">
-                                <SchoolIcon className="text-saitBlack text-4xl" />
-                                <p className="text-lg text-saitBlack">
-                                    {Program?.name} - {Department?.name}
-                                </p>
+                                <AlternateEmailIcon className="text-saitBlack text-4xl" />
+                                <p className="text-lg text-saitBlack underline">{email}</p>
                             </div>
-                        )}
+                            <div className="flex flex-row space-x-4 items-center">
+                                <Grid3x3Icon className="text-saitBlack text-4xl" />
+                                <p className="text-lg text-saitBlack">{user_id}</p>
+                            </div>
 
-                        {role == "Alumni" && (
-                            <div className="space-y-6">
+                            {/** Role Specific Fields */}
+
+                            {role == "Admin" && (
                                 <div className="flex flex-row space-x-4 items-center">
-                                    <GradeIcon className="text-saitBlack text-4xl" />
+                                    <WorkspacePremiumIcon className="text-saitBlack text-4xl" />
                                     <p className="text-lg text-saitBlack">
-                                        Graduated: {graduation_year}
+                                        Permissions: {permissions}
                                     </p>
                                 </div>
+                            )}
 
+                            {role == "Student" && (
                                 <div className="flex flex-row space-x-4 items-center">
                                     <SchoolIcon className="text-saitBlack text-4xl" />
                                     <p className="text-lg text-saitBlack">
-                                        {credentials}
+                                        {Program?.name} - {Department?.name}
                                     </p>
                                 </div>
+                            )}
 
-                                <div className="flex flex-row space-x-4 items-center">
-                                    <WorkIcon className="text-saitBlack text-4xl" />
-                                    <p className="text-lg text-saitBlack">
-                                        Works at: {company} as {current_position}
-                                    </p>
-                                </div>
+                            {role == "Alumni" && (
+                                <div className="space-y-6">
+                                    <div className="flex flex-row space-x-4 items-center">
+                                        <GradeIcon className="text-saitBlack text-4xl" />
+                                        <p className="text-lg text-saitBlack">
+                                            Graduated: {graduation_year}
+                                        </p>
+                                    </div>
 
-                            </div>            
-                        )}
-                        <div className="flex flex-row space-x-4 items-center">
-                            <AccessTimeIcon className="text-saitBlack text-4xl" />
-                            <p className="text-lg text-saitBlack">Joined Campus Connect: {formatDate(created_at)}</p>
+                                    <div className="flex flex-row space-x-4 items-center">
+                                        <SchoolIcon className="text-saitBlack text-4xl" />
+                                        <p className="text-lg text-saitBlack">
+                                            {credentials}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex flex-row space-x-4 items-center">
+                                        <WorkIcon className="text-saitBlack text-4xl" />
+                                        <p className="text-lg text-saitBlack">
+                                            Works at: {company} as {current_position}
+                                        </p>
+                                    </div>
+
+                                </div>            
+                            )}
+                            <div className="flex flex-row space-x-4 items-center">
+                                <AccessTimeIcon className="text-saitBlack text-4xl" />
+                                <p className="text-lg text-saitBlack">Joined Campus Connect: {formatDate(created_at)}</p>
+                            </div>
                         </div>
-                    </div>
                     
-                    <Button variant="outlined" className="font-semibold" onClick={handleOpen}>Edit {role}</Button>
+                    </div>
+                </div> 
+            </div>
 
-                    <UpdateDialog  open={openDialog} handleClose={handleClose} handleSubmit={handleSubmit} initialData={user} title= {`Update ${role} User`}/>
-                </div>
-            </div> 
         </div>
   );
 }
