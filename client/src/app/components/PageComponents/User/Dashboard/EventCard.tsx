@@ -23,19 +23,19 @@ export default function EventCard({
     return text.length >= 100 ? text.substring(0, 100) + "..." : text;
   };
   return (
-    <div className="flex-col border-gray-100 rounded-2xl shadow-lg border-2 p-4">
+    <div className="flex-col text-saitBlack border-gray-100 rounded-2xl shadow-lg border-2 p-4 hover:border-saitRed hover:shadow-saitRed-100 hover:shadow-lg hover:scale-105 duration-300 ease-in-out">
       <div className="text-xl mb-2">{title}</div>
       <div className="flex items-center">
         <div>
           <img className="w-5 h-5" src={dateIcon} />
         </div>
-        <div className="p-1 text-saitBlack">{date}</div>
+        <div className="p-1">{date}</div>
       </div>
       <div className="flex items-center mb-2">
         <div>
           <img className="w-5 h-5" src={timeIcon} />
         </div>
-        <div className="p-1 text-saitBlack">{time}</div>
+        <div className="p-1">{time}</div>
       </div>
       <div>
         <img className="w-30 mb-4" src={image} />

@@ -6,7 +6,9 @@ import Link from "next/link";
 export function ArticleCard(props: ArticleInterface) {
     let { article_id, title, author, type, datePublished, imageUrl } = props;
 
-    datePublished = new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(new Date(datePublished));
+  datePublished = new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(
+    new Date(datePublished)
+  );
 
     return (  
         <div className="border-gray-100 rounded-2xl shadow-lg border-2 transition-transform transform hover:scale-[1.03] hover:shadow-xl overflow-hidden">

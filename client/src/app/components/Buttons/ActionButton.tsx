@@ -11,6 +11,7 @@ type ActionButtonProps = {
     iconFirst?: boolean;
 
     // optional props for styling
+    textSize?: string;  
     textColor?: string;
     fontWeight?: string;
     bgColor?: string;
@@ -29,6 +30,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     disabled,
     iconFirst,
 
+    textSize,
     textColor, 
     fontWeight,
     bgColor, 
@@ -47,6 +49,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
         fontWeight: fontWeight || 'font-normal',
         backgroundColor: bgColor || 'bg-white',
         borderColor: borderColor || 'border-saitGray',
+        textSize: textSize || 'text-md',
     };
 
     const hoverStyles = {
@@ -56,7 +59,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     }
 
     const finalClassName = `group ${buttonStyles.color} border ${buttonStyles.borderColor} ${buttonStyles.backgroundColor}
-    font-normal h-9 flex ${buttonStyles.fontWeight} items-center justify-between py-2 px-4 rounded-full 
+    font-normal h-9 flex ${buttonStyles.fontWeight} items-center justify-between py-2 px-4 rounded-full ${buttonStyles.textSize}
     hover:${hoverStyles.textColor} hover:${hoverStyles.borderColor} hover:${hoverStyles.backgroundColor} 
     hover:shadow-2xl active:scale-75 transition delay-150 transition-colors transition-transform duration-300 ease-in-out`;
 

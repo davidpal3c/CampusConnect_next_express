@@ -16,7 +16,12 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
-export default function TableView({ users, filteredRole }) {
+
+type UserRole = "Admin" | "Student" | "Alumni";
+
+
+
+export default function TableView({ users, filteredRole }: { users: any[]; filteredRole: UserRole }) {
     // State Management
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -29,6 +34,8 @@ export default function TableView({ users, filteredRole }) {
     const handleViewUser= (userId: string) => {
         router.push(`/admin/users/${userId}`);
     };
+
+
 
     // Delete function for users
     const deleteUser = async (userId: string) => {
@@ -73,6 +80,12 @@ export default function TableView({ users, filteredRole }) {
         setOpenDialog(false);
     };
 
+    useEffect(() => {
+        console.log("Filtered Users:", filteredUsers);
+    }, [filteredUsers]);
+
+
+
     // TABLE COLUMNS
 
     // Base columns for the table (All users)
@@ -80,10 +93,6 @@ export default function TableView({ users, filteredRole }) {
         { field: "actions", headerName: "Actions", type: "actions", minWidth: 120, flex: 1, renderCell: (params) => {
             const userId = params.row.user_id;
             return (
-                // <div className="flex items-center justify-center w-full h-full">
-                //     <ViewButton href={`/admin/users/${userId}`} />
-                //     <DeleteButton onClick={() => handleOnDelete(userId)} />
-                // </div>
                 <div className="flex items-center justify-center w-full h-full space-x-1">
                     <Tooltip title="Delete Article" arrow>
                         <IconButton onClick={() => handleOnDelete(userId)}
@@ -135,7 +144,6 @@ export default function TableView({ users, filteredRole }) {
         }},
         { field: "imageUrl", headerName: "Photo", minWidth: 80, renderCell: (params) => {
             const imageUrl = params.row.image_url;
-            console.log(imageUrl);
             return (
                 <div className="flex items-center justify-center w-full h-full">
                     {imageUrl ? (
@@ -190,16 +198,12 @@ export default function TableView({ users, filteredRole }) {
             { field: "current_position", headerName: "Position", width: 150 },
             { field: "company", headerName: "Company", width: 150 },
         ],
-
     };
-
-    type UserRole = "Admin" | "Student" | "Alumni";
 
     const columns = roleColumnsMap[filteredRole as UserRole] || baseColumns;
 
     return (
         <div className="bg-saitWhite h-screen flex flex-col items-center p-4 -mt-4">
-
             {/* User Table */}
             <div className="w-full max-w-6xl">
                 <DataGrid

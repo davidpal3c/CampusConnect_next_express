@@ -69,7 +69,7 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
                     <p className="text-sm">Loading...</p>
                 </div>
             ) : user ? (
-                <Tooltip title={`Hello, ${user.displayName}!`}>           
+                <Tooltip title={`Hello, ${user.displayName}!`} arrow>           
                     <button
                         id="basic-button"
                         aria-controls={open ? 'basic-menu' : undefined}

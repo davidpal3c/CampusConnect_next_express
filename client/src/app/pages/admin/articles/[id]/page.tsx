@@ -17,6 +17,7 @@ import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import { Tooltip } from '@mui/material';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import IconButton from '@mui/material/IconButton';
 
 // audience grouping dropdown
 import InputLabel from '@mui/material/InputLabel';
@@ -116,6 +117,8 @@ export default function Article() {
             setArticleUrl(`${process.env.NEXT_PUBLIC_CLIENT_URL}/user/articles/${id}`);
             setArticleTitle(articleData?.title);
         }
+
+        console.log("articleData: ", articleData);
       }, [articleData]);
 
     return(
@@ -126,12 +129,12 @@ export default function Article() {
                 <div className="p-4">
                     <div className="flex justify-between items-center">
                         <Tooltip title="Back to Articles" arrow>
-                            <button onClick={() => router.push("/admin/articles")} className="flex items-center mb-6">
-                                <ArrowBackIosRoundedIcon className="mr-4"/>
-                            </button>
+                            <IconButton onClick={() => router.push("/admin/articles")} className="flex items-center mb-6 hover:bg-opacity-10 hover:text-saitPurple">
+                                <ArrowBackIosRoundedIcon />
+                            </IconButton>
                         </Tooltip>
                     </div>
-                    
+
                     <div className="flex flex-row justify-center space-x-4 w-full">
                         <div className="bg-white p-7 rounded-lg shadow-md w-11/12">
                             {articleData ? (

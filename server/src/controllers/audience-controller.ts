@@ -49,5 +49,7 @@ export const getAllAudience = async (req: Request, res: Response) => {
         res.status(200).json({ data: audienceData, message: 'Audience retrieved successfully!' });
     } catch (error) {
         res.status(500).send('Something went wrong retrieving Audience!');
+    } finally {
+        await prisma.$disconnect();
     }
 };

@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 
 // Components
 import Loader from "@/app/components/Loader/Loader";
-import { UpdateDialog } from "@/app/components/Dialogs/Dialogs";
+import ActionButton from "@/app/components/Buttons/ActionButton";
 
 // Icons
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
@@ -18,7 +18,7 @@ import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import GradeIcon from '@mui/icons-material/Grade';
 import WorkIcon from '@mui/icons-material/Work';
 import Button from '@mui/material/Button';
-
+import IconButton from '@mui/material/IconButton';
 import { Tooltip } from '@mui/material';
 
 export default function UserDetails() {
@@ -26,7 +26,6 @@ export default function UserDetails() {
     // State Management
     const [user, setUser] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
-
     const router = useRouter();
 
     // Get the user ID from the URL
@@ -108,29 +107,36 @@ export default function UserDetails() {
     };
 
     return (
-        <div className="p-4">
-            <div className="flex justify-between items-center ">
+        <div className="p-4">        
+            <div className="flex justify-between items-center">
                 <Tooltip title="Back to Users" arrow>
-                    <button onClick={() => router.push("/admin/users")} className="flex items-center mb-6">
-                        <ArrowBackIosRoundedIcon className="mr-4"/>
-                    </button>
+                    <IconButton onClick={() => router.push("/admin/users")} className="flex items-center mb-6 hover:bg-opacity-10 hover:text-saitPurple">
+                        <ArrowBackIosRoundedIcon />
+                    </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Update User Information" arrow>
+                    <div className="flex justify-between items-center">
+                        <ActionButton title="Edit User" onClick={() => console.log("Edit User")}
+                            textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>      
+                    </div>
                 </Tooltip>
             </div>
-        
-            <div className="bg-saitWhite h-screen flex flex-col items-center justify-center">    
-                <div className="flex flex-row mb-28">
-                    <div className="mr-12">
+
+            <div className="bg-saitWhite flex flex-col items-center justify-center p-12 rounded-lg shadow-md border border-slate-300">    
+                <div className="flex flex-row pt-20 pb-20 items-center justify-center">
+                    <div className="mr-20">
                         {imageUrl ? (
-                            <img src={imageUrl.replace(/=s\d+-c$/, "=s400-c")} alt="User Photo" className="w-96 ml-3 mr-2 rounded-full border border-slate-500" />
+                            <img src={imageUrl.replace(/=s\d+-c$/, "=s400-c")} alt="User Photo" className="w-64 ml-3 mr-2 rounded-full border border-slate-500" />
                         ) : (
-                            <img src="/face.png" alt="User Photo" className="w-96 ml-3 mr-2 rounded-full border border-slate-500" />
+                            <img src="/face.png" alt="User Photo" className="w-64 ml-3 mr-2 rounded-full border border-slate-500" />
                         )}
                     </div>
                     <div>
-                        <h1 className="text-5xl font-bold text-saitBlack">{first_name + " " + last_name}</h1>
+                        <h1 className="text-4xl font-bold text-saitBlack mb-4">{first_name + " " + last_name}</h1>
                         <p className="text-lg font-semibold text-saitLighterBlue">{role}</p>
 
-                        <div className="space-y-6 my-16">
+                        <div className="">
                             <div className="flex flex-row space-x-4 items-center">
                                 <AlternateEmailIcon className="text-saitBlack text-4xl" />
                                 <p className="text-lg text-saitBlack underline">{email}</p>
@@ -190,10 +196,7 @@ export default function UserDetails() {
                                 <p className="text-lg text-saitBlack">Joined Campus Connect: {formatDate(created_at)}</p>
                             </div>
                         </div>
-                        
-                        <Button variant="outlined" className="font-semibold" onClick={handleOpen}>Edit {role}</Button>
-
-                        <UpdateDialog  open={openDialog} handleClose={handleClose} handleSubmit={handleSubmit} initialData={user} title= {`Update ${role} User`}/>
+                    
                     </div>
                 </div> 
             </div>
