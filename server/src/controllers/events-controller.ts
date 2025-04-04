@@ -183,6 +183,8 @@ export const createEvent = async (req: AuthenticatedRequest, res: Response) => {
         console.error('Server: event creation route. ', error);
         res.status(500).json({ error: 'Internal server error: Event could not be created' });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -242,6 +244,8 @@ export const registerForEvent = async (req: Request, res: Response) => {
         console.error('Server: event registration route. ', error);
         res.status(500).json({ error: 'Internal server error: User could not be registered for event' });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -276,6 +280,8 @@ export const updateEvent = async (req: Request, res: Response) => {
         console.error('Server: event update route. ', error);
         res.status(500).json({ error: 'Internal server error: Event could not be updated' });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -306,6 +312,8 @@ export const updateEventFull = async (req: Request, res: Response) => {
         console.error('Server: event update route. ', error);
         res.status(500).json({ error: 'Internal server error: Event could not be updated' });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -328,6 +336,8 @@ export const deleteEvent = async (req: Request, res: Response) => {
         console.error('Server: event delete route. ', error);
         res.status(500).json({ error: 'Internal server error: Event could not be deleted' });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -374,5 +384,7 @@ export const unregisterForEvent = async (req: Request, res: Response) => {
         console.error('Server: event unregister route. ', error);
         res.status(500).json({ error: 'Internal server error: User could not be unregistered for event' });
         return;
+    } finally {
+        await prisma.$disconnect();
     }
 }

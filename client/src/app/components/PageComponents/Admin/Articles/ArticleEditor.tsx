@@ -103,6 +103,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         },
     });
     
+
     useEffect(() => {
         if (action === "Edit" && articleObject) {
             reset({
@@ -229,6 +230,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         } else {
             processUpdateArticle(articleData);
         }
+
         handleLoaderClose();
     }
 
@@ -447,18 +449,32 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                         {/* author name */}
                         {action === "Create" ? (
                             <div>
-                                <label className={formStyling.labelStyling} htmlFor="author">Author</label>
+                                <label className={formStyling.labelStyling} htmlFor="author">Author <span className="text-saitRed text-xs italic">(*defaults to user)</span></label>
                                 <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
-                                    {...register("author")}
+                                    {...register("author", {
+                                        required: false,
+                                        pattern: {
+                                            value: /^[a-zA-Z\s]*$/,
+                                            message: "Author name should only contain letters and spaces",
+                                        }
+                                    })}
                                 />
+                                {errors.author && (<p className={formStyling.errorStyle}>{errors.author.message}</p>)}
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className={formStyling.labelStyling} htmlFor="author">Author <span className="text-saitRed text-xs italic">(*defaults to current user)</span></label>
-                                    <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
-                                        {...register("author")}
+                                    <label className={formStyling.labelStyling} htmlFor="author">Author</label>
+                                    <input className={formStyling.inputStyling} type="text" id="author" placeholder={articleObject.author || "Enter Author's Name" }
+                                        {...register("author", {
+                                            required: false,
+                                            pattern: {
+                                                value: /^[a-zA-Z\s]*$/,
+                                                message: "Author name should only contain letters and spaces",
+                                            }
+                                        })}
                                     />
+                                    {errors.author && (<p className={formStyling.errorStyle}>{errors.author.message}</p>)}
                                 </div>
                                 <div>
                                     <label className={formStyling.labelStyling} htmlFor="status">Status</label>
@@ -567,8 +583,13 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                         <div className="flex flex-row items-center justify-between w-full space-x-5">
                             <ActionButton title="Publish" onClick={handleSubmit((data) => submitForm(data, "publish"))}    
                             textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
-                            <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
-                                textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
+
+                            <Tooltip title="Save as Draft" arrow>
+                                <div>
+                                    <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
+                                        textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
+                                </div>
+                            </Tooltip>
                         </div>
                     ) : (
                         <div className="flex flex-row items-center justify-between w-full ">

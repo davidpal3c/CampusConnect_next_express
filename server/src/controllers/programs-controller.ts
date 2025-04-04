@@ -45,5 +45,7 @@ export const getProgramById = async (req: Request, res: Response) : Promise<void
         console.error(error);
         res.status(500).json({ error: 'Internal server error: Program could not be fetched' });
         return;
+    } finally {
+        await prisma.$disconnect(); 
     }
 }

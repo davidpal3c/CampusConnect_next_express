@@ -4,6 +4,8 @@
 /server/node_modules
 /client/node_modules
 
+/server/dist
+
 client/.next/
 client/.env
 
@@ -79,4 +81,4 @@ Thumbs.db
 # Prisma seed files
 /server/prisma/seed.ts
 /server/prisma/seed.js
-/server/prisma/seed(old).ts
+/server/prisma/seed(old).tsserver/dist/
