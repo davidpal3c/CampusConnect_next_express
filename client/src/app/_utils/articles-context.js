@@ -80,7 +80,7 @@ const fetchArticleTypes = async () => {
             credentials: "include",
         });
 
-        const data = response.json();
+        const data = await response.json();
         return data;
 
 

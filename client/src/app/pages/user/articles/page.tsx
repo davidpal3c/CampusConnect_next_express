@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useMemo } from "react";
 import ArticleList from "@/app/components/PageComponents/User/Articles/ArticleList";
 import { useArticlesContext} from "@/app/_utils/articles-context";
@@ -13,10 +12,8 @@ type TypesCount = {
 };
 
 const Articles = () => {
-  const searchParams = useSearchParams();
-  const paramsType = searchParams.get("type");
 
-  const [typeName, setTypeName] = useState(paramsType || "All Articles");
+  const [typeName, setTypeName] = useState("All Articles");
   const { allArticles, articleTypes } = useArticlesContext();
 
   const [articleCounts, setArticleCounts] = useState<TypesCount>({});

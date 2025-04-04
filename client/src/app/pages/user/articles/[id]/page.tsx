@@ -8,7 +8,7 @@ import { fetchArticleById } from "../articles";
 import ArticlesLayout from "../ArticlesLayout";
 import { ArticleInterface } from "../../props";
 import { useArticlesContext} from "@/app/_utils/articles-context";
-import { useUser } from "@/app/_utils/user-context";
+import { useUserData } from "@/app/_utils/userData-context";
 import { toast } from "react-toastify";
 
 import Loader from "@/app/components/Loader/Loader";
@@ -22,10 +22,8 @@ const ArticleContent = () => {
 
     // Context
     const { allArticles, articleTypes } = useArticlesContext();
-    const { user } = useUser();
-    // const { Program: { Department: { department_id: departmentId, name: departmentName } = {} } = {} } = user?.user || {};
-
-    const departmentId = "SADT420";
+    const { userData } = useUserData();
+    const { Program: { Department: { department_id: departmentId, name: departmentName } = {} } = {} } = userData?.user || {};
     
 
     // State Management

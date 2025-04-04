@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { UserProvider } from "@/app/_utils/user-context";
+import { UserDataProvider } from "@/app/_utils/userData-context";
 import TopBar from "@/app/components/TopBar/TopBar";
 import Loader from "@/app/components/Loader/Loader";
 
@@ -44,7 +44,7 @@ export default function StudentLayout({
   const isLoading = !isTopBarLoaded || !isChildrenLoaded;
 
   return (
-    <UserProvider>
+    <UserDataProvider>
       {!isLoading ? (
         <main className="flex min-h-screen bg-white">
           <div className="flex flex-col bg-gray-200 w-full h-screen">
@@ -59,6 +59,6 @@ export default function StudentLayout({
       ) : ( 
         <Loader isLoading={isLoading} />
       )}
-    </UserProvider>
+    </UserDataProvider>
   );
 }

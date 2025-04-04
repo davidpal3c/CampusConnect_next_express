@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import UserCard from "@/app/components/PageComponents/Admin/User/UserCard";
 import { getCurrentSeason } from "../../components/PageComponents/Admin/User/IntakePicker";
 
-import { useUserData } from "@/app/_utils/userData-context";
+import { UserDataProvider, useUserData } from "@/app/_utils/userData-context";
 import { useUserAuth } from "@/app/_utils/auth-context";
 import UserPageMenu from "@/app/components/PageComponents/User/UserPageMenu";
 import OverViewCard from "@/app/components/PageComponents/User/Dashboard/OverviewCard";
@@ -196,7 +196,7 @@ export default function UserPage() {
             onClick={handleLoginRedirectButton}
             className="w-32 flex flex-row justify-center items-center hover:bg-saitBlue border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl"
           >
-            <p className="text-saitWhite">Login</p>
+            <p className="text-saitWhite">Login </p>
           </button>
           <button
             onClick={handleHomeRedirectButton}
@@ -212,83 +212,84 @@ export default function UserPage() {
   const authorizedPage = (
     <main className="m-8 flex-col">
       <div className="flex justify-between items-center h-full">
-        <div className="flex-col">
-          <h1 className="text-4xl font-bold">Welcome back, {first_name}!</h1>
-          <p className="text-saitGray mt-4">
-            Here's what's happening at SAIT today.{" "}
-          </p>
+          <div className="flex-col">
+            <h1 className="text-4xl font-bold">Welcome back, {first_name}!</h1>
+            <p className="text-saitGray mt-4">
+              Here's what's happening at SAIT today.{" "}
+            </p>
+          </div>
+          <div className="flex items-center">
+            <button className="bg-saitRed text-white px-4 py-2 rounded-md flex items-center gap-2">
+              <img src="/calendar.png" alt="Calendar Icon" className="w-5 h-5" />
+              Add to Calendar
+            </button>
+          </div>
         </div>
-        <div className="flex items-center">
-          <button className="bg-saitRed text-white px-4 py-2 rounded-md flex items-center gap-2">
-            <img src="/calendar.png" alt="Calendar Icon" className="w-5 h-5" />
-            Add to Calendar
-          </button>
+        <div>
+          <UserPageMenu
+            menuItems={[
+              { title: "Overview", onClick: onClickOverview },
+              { title: "Upcoming", onClick: onClickUpcoming },
+              { title: "Announcements", onClick: onClickAnnouncements },
+            ]}
+          />
         </div>
-      </div>
-      <div>
-        <UserPageMenu
-          menuItems={[
-            { title: "Overview", onClick: onClickOverview },
-            { title: "Upcoming", onClick: onClickUpcoming },
-            { title: "Announcements", onClick: onClickAnnouncements },
-          ]}
-        />
-      </div>
 
-      <div className="grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testOverviewItems.slice(0, 4).map((item, index) => (
-            <OverViewCard
+        <div className="grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 mt-4">
+          {testOverviewItems.slice(0, 4).map((item, index) => (
+              <OverViewCard
+                key={index}
+                title={item.title}
+                icon={item.icon}
+                number={item.number}
+                text={item.text}
+              />
+          ))}
+        </div>
+
+        <h1 className="flextext-2xl text-xl font-semibold mt-4">Events</h1>
+
+        <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
+          {testEvents.slice(0, 3).map((event, index) => (
+            <EventCard
               key={index}
-              title={item.title}
-              icon={item.icon}
-              number={item.number}
-              text={item.text}
+              title={event.title}
+              date={event.date}
+              time={event.time}
+              image={event.image}
+              text={event.text}
             />
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <h1 className="flextext-2xl text-xl font-semibold mt-4">Events</h1>
+        <h1 className="flextext-2xl text-xl font-semibold mt-4">
+          Latest Articles
+        </h1>
 
-      <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testEvents.slice(0, 3).map((event, index) => (
-          <EventCard
-            key={index}
-            title={event.title}
-            date={event.date}
-            time={event.time}
-            image={event.image}
-            text={event.text}
-          />
-        ))}
-      </div>
-
-      <h1 className="flextext-2xl text-xl font-semibold mt-4">
-        Latest Articles
-      </h1>
-
-      <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testArticles.slice(0, 3).map((article, index) => (
-          <ArticleCard
-            key={index}
-            article_id={article.article_id}
-            title={article.title}
-            content={article.content}
-            type_id={article.type_id}
-            imageUrl={article.imageUrl}
-            datePublished={article.datePublished}
-            created_at={article.created_at}
-            updated_at={article.updated_at}
-            author={article.author}
-            author_id={article.author_id}
-            audience={article.audience}
-            status={article.status}
-            type={article.type}
-          />
-        ))}
-      </div>
-    </main>
+        <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
+          {testArticles.slice(0, 3).map((article, index) => (
+            <ArticleCard
+              key={index}
+              article_id={article.article_id}
+              title={article.title}
+              content={article.content}
+              type_id={article.type_id}
+              imageUrl={article.imageUrl}
+              datePublished={article.datePublished}
+              created_at={article.created_at}
+              updated_at={article.updated_at}
+              author={article.author}
+              author_id={article.author_id}
+              audience={article.audience}
+              status={article.status}
+              type={article.type}
+            />
+          ))}
+        </div>
+      </main>
   );
 
-  return !userData ? unauthorized : authorizedPage;
+  return user?.role === "Student" || user?.role === "Alumni" ? authorizedPage : unauthorized;
+
 }
 
