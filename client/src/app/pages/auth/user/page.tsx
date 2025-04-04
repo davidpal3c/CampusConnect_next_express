@@ -12,9 +12,10 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import LoginLoader from "@/app/components/LoginLoader";
 import { auth } from "@/app/_utils/firebase";
-import StudentPageBtn from "@/app/components/Buttons/StudentPageButton/StudentLoginBtn";
 
-
+import { Tooltip } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 
 export default function AdminLogin() {
 
@@ -27,6 +28,8 @@ export default function AdminLogin() {
     const [loaderBackdrop, setLoaderBackdrop] = useState(false);
     const [authRoleType, setAuthRoleType] = useState("");
     const [userResultProp, setUserResultProp] = useState(false);
+
+    const router = useRouter();
 
     const handleLoaderOpen = (provider: string) => {
         setBackdrop(true);
@@ -112,6 +115,16 @@ export default function AdminLogin() {
 
     return (
         <div className="bg-blue-gradient flex flex-col md:flex-row h-screen">
+
+            <div className="absolute top-5 left-5 flex justify-between items-center">
+                <Tooltip title="Back to Homepage" arrow>
+                    <IconButton onClick={() => router.push("/")} className="flex items-center mb-6 hover:bg-opacity-10 hover:text-saitPurple">
+                        <ArrowBackIosRoundedIcon />
+                    </IconButton>
+                </Tooltip>
+            </div>
+                        
+
             <Backdrop
                 sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
                 open={backdrop}

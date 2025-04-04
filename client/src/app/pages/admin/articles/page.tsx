@@ -383,7 +383,7 @@ export default function Articles() {
                   <div>              
                     <ActionButton title="Create" icon={<AddRoundedIcon />} 
                       onClick={handleCreateArticle} borderColor="border-saitBlue" textColor="text-saitGray" 
-                      hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                      hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                     />
                   </div>
                 </Tooltip>
@@ -438,17 +438,16 @@ export default function Articles() {
                 {/* pagination */}
                 <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
                   <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<ArrowLeftRoundedIcon />} iconFirst={true}
-                    borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                    borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                   />
-                  <span>
+                  <span className='text-sm'>
                     Page {currentPage} of {totalPages}
                   </span>
                   <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<ArrowRightRoundedIcon />} 
-                    borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                    borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                   />
                 </div>
               </div>
-              
             ) : (
               // Extended Article View
               <ArticlesTableDetailed articlesData={filteredArticles} reFetchArticles={fetchArticleData} />

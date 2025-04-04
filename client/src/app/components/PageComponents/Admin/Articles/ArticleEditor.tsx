@@ -11,7 +11,7 @@ import ArticleDeleteModal from './Modals/ArticleDeleteModal';
 import RichTextEditor from './RichTextEditor';
 import AudienceSelectionModal from '@/app/components/PageComponents/Admin/Articles/AudienceSelectionModal';
 import CriteriaAccordion from './CriteriaAccordion';
-
+import { uploadImage } from '@/app/api/upload-image'
 import { toast } from "react-toastify";
 
 //mui
@@ -147,50 +147,6 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         reset({ ...articleObject, imageUrl: null });
     }
 
-    // upload image to imgbb API
-    const handleImageUpload = async(file: File) => {
-        if (!file) {
-            return null;
-        }
-
-        const formData = new FormData();
-        formData.append("image", file);
-
-        // const base64image = await fileToBase64(file);
-
-        try {
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`, {
-                method: "POST",
-                body: formData,
-            });
-
-            const responseData = await response.json();
-
-            if(!response.ok) {
-                console.log("Error uploading image: ", responseData);
-                toast.error("An error occurred uploading image");
-                return;
-            }
-
-            console.log("Image upload response: ", responseData)
-            if (responseData.success) {
-                return responseData.data.url; // Return the image URL
-            } else {
-                // console.log(responseData.error?.message || 'Image upload failed');
-                toast.error(responseData.error?.message || 'Image upload failed');
-                return null;
-            }
-        } catch (error) {
-            console.log("Error: ", error);
-            toast.error("An error occurred uploading image");
-
-            return null;
-        }
-        // finally {
-        //     // set loader to false
-        // }
-    }
-
     const submitForm = async (data: any, type:  "publish" | "save-preview" | "update" ) => {
         handleLoaderOpen();
 
@@ -202,10 +158,16 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         let imageUrl = data.imageUrl;
 
         if (data.imageUrl && data.imageUrl[0] instanceof File) {                                        //only runs if a new image is uploaded
-            imageUrl = await handleImageUpload(data.imageUrl[0]);
+            imageUrl = await uploadImage(data.imageUrl[0]);
+            
             if (!imageUrl) {
                 toast.error('Failed to upload image. creating article without image. Please contact support.');
-                // return; 
+                return; 
+            }
+
+            if (typeof imageUrl === 'object' && imageUrl.error) {
+                toast.error(imageUrl.error || 'Failed to upload image. creating article without image. Please contact support.');
+                return;  
             }
         }
 
