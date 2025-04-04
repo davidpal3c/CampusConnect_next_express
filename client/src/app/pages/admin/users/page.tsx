@@ -36,6 +36,7 @@ export default function Users() {
     const [usersView, setUsersView] = useState("List");
     const [isPanelVisible, setIsPanelVisible] = useState(false);
     const userEditorRef = useRef(null);
+    const [fieldsByRole, setFieldsByRole] = useState({});
     
     useEffect(() => {
        fetchUserData();
@@ -85,7 +86,6 @@ export default function Users() {
         }
     };
     
-
     // Search and filter functions
     const searchByName = (searchValue: string) => {
         if (searchValue === "") {
@@ -101,7 +101,6 @@ export default function Users() {
             });
             
             setUsers(filteredUsers);
-            
         }
     };
 
@@ -127,6 +126,49 @@ export default function Users() {
     const handlePanel = () => {
         setIsPanelVisible(!isPanelVisible);
     };
+
+
+    // fetch fields by role
+    const fetchFieldsByRole = async (role: string) => {
+        try {       
+            console.log(">>>Fetching fields by role: ", role);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${role}`, {
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                },
+                credentials: "include",
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                toast.error(errorData.message || "An Error occurred fetching fields by role.");
+                return;
+            }
+
+            setFieldsByRole(data); // Reset fieldsByRole state
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Unknown error occurred fetching fields by role! : " + error, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
+        }
+    };
+
+    useEffect(() => {
+        if (roleToFilter) {
+            fetchFieldsByRole(roleToFilter);
+        }
+    }, [roleToFilter]);
 
     return (
         <div className="bg-saitWhite h-screen">
@@ -170,36 +212,25 @@ export default function Users() {
                                 </div>
 
                                 <div className="flex items-center justify-evenly gap-4 md:w-full">
+                                    <Tooltip title="Import Users from Excel" arrow>
+                                        <div>
+                                            <ActionButton title="Import" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
+                                                onClick={() => console.log("import from excel button")} borderColor="border-saitPurple" textColor="text-saitGray" 
+                                                hoverBgColor="bg-saitPurple" hoverTextColor="text-saitWhite" textSize="text-sm"
+                                            />
+                                        </div>
+                                    </Tooltip>
                                     <Tooltip title="Add User" arrow>
                                         <div>
                                             <ActionButton title="Add" icon={<AddRoundedIcon />} 
                                                 onClick={handlePanel} borderColor="border-saitBlue" textColor="text-saitGray" 
-                                                hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                                                hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                                             />
                                         </div>
                                     </Tooltip>
-                                    {/* <button onClick={handlePanel} className="bg-white border-2 border-gray-300 rounded-lg p-2 flex items-center justify-center hover:bg-gray-100 hover:border-green-500">
-                                        <AddIcon className="text-green-500 w-5 h-5" />
-                                    </button> */}
-              
-
-                                     {/* Right side container for the Add button */}
-                                    <Tooltip title="Import Users from Excel" arrow>
-                                        <div>
-                                            <ActionButton title="Import Excel" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
-                                                onClick={handlePanel} borderColor="border-saitPurple" textColor="text-saitGray" 
-                                                hoverBgColor="bg-saitPurple" hoverTextColor="text-saitWhite"
-                                            />
-                                        </div>
-                                    </Tooltip>
-                                    {/* <button onClick={handlePanel} className="bg-white border-2 border-gray-300 rounded-lg p-2 flex items-center justify-center hover:bg-gray-100 hover:border-green-500">
-                                        <AddIcon className="text-green-500 w-5 h-5" />
-                                    </button> */}
                                 </div>
-
                             </div>
-                        }                                          
-                                     
+                        }                                            
                      />
 
                     {/* Display Users */}
@@ -226,11 +257,9 @@ export default function Users() {
                             </div>
                         </motion.div>
                         }
-                    </AnimatePresence>
-                    
+                    </AnimatePresence>   
                 </div>
             )}
         </div>
-        
     );
 }
