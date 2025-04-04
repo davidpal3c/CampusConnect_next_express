@@ -26,7 +26,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
     } finally {
         await prisma.$disconnect(); 
     }
-
 }
 
 // GET /api/users/:id - Get a single user by ID
@@ -73,6 +72,19 @@ export const getUserById = async (req: Request, res: Response) : Promise<void> =
         await prisma.$disconnect(); 
     }
 }
+
+// GET /api/users/:role - Get user fields by role
+export const getUserFieldsByRole = async (req: Request, res: Response) : Promise<void> => {
+    try {
+        const role = req.params.role;
+        console.log("role", role);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+        return; 
+    } finally { 
+        await prisma.$disconnect(); 
+    }
+};
 
 // GET /api/users/me - Get current user
 export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
@@ -132,6 +144,8 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
         return;
+    } finally {
+        await prisma.$disconnect(); 
     }
 }
 
