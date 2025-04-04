@@ -23,7 +23,7 @@ export default function UserPageMenu({
   }
 
   return (
-    <div className="flex gap-6 text-saitBlack font-semibold mt-8 underline cursor-pointer">
+    <div className="flex gap-6 text-saitBlack font-semibold underline cursor-pointer">
       {getMenuItems()}
     </div>
   );
