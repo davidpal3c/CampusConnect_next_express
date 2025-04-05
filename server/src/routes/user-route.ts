@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllUsers, getUserById, getMyUser, createUser, updateUser, deleteUser } from '../controllers/user-controller';
+import { getAllUsers, getUserById, getUserFieldsByRole, getMyUser, createUser, updateUser, deleteUser } from '../controllers/user-controller';
 import { verifySession, adminRoute, validatePermissions } from '../middleware/user-middleware';
 
 
@@ -17,7 +17,7 @@ router.get('/:id', verifySession, adminRoute, validatePermissions(['Read-Write',
     
 
 // GET /api/users/role/:role - Get user fields by role
-// router.get('/:role', verifySession, adminRoute, validatePermissions(['Read-Only', 'Read-Write', 'Full Access']), getUserFieldsByRole);
+router.get('/role/:role', verifySession, adminRoute, validatePermissions(['Read-Only', 'Read-Write', 'Full Access']), getUserFieldsByRole);
 
 // POST: /api/users/ - Create a new user
 router.post('/', verifySession, adminRoute, validatePermissions(['Read-Write', 'Full Access']), createUser);

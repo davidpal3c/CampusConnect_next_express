@@ -16,25 +16,26 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
+// types
+import { UserRole } from '@/app/types/user';
 
-type UserRole = "Admin" | "Student" | "Alumni";
 
 
-
-export default function TableView({ users, filteredRole }: { users: any[]; filteredRole: UserRole }) {
-    // State Management
+export default function TableView({ users, filteredRole, fieldsByRole }: { users: any[]; filteredRole: UserRole; fieldsByRole: any }) {
+    
+    const [combinedUsers, setCombinedUsers] = useState<any[]>([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
     const [userId, setUserId] = useState(null);
 
+    
     const router = useRouter();
 
     const handleViewUser= (userId: string) => {
         router.push(`/admin/users/${userId}`);
     };
-
 
 
     // Delete function for users
@@ -55,14 +56,6 @@ export default function TableView({ users, filteredRole }: { users: any[]; filte
             console.error("Error deleting user:", error);
         }
     };
-
-    // Filter users based on search input
-    useEffect(() => {
-        const filtered = users.filter((user: any) =>
-            `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredUsers(filtered);
-    }, [searchTerm, users]);
 
     const handleOnDelete = (selectedUserId: string) => {
         setUserId(selectedUserId);
@@ -85,8 +78,128 @@ export default function TableView({ users, filteredRole }: { users: any[]; filte
     }, [filteredUsers]);
 
 
+    useEffect(() => {
+        console.log('fields by role :', fieldsByRole);
+    })
 
-    // TABLE COLUMNS
+
+    useEffect(() => {
+        if (!fieldsByRole || fieldsByRole === '' || !users) return;
+        
+        // console.log('fieldsByRole data:', fieldsByRole);
+        // console.log('users data:', users);
+
+        const combined = users.map(user => {
+
+            let roleData = fieldsByRole.find((item: any) => item.user_id === user.user_id);
+            console.log('roleData: ', roleData);
+            
+            if (filteredRole === 'Student' && roleData) {
+                return {
+                    ...user,
+                    program_id: roleData.program_id,
+                    program_name: roleData.Program?.name,
+                    department_name: roleData.Program?.Department.name,
+                    intake: roleData.intake,
+                    intake_year: roleData.intake_year,
+                    status: roleData.status,
+                };
+            }
+
+            if (filteredRole === 'Admin' && roleData) {
+                // const permissions = roleData.permissions.map((permission: any) => permission.name).join(', ');
+
+                if (roleData) {
+                    return {
+                        ...user,
+                        ...roleData,
+                    };
+                }
+            }
+
+            if (filteredRole === 'Alumni' && roleData) {
+                const alumniStudies = roleData.AlumniStudy || [];
+                const latestStudy = alumniStudies.find((study: any) => study.graduation_year === Math.max(...alumniStudies.map((s: any) => s.graduation_year))) || null;
+                // const latestStudy = alumniStudies[alumniStudies.length - 1] || null;
+                
+                // summary of all studies 
+                // const studiesSummary = alumniStudies.map(study => ({
+                //     program: study.Program?.name.forEach(( (program: any) => program.name ) ),
+                //     department: study.Department?.name,
+                //     graduation_year: study.graduation_year
+                // }));
+
+                
+                // Join multiple studies into strings for display
+                // const programs = studiesSummary.map(s => s.program).filter(Boolean).join(', ');
+                // const departments = studiesSummary.map(s => s.department).filter(Boolean).join(', ');
+                // const graduationYears = studiesSummary.map(s => s.graduation_year).filter(Boolean).join(', ');
+                
+                // TODO: Set studies info to variable to pass to the dropdown component
+
+
+                return {
+                    ...user,
+                    current_position: roleData.current_position,
+                    company: roleData.company,
+
+                    graduation_year: latestStudy ? latestStudy.graduation_year : null,
+                    program_id: latestStudy ? latestStudy.program_id : null,
+                    program_name: latestStudy ? latestStudy.Program?.name : null,
+                    department_name: latestStudy ? latestStudy.Department?.name : null,
+
+                    alumni_studies: roleData.AlumniStudy,
+                    // alumni_studies: alumniStudies, 
+                    // // Create display-friendly fields
+                    // program_names: programs,
+                    // department_names: departments,
+                    // graduation_years: graduationYears,
+                };
+            }
+
+            return user; 
+        });
+    
+        setCombinedUsers(combined);
+
+        console.log('Combined Users:', combined);
+    }, [users, fieldsByRole, filteredRole]);
+    
+
+    
+    const getColumnsByRole = () => {
+        switch (filteredRole) {
+            case 'Student':
+                return [
+                    { field: "program_id", headerName: "Program ID", width: 150 },
+                    { field: "program_name", headerName: "Program", width: 150 },
+                    { field: "department_name", headerName: "Department", width: 150 },
+                    { field: "intake", headerName: "Intake", width: 100 },
+                    { field: "intake_year", headerName: "Intake Year", width: 120 },
+                    { field: "status", headerName: "Status", width: 100 }
+                ];
+            case 'Alumni':
+                return [
+                    { field: "current_position", headerName: "Position", width: 150 },
+                    { field: "company", headerName: "Company", width: 150 },
+                    { field: "graduation_year", headerName: "Graduation Year", width: 120 },        // flattened latest 
+                    { field: "program_name", headerName: "Program", width: 150 },                   // flattened latest 
+                                    
+                    // render dropdown component for AlumniStudy fields 
+                    // { field: "graduation_year", headerName: "Graduation Year", width: 120, 
+                    //   valueGetter: (params) => fieldsByRole[0]?.AlumniStudy?.[0]?.graduation_year },
+                    // { field: "program_id", headerName: "Program", width: 150, 
+                    //   valueGetter: (params) => fieldsByRole[0]?.AlumniStudy?.[0]?.Program?.name }, 
+                ];
+            case 'Admin':
+                return [
+                    { field: "permissions", headerName: "Permissions", width: 150 }
+                ];
+            default:
+                return [];
+        }
+    };
+
 
     // Base columns for the table (All users)
     const baseColumns = [
@@ -173,35 +286,20 @@ export default function TableView({ users, filteredRole }: { users: any[]; filte
             new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(new Date(params.row.created_at))
         },
     ];
+    
+    const columns = [...baseColumns, ...getColumnsByRole()];
+    // const columns = roleColumnsMap[filteredRole as UserRole] || baseColumns;
 
-    const roleColumnsMap = {
-        // Admin columns for the table
-        "Admin": [
-            ...baseColumns,
-            { field: "permissions", headerName: "Permissions", width: 150 },
-        ],
 
-        // Student columns for the table
-        "Student": [
-            ...baseColumns,
-            { field: "program_id", headerName: "Program", width: 150 },
-            { field: "department_id", headerName: "Department", width: 150 },
-            { field: "intake_year", headerName: "Intake Year", width: 120 },
-            { field: "status", headerName: "Status", width: 100 },
-        ],
+    // Filter users based on search input
+    useEffect(() => {
+        const filtered = combinedUsers.filter((user: any) =>
+            `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredUsers(filtered);
+    }, [searchTerm, combinedUsers]);
 
-        // Alumni columns for the table
-        "Alumni": [
-            ...baseColumns,
-            { field: "graduation_year", headerName: "Graduation Year", width: 120 },
-            { field: "credentials", headerName: "Credentials", width: 150 },
-            { field: "current_position", headerName: "Position", width: 150 },
-            { field: "company", headerName: "Company", width: 150 },
-        ],
-    };
-
-    const columns = roleColumnsMap[filteredRole as UserRole] || baseColumns;
-
+    
     return (
         <div className="bg-saitWhite h-screen flex flex-col items-center p-4 -mt-4">
             {/* User Table */}
@@ -225,5 +323,4 @@ export default function TableView({ users, filteredRole }: { users: any[]; filte
         </div>
     );
 
-    
 }

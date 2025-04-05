@@ -273,7 +273,7 @@ export default function Article() {
                         </div>
                     </div>
                     
-                    {/* TODO: edit, share, delete buttons, article data analysis placeholder  */}
+
                     {/* Create Article Panel */}
                     <AnimatePresence>
                         {isEditPanelVisible &&
