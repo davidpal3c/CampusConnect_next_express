@@ -177,56 +177,54 @@ export default function Users() {
     };
 
 
-    // const filterByRole = async (role: UserRole) => {
-    //     if (role === "" || role === "All" ) {
-    //         setUsers(originalUsers);
-    //         return;
-
-    //     } else {
-    //         let filteredUsers;
-
-    //         if (role === 'Prospective Student') {
-
-    //             //TODO: fetch prospective students from backend. 
-    //             // Create new endpoint returning only students by status 
-    //             // ('prospective' in this case)
-
-
-    //             // const students = originalUsers.filter(user => 
-    //             //     user.role.toLowerCase() === 'student' 
-    //             // )
-
-    //             return;
-
-    //         } else {
-    //             filteredUsers = originalUsers.filter((user) =>
-    //                 user.role.toLowerCase().includes(role.toLowerCase())
-    //             );
-    //         } 
-
-    //         setUsers(filteredUsers);
-    //         setRoleToFilter(role);
-
-    //         console.log("Filtered Users: ", filteredUsers);
-
-    //         // if (role !== "") {
-    //         //     await fetchFieldsByRole(role);
-    //         // }
-    //     }
-    // }
-
     const filterByRole = async (role: UserRole) => {
-        // Client-side filtering
-        const filteredUsers = role === "All" 
-            ? originalUsers 
-            : originalUsers.filter(u => u.role === role);
-        
-        setUsers(filteredUsers);
-        setRoleToFilter(role);
+        if (role === "" || role === "All" ) {
+            setUsers(originalUsers);
+            return;
 
-        // Background field loading (cached)
-        if (role !== "All") await fetchFieldsByRole(role);
-    };
+        } else {
+            let filteredUsers;
+
+            if (role === 'Prospective Student') {
+
+                //TODO: fetch prospective students from backend. 
+                // Create new endpoint returning only students by status 
+                // ('prospective' in this case)
+
+
+                // const students = originalUsers.filter(user => 
+                //     user.role.toLowerCase() === 'student' 
+                // )
+
+                return;
+
+            } else {
+                filteredUsers = originalUsers.filter((user) =>
+                    user.role.toLowerCase().includes(role.toLowerCase())
+                );
+            } 
+
+            setUsers(filteredUsers);
+            setRoleToFilter(role);
+
+            console.log("Filtered Users: ", filteredUsers);
+
+            if (role !== "All" || role !== '') await fetchFieldsByRole(role);
+
+        }
+    }
+
+    // const filterByRole = async (role: UserRole) => {
+    //     // Client-side filtering
+    //     const filteredUsers = role === "All" ? originalUsers 
+    //         : originalUsers.filter(u => u.role === role);
+        
+    //     setUsers(filteredUsers);
+    //     setRoleToFilter(role);
+
+    //     // Background field loading (cached)
+    //     if (role !== "All") await fetchFieldsByRole(role);
+    // };
 
     useEffect(() => {
         if (roleToFilter) {
