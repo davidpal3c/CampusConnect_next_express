@@ -63,7 +63,7 @@ export const validatePermissions = (allowedPermissions: string[]) => {
             
             const adminPermissions = decodedClaims.permissions;   
     
-            if (!adminPermissions || !allowedPermissions.includes(adminPermissions)              ) {
+            if (!adminPermissions || !allowedPermissions.includes(adminPermissions)) {
                 res.status(403).json({ status: 'error', message: 'Forbidden Access: Insufficient permissions.', permissions: adminPermissions });
                 return;
             }   

@@ -6,8 +6,12 @@ import Image from "next/image";
 // Components
 import { ViewButton, DeleteButton } from "@/app/components/Buttons/Buttons";
 import { DeleteDialog } from "@/app/components/Dialogs/Dialogs";
+import ActionButton from "@/app/components/Buttons/ActionButton";
+import UserDeleteMultipleModal from "./Modals/UserDeleteMultipleModal";
 
+// Hooks
 import { useRouter } from "next/navigation";
+
 // MUI Components
 import { DataGrid } from "@mui/x-data-grid";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -17,11 +21,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
 // types
-import { UserRole } from '@/app/types/user';
+import { UserRole } from '@/app/types/userTypes';
 
 
 
-export default function TableView({ users, filteredRole, fieldsByRole }: { users: any[]; filteredRole: UserRole; fieldsByRole: any }) {
+export default function TableView({ users, filteredRole, fieldsByRole, reFetchUsers }: { users: any[]; filteredRole: UserRole; fieldsByRole: any, reFetchUsers: any }) {
     
     const [combinedUsers, setCombinedUsers] = useState<any[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
@@ -30,7 +34,37 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
     const [openDialog, setOpenDialog] = useState(false);
     const [userId, setUserId] = useState<string>(null);
 
+
+    // Article Delete Multiple Modal
+    const [openDeleteMultipleModal, setOpenDeleteMultipleModal] = useState(false);
+    const handleDeleteMultipleModalClose = () => setOpenDeleteMultipleModal(false);
+
+
+    // multiple row selection
+    const [selectedRows, setSelectedRows] = useState<string[]>([]);
+    const [selectedData, setSelectedData] = useState<any[]>([]);
+    const [showMultipleSelection, setShowMultipleSelection] = useState(false);
     
+    const handleRowSelectionChange = (selectionModel: any) => {
+        const selectedIds = Array.isArray(selectionModel) ? selectionModel : [];
+        
+        setSelectedRows(selectedIds);
+        setShowMultipleSelection(selectedIds.length > 0);        // sets boolean 
+    
+        setSelectedData(users.filter((row) => 
+            selectedIds.includes(row.user_id))
+        );
+    };
+
+    const handleBulkDelete = async () => {
+        handleMultipleDeleteModalOpen();
+    }
+
+    const handleMultipleDeleteModalOpen = () => {
+        console.log('Selected Rows:', selectedRows);
+        setOpenDeleteMultipleModal(true);
+    }
+
     const router = useRouter();
 
     const handleViewUser= (userId: string) => {
@@ -90,14 +124,10 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
         }
 
         if (!Array.isArray(fieldsByRole)) return;
-        
-        // console.log('fieldsByRole data:', fieldsByRole);
-        // console.log('users data:', users);
 
         const combined = users.map(user => {
 
             let roleData = fieldsByRole.find((item: any) => item.user_id === user.user_id);
-            console.log('roleData: ', roleData);
             
             if (filteredRole === 'Student' && roleData || filteredRole === 'Prospective Student' && roleData) {
                 return {
@@ -125,29 +155,15 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
             if (filteredRole === 'Alumni' && roleData) {
                 const alumniStudies = roleData.AlumniStudy || [];
                 const latestStudy = alumniStudies.find((study: any) => study.graduation_year === Math.max(...alumniStudies.map((s: any) => s.graduation_year))) || null;
-                // const latestStudy = alumniStudies[alumniStudies.length - 1] || null;
                 
-                // summary of all studies 
-                // const studiesSummary = alumniStudies.map(study => ({
-                //     program: study.Program?.name.forEach(( (program: any) => program.name ) ),
-                //     department: study.Department?.name,
-                //     graduation_year: study.graduation_year
-                // }));
-
-                
-                // Join multiple studies into strings for display
-                // const programs = studiesSummary.map(s => s.program).filter(Boolean).join(', ');
-                // const departments = studiesSummary.map(s => s.department).filter(Boolean).join(', ');
-                // const graduationYears = studiesSummary.map(s => s.graduation_year).filter(Boolean).join(', ');
-                
-                // TODO: Set studies info to variable to pass to the dropdown component
+                const graduation_year = alumniStudies.map((study: any) => study.graduation_year).join(', ');
 
                 return {
                     ...user,
                     current_position: roleData.current_position,
                     company: roleData.company,
 
-                    graduation_year: latestStudy ? latestStudy.graduation_year : null,
+                    graduation_year: graduation_year,
                     program_id: latestStudy ? latestStudy.program_id : null,
                     program_name: latestStudy ? latestStudy.Program?.name : null,
                     department_name: latestStudy ? latestStudy.Department?.name : null,
@@ -192,14 +208,53 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                 return [
                     { field: "current_position", headerName: "Position", width: 150 },
                     { field: "company", headerName: "Company", width: 150 },
-                    { field: "graduation_year", headerName: "Graduation Year", width: 120 },        // flattened latest 
+                    { field: "view", headerName: "Grad. Overview", width: 120, renderCell: (params) => 
+                        {
+                            let alumniStudies = params.row?.alumni_studies || [];
+                            alumniStudies = alumniStudies.sort((a: any, b: any) => b.graduation_year - a.graduation_year);
+                            
+                            const latestStudy = [...alumniStudies].sort((a: any, b: any) => b.graduation_year - a.graduation_year)[0] || null;
+
+                            const tooltipContent = (
+                                <div className="p-2">
+                                    <div>
+                                    <p className="font-semibold">Program(s):</p>
+                                    {alumniStudies.map((study: any) => (
+                                        <div key={`${study.Program?.program_id}-${study.graduation_year}`}>
+                                            * {study.Program?.name} ({study.graduation_year})
+                                            {/* <span className="text-gray-600 ml-2">- {study.Department?.name}</span> */}
+                                        </div>
+                                    ))}
+                                    </div>
+                                </div>
+                            );
+
+                            return (
+                                <div className="flex items-center justify-between">
+                                    <Tooltip title={tooltipContent} arrow>
+                                        {/* <div className="flex items-center justify-center rounded-2xl mt-3 h-8 w-20 border border-saitPurple cursor-pointer hover:border-saitBlue group transition-colors duration-300"> 
+                                            <span className="font-normal text-saitBlack group-hover:text-saitBlue rounded-xl transition-colors duration-300">View</span>
+                                        </div> */}
+                                        <IconButton
+                                            sx={{
+                                                color: '#666666',
+                                                '&:hover': {
+                                                    color: '#5c2876', 
+                                                    '& .MuiSvgIcon-root': {
+                                                    color: '##5c2876', 
+                                                    },
+                                                },
+                                            }}    
+                                        >
+                                            <VisibilityIcon sx={{ fontSize: 18 }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                </div>
+                            )
+                        } 
+                    },
+                    { field: "graduation_year", headerName: "Graduation Year", width: 130 },        // flattened latest 
                     { field: "program_name", headerName: "Program", width: 250 },                   // flattened latest 
-                                    
-                    // render dropdown component for AlumniStudy fields 
-                    // { field: "graduation_year", headerName: "Graduation Year", width: 120, 
-                    //   valueGetter: (params) => fieldsByRole[0]?.AlumniStudy?.[0]?.graduation_year },
-                    // { field: "program_id", headerName: "Program", width: 150, 
-                    //   valueGetter: (params) => fieldsByRole[0]?.AlumniStudy?.[0]?.Program?.name }, 
                 ];
             case 'Admin':
                 return [
@@ -329,6 +384,7 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                         },
                     }}
                     pageSizeOptions={[10, 25, 50, 100]}
+                    onRowSelectionModelChange={handleRowSelectionChange}         
                 />
             </div>
 
@@ -339,6 +395,31 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                 handleConfirm={handleConfirm}
                 message="Are you sure you want to delete this user?"
             />
+
+            {/* Bulk selection button */}
+            {showMultipleSelection && (
+                <div className="flex justify-end items-end mt-4 w-full">
+                    {/* <button className={getButtonClasses(deleteButton)} onClick={handleBulkDelete}
+                        >Delete Selected
+                    </button> */}
+                    <ActionButton title="Delete Selected" textColor="text-saitDarkRed" hoverBgColor="bg-saitDarkRed" bgColor="bg-saitWhite"
+                        borderColor="border-saitDarkRed" hoverTextColor="text-saitWhite" hoverBorderColor="border-saitGray"
+                        onClick={handleBulkDelete}
+                        icon={<DeleteRoundedIcon/>}
+                    />
+                </div>
+            )}
+
+            <UserDeleteMultipleModal
+                usersData={selectedData}
+                userIds={selectedRows}
+                openDeleteModal={openDeleteMultipleModal}
+                handleDeleteModalClose={handleDeleteMultipleModalClose}
+                noEditor={true}
+                reFetchUsers={reFetchUsers}
+            />
+
+
         </div>
     );
 

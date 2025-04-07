@@ -11,7 +11,7 @@ import Loader from "@/app/components/Loader/Loader";
 import TableView from "../../../components/PageComponents/Admin/User/TableView";
 import UserEditor from "@/app/components/PageComponents/Admin/User/UserEditor";
 import ActionButton from "@/app/components/Buttons/ActionButton";
-import { getStudentByStatus } from "@/app/api/admin/users/user";
+import { getUsersData, getStudentsByStatus } from "@/app/api/admin/users/user";
 
 // Icons 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -28,7 +28,7 @@ import { Tooltip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // types
-import { UserRole } from "@/app/types/user";
+import { UserRole } from "@/app/types/userTypes";
 
 export default function Users() {
 
@@ -59,28 +59,21 @@ export default function Users() {
         }
       }, [users]);
 
-    
+        
     // Fetch data from the API
     const fetchUserData = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
-                method: "GET",
-                headers: {
-                  "content-type": "application/json",
-                },
-                credentials: "include",  
-            });
+            const userData = await getUsersData();
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                const errorData = data;
-                toast.error(errorData.message || "An Error occurred fetching users.");
+            if (userData.error) {
+                toast.error(userData.error || 'An error occurred fetching users. from call');
+                console.log('Error fetching users: ', userData.error);
                 return;
             }
 
-            setUsers(data);
-            setOriginalUsers(data); 
+            setUsers(userData);
+            setOriginalUsers(userData); 
+            
         } catch (error) {
             console.error(error);
             toast.error("Unknown error occurred fetching users! : " + error, {
@@ -88,11 +81,11 @@ export default function Users() {
                 autoClose: 3000,
                 hideProgressBar: true,
                 closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-              });
+                pauseOnHover: false,
+            });
         }
     };
+
     
     // Search and filter functions
     const searchByName = (searchValue: string) => {
@@ -150,7 +143,7 @@ export default function Users() {
         if (role === "Prospective Student") {
 
             try {
-                const prospectiveStudentData = await getStudentByStatus({ status: 'Prospective' });
+                const prospectiveStudentData = await getStudentsByStatus({ status: 'Prospective' });
 
                 if (prospectiveStudentData.error) {
                     toast.error(prospectiveStudentData.error || "An Error occurred fetching students by status.");
@@ -322,7 +315,12 @@ export default function Users() {
                     {usersView === "List" ? (
                             <UserListView users={users}/>
                         ) : (
-                            <TableView users={users} filteredRole={roleToFilter} fieldsByRole={fieldsByRole}/>
+                            <TableView 
+                                users={users} 
+                                filteredRole={roleToFilter} 
+                                fieldsByRole={fieldsByRole}
+                                reFetchUsers={fetchUserData}
+                            />
                         )}
 
                     {/* Create New User */}

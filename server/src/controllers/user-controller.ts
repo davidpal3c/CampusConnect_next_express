@@ -170,7 +170,6 @@ export const getUserFieldsByRole = async (req: Request, res: Response) : Promise
     }
 };
 
-
 // GET /api/users/students/:status - Get students by status
 export const getStudentsByStatus = async (req: Request, res: Response) : Promise<void> => {
     try {
@@ -427,3 +426,54 @@ export const deleteUser = async (req: Request, res: Response) : Promise<void> =>
         await prisma.$disconnect();
     }
 }
+
+// DELETE /api/users/  - Delete multiple users by IDs
+export const deleteUsersByIds = async (req: Request, res: Response) => {
+    try {
+        let { userIds } = await req.body;
+
+        if (!Array.isArray(userIds) || userIds.length === 0) {
+            res.status(400).json({ message: 'Invalid request - must provide an array of user IDs' });
+            return 
+        }
+
+        const invalidIds = userIds.some(id => 
+            typeof id !== 'string' && typeof id !== 'number'
+        );
+
+        if (invalidIds) {
+            res.status(400).json({ message: 'Invalid ID format - all IDs must be strings or numbers' });
+            return 
+        }
+
+        // userIds = Object.values(userIds);
+        // console.log('userIds: ', userIds);
+
+        if (!Array.isArray(userIds) || userIds.length === 0) {
+            res.status(400).json({ message: 'Invalid request.' });
+            return;
+        }   
+
+        const deleteResult = await prisma.user.deleteMany({
+            where: {
+                user_id: { in: userIds }      
+            }   
+        });
+
+        if (deleteResult.count === 0) {
+            res.status(404).json({ message: 'No users found with the provided IDs.' });
+            return;
+        }
+        
+        res.status(200).json({ 
+            message: `User${userIds.length > 1 ? 's' : ''} deleted successfully! (${userIds.length})`,
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error: error deleting users', error: error });   
+        return;
+
+    } finally {
+        await prisma.$disconnect();
+    }
+};
