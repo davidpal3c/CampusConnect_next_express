@@ -105,7 +105,7 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
                             }
                         }
                     }
-                } as any
+                } 
             });
         
             // console.log("Alumni Fields: ", alumniFields);

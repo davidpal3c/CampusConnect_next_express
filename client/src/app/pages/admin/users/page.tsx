@@ -26,22 +26,28 @@ import { toast } from "react-toastify";
 import { Tooltip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// types
+import { UserRole } from "@/app/types/user";
 
 export default function Users() {
 
     // State Management
     const [users, setUsers] = useState([]);
-    const [roleToFilter, setRoleToFilter] = useState("");
+    const [roleToFilter, setRoleToFilter] = useState<UserRole>('');
+    const [roleFieldCache, setRoleFieldCache] = useState<Record<string, any>>({});
+    // const [roleFieldCache, setRoleFieldCache] = useState<Record<UserRole, any >>({} as Record<UserRole, any>); 
+    // const previousRoleRef = useRef<UserRole>('');
+    // const fetchedRolesRef = useRef<Set<UserRole>>(new Set());
+
     const [originalUsers, setOriginalUsers] = useState([]);
     const [usersView, setUsersView] = useState("List");
     const [isPanelVisible, setIsPanelVisible] = useState(false);
     const userEditorRef = useRef(null);
-    const [fieldsByRole, setFieldsByRole] = useState({});
+    const [fieldsByRole, setFieldsByRole] = useState([]);
     
     useEffect(() => {
        fetchUserData();
     }, []);
-
 
     // Loader
     const [isLoading, setIsLoading] = useState(true);
@@ -65,6 +71,7 @@ export default function Users() {
             });
 
             const data = await response.json();
+
             if (!response.ok) {
                 const errorData = data;
                 toast.error(errorData.message || "An Error occurred fetching users.");
@@ -104,17 +111,6 @@ export default function Users() {
         }
     };
 
-    const filterByRole = (role: string) => {
-        if (role === "") {
-            setUsers(originalUsers);
-        } else {
-            const filteredUsers = originalUsers.filter((user) =>
-                user.role.toLowerCase().includes(role.toLowerCase())
-            );
-            setUsers(filteredUsers);
-            setRoleToFilter(role);
-        }
-    }
 
     // Handle Users View 
     const handleUsersView = (view: string) => {
@@ -127,13 +123,95 @@ export default function Users() {
         setIsPanelVisible(!isPanelVisible);
     };
 
+    // const filterByRole = async (role: UserRole) => {
+    //     // Client-side filtering
+    //     const filteredUsers = role === "All" ? originalUsers 
+    //         : originalUsers.filter(u => u.role === role);
+        
+    //     setUsers(filteredUsers);
+    //     setRoleToFilter(role);
+
+    //     // Background field loading (cached)
+    //     if (role !== "All") await fetchFieldsByRole(role);
+    // };
+
+
+    const filterByRole = async (role: UserRole) => {
+        if (role === "" || role === "All" ) {
+            setUsers(originalUsers);
+            setRoleToFilter(role);
+            return;
+
+        } 
+
+        let filteredUsers; 
+
+        if (role === "Prospective Student") {
+
+           
+            const statusParam = 'Prospective';
+            console.log('>>>Fetching PROSPECTIVE students by status: ', statusParam);
+            // fetch students by status (Prospective)
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/students/${statusParam}`, {
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                },
+                credentials: "include",
+            });
+            
+            const data = await response.json();
+
+            if (!response.ok) {
+                const errorData = data.error
+                toast.error(errorData || "An Error occurred fetching students.");
+                return;
+            }
+            console.log("Fetched students by status: ", data);
+
+            setUsers(data);
+            setRoleToFilter(role);
+            return;
+
+        } else {  
+            filteredUsers = originalUsers.filter(user => user.role.toLowerCase().includes(role.toLowerCase()));
+        }
+
+        // const filteredUsers = role === 'Prospective Student' 
+        // ? originalUsers.filter(user => user.role.toLowerCase().includes('student'))
+        // : originalUsers.filter(user => user.role.toLowerCase().includes(role.toLowerCase()));
+
+        setUsers(filteredUsers);
+        setRoleToFilter(role);
+
+        if (role !== 'All' && role !== '') {
+            await fetchFieldsByRole(role);
+        }
+
+    }
+
+
 
     // fetch fields by role
-    const fetchFieldsByRole = async (role: string) => {
+    const fetchFieldsByRole = async (role: UserRole) => {
+        if (!role || role === 'All') return;
+        if (roleFieldCache[role]) {
+
+            console.log(">>>Using cached fields for role: ", role);
+            return roleFieldCache[role];
+        }
+            
+        const roleData = await fetchRoleData(role);
+        setRoleFieldCache(prev => ({...prev, [role]: roleData }));
+
+        return roleData;
+    }
+
+    const fetchRoleData = async (role: UserRole) => {
         try {       
             console.log(">>>Fetching fields by role: ", role);
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${role}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/roles/${role}`, {
                 method: "GET",
                 headers: {
                     "content-type": "application/json",
@@ -142,14 +220,21 @@ export default function Users() {
             });
 
             const data = await response.json();
+            console.log('Fetched roles data: ', data)
 
             if (!response.ok) {
-                const errorData = await response.json();
-                toast.error(errorData.message || "An Error occurred fetching fields by role.");
+                const errorData = data.error
+                toast.error(errorData || "An Error occurred fetching fields by role.");
                 return;
             }
 
-            setFieldsByRole(data); // Reset fieldsByRole state
+            // update cache (client side - temporary)
+            setRoleFieldCache(prev => ({
+                ...prev,
+                [role]: data
+            }));
+
+            setFieldsByRole(data); 
 
         } catch (error) {
             console.error(error);
@@ -164,10 +249,16 @@ export default function Users() {
         }
     };
 
+
     useEffect(() => {
         if (roleToFilter) {
             fetchFieldsByRole(roleToFilter);
         }
+
+        // if (roleToFilter && roleToFilter !== previousRoleRef.current) {
+        //     fetchFieldsByRole(roleToFilter);
+        //     previousRoleRef.current = roleToFilter;
+        // }
     }, [roleToFilter]);
 
     return (
@@ -205,8 +296,8 @@ export default function Users() {
                                         handleChange={searchByName}
                                     />
                                     <FilterDropdown 
-                                        title="Role" 
-                                        options={["Admin", "Student", "Alumni", "Prospective Student"]}
+                                        title="Filter By Role"
+                                        options={["All", "Admin", "Student", "Alumni", "Prospective Student"]}
                                         handleSelect={filterByRole}
                                     />
                                 </div>
@@ -238,7 +329,7 @@ export default function Users() {
                     {usersView === "List" ? (
                             <UserListView users={users}/>
                         ) : (
-                            <TableView users={users} filteredRole={roleToFilter}/>
+                            <TableView users={users} filteredRole={roleToFilter} fieldsByRole={fieldsByRole}/>
                         )}
 
                     {/* Create New User */}

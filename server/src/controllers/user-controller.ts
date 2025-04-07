@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/prismaClient';
+import { Status } from '@prisma/client';
 
 export interface AuthenticatedRequest extends Request {
     user?: any; 
@@ -19,7 +20,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
     try {
         const users = await prisma.user.findMany(); 
-        res.json(users);
+
+        res.status(200).json(users);
     } catch (error) {
         console.log("error getting all users", error);
         res.status(500).json({ message: "Server Error: could ", error: error });
@@ -36,7 +38,7 @@ export const getUserById = async (req: Request, res: Response) : Promise<void> =
         //change to query db for user by email
 
         if (isNaN(Number(id))) {
-            res.status(404).json({ error: 'Invalid ID format' });
+            res.status(404).json({ error: 'Invalid ID format.' });
             return;
         }
 
@@ -77,12 +79,148 @@ export const getUserById = async (req: Request, res: Response) : Promise<void> =
 export const getUserFieldsByRole = async (req: Request, res: Response) : Promise<void> => {
     try {
         const role = req.params.role;
-        console.log("role", role);
+
+        let userFields;
+
+        if (role === 'Student') {
+            const students = await prisma.student.findMany({
+                include: {
+                    Program: {
+                        select: {
+                            name: true,
+                            program_id: true,
+                            Department: {
+                                select: {
+                                    name: true,
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            userFields = students; 
+
+        } else if (role === 'Prospective Student') {
+            const prospectiveStudents = await prisma.student.findMany({
+                where: { status: 'Prospective' },
+                include: {
+                    Program: {
+                        include: {
+                            Department: true
+                        }
+                    }
+                }
+            });
+
+            userFields = prospectiveStudents;
+
+        } else if (role === 'Alumni') {
+            const alumni = await prisma.alumni.findMany({
+                select: {
+                    user_id: true,
+                    current_position: true,
+                    company: true,
+                    AlumniStudy: {
+                        select: {
+                            graduation_year: true,
+                            Program: {
+                                select: {
+                                    name: true,
+                                    program_id: true
+                                }
+                            },
+                            Department: {
+                                select: {
+                                    name: true,
+                                    department_id: true
+                                }
+                            }
+                        }
+                    }
+                } 
+            });
+            userFields = alumni;
+
+        } else if (role === 'Admin') {
+            const admins = await prisma.admin.findMany({
+                select : {
+                    user_id: true,
+                    permissions: true,
+                }
+            });
+            userFields = admins;
+
+        } else {
+            res.status(400).json({ error: 'Invalid role' });
+            return;
+        }
+        
+        if (!userFields) {
+            res.status(404).json({ error: 'No users found for this role' });
+            return;
+        }
+
+        res.status(200).json(userFields);
+        return
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
         return; 
     } finally { 
         await prisma.$disconnect(); 
+    }
+};
+
+
+// GET /api/users/students/:status - Get students by status
+export const getStudentsByStatus = async (req: Request, res: Response) : Promise<void> => {
+    try {
+        
+        const status = req.params.status as Status;
+        
+        // Check if the statusParam is one of the allowed enum values.
+        if (!Object.values(Status).includes(status as Status)) {
+            res.status(400).json({ error: 'Invalid status value' });
+            return;
+        }
+
+        const students = await prisma.user.findMany({
+            where: {
+              role: 'Student',
+              Student: { 
+                status: status  
+              },
+            },
+            include: {
+                Student: {
+                    include: {
+                        Program: {
+                            select: {
+                                name: true,
+                                program_id: true,
+                                Department: {
+                                    select: {
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!students) {
+            res.status(404).json({ error: 'No students found for this status' });
+            return;
+        }
+
+        console.log("students", students);
+        res.status(200).json(students);
+        return;
+
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+        return;
     }
 };
 

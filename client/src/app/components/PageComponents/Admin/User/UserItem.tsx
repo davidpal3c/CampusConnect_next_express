@@ -5,7 +5,7 @@ import Link from 'next/link';
 interface UserItemProps {
     user_id: string;
     name: string;
-    role: string;
+    role?: string;
     email: string;
     created_at: string;
 }
@@ -19,7 +19,7 @@ export default function UserItem({ user_id, name, role, email, created_at}: User
     const roleClass =
         role.toLowerCase() === "admin"
             ? "text-saitRed font-semibold" // Red for Admin
-            : "text-saitLightBlue font-semibold"; // Blue for Student (alumni, upcoming student, current student)
+            : "text-saitLightBlue font-semibold"; // Blue for Student (alumni, prospective student, current student)
 
     return (
         <Link href={`users/${user_id}`} passHref> 
