@@ -1,5 +1,6 @@
 import express from 'express';
-import { getAllUsers, getUserById, getUserFieldsByRole, getStudentsByStatus, getMyUser, createUser, updateUser, deleteUser } from '../controllers/user-controller';
+import { getAllUsers, getUserById, getUserFieldsByRole, getStudentsByStatus, getMyUser, 
+    createUser, updateUser, deleteUser, deleteUsersByIds } from '../controllers/user-controller';
 import { verifySession, adminRoute, validatePermissions } from '../middleware/user-middleware';
 
 
@@ -33,6 +34,8 @@ router.put('/:id', verifySession, adminRoute, validatePermissions(['Full Access'
 // DELETE /api/users/:id - Delete a user by ID
 router.delete('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), deleteUser);
 
+// DELETE /api/users/ - Delete multiple users by IDs
+router.delete('/', verifySession, adminRoute, validatePermissions(['Full Access']), deleteUsersByIds);
 
 // module.exports = router;
 export default router;

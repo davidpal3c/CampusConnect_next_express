@@ -17,26 +17,12 @@ import EditRoundedIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Tooltip } from "@mui/material";
 import { motion, AnimatePresence } from 'framer-motion';
-
-
-type Article = {
-    id: string;
-    title: string;
-    datePublished: string;
-    content: string;
-    imageURL: string;
-    audience: string;
-    status: string;
-    author_id: string;
-    author: string;
-    type: string;
-}
+import { Article } from "@/app/types/articleTypes";
 
 type ArticleDetailedProps = {
     articlesData: Article[];
     reFetchArticles: any;
 };  
-
 
 const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, reFetchArticles }) => {
 
@@ -96,7 +82,6 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
         setSelectedData(articlesData.filter((row) => 
             selectedIds.includes(row.article_id))
         );
-        // console.log("Selected Data: ", selectedData);
     };
 
     const handleMultipleDeleteModalOpen = () => {

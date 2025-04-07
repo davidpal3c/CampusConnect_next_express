@@ -6,8 +6,12 @@ import Image from "next/image";
 // Components
 import { ViewButton, DeleteButton } from "@/app/components/Buttons/Buttons";
 import { DeleteDialog } from "@/app/components/Dialogs/Dialogs";
+import ActionButton from "@/app/components/Buttons/ActionButton";
+import UserDeleteMultipleModal from "./Modals/UserDeleteMultipleModal";
 
+// Hooks
 import { useRouter } from "next/navigation";
+
 // MUI Components
 import { DataGrid } from "@mui/x-data-grid";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -17,11 +21,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
 // types
-import { UserRole } from '@/app/types/user';
+import { UserRole } from '@/app/types/userTypes';
 
 
 
-export default function TableView({ users, filteredRole, fieldsByRole }: { users: any[]; filteredRole: UserRole; fieldsByRole: any }) {
+export default function TableView({ users, filteredRole, fieldsByRole, reFetchUsers }: { users: any[]; filteredRole: UserRole; fieldsByRole: any, reFetchUsers: any }) {
     
     const [combinedUsers, setCombinedUsers] = useState<any[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
@@ -30,7 +34,37 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
     const [openDialog, setOpenDialog] = useState(false);
     const [userId, setUserId] = useState<string>(null);
 
+
+    // Article Delete Multiple Modal
+    const [openDeleteMultipleModal, setOpenDeleteMultipleModal] = useState(false);
+    const handleDeleteMultipleModalClose = () => setOpenDeleteMultipleModal(false);
+
+
+    // multiple row selection
+    const [selectedRows, setSelectedRows] = useState<string[]>([]);
+    const [selectedData, setSelectedData] = useState<any[]>([]);
+    const [showMultipleSelection, setShowMultipleSelection] = useState(false);
     
+    const handleRowSelectionChange = (selectionModel: any) => {
+        const selectedIds = Array.isArray(selectionModel) ? selectionModel : [];
+        
+        setSelectedRows(selectedIds);
+        setShowMultipleSelection(selectedIds.length > 0);        // sets boolean 
+    
+        setSelectedData(users.filter((row) => 
+            selectedIds.includes(row.user_id))
+        );
+    };
+
+    const handleBulkDelete = async () => {
+        handleMultipleDeleteModalOpen();
+    }
+
+    const handleMultipleDeleteModalOpen = () => {
+        console.log('Selected Rows:', selectedRows);
+        setOpenDeleteMultipleModal(true);
+    }
+
     const router = useRouter();
 
     const handleViewUser= (userId: string) => {
@@ -90,14 +124,10 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
         }
 
         if (!Array.isArray(fieldsByRole)) return;
-        
-        // console.log('fieldsByRole data:', fieldsByRole);
-        // console.log('users data:', users);
 
         const combined = users.map(user => {
 
             let roleData = fieldsByRole.find((item: any) => item.user_id === user.user_id);
-            console.log('roleData: ', roleData);
             
             if (filteredRole === 'Student' && roleData || filteredRole === 'Prospective Student' && roleData) {
                 return {
@@ -127,24 +157,6 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                 const latestStudy = alumniStudies.find((study: any) => study.graduation_year === Math.max(...alumniStudies.map((s: any) => s.graduation_year))) || null;
                 
                 const graduation_year = alumniStudies.map((study: any) => study.graduation_year).join(', ');
-
-                // const graduation_year = alumniStudies.map((study: any) => study.graduation_year).join(', ');
-                // const latestStudy = alumniStudies[alumniStudies.length - 1] || null;
-                
-                // summary of all studies 
-                // const studiesSummary = alumniStudies.map(study => ({
-                //     program: study.Program?.name.forEach(( (program: any) => program.name ) ),
-                //     department: study.Department?.name,
-                //     graduation_year: study.graduation_year
-                // }));
-
-                
-                // Join multiple studies into strings for display
-                // const programs = studiesSummary.map(s => s.program).filter(Boolean).join(', ');
-                // const departments = studiesSummary.map(s => s.department).filter(Boolean).join(', ');
-                // const graduationYears = studiesSummary.map(s => s.graduation_year).filter(Boolean).join(', ');
-                
-                // TODO: Set studies info to variable to pass to the dropdown component
 
                 return {
                     ...user,
@@ -220,6 +232,9 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                             return (
                                 <div className="flex items-center justify-between">
                                     <Tooltip title={tooltipContent} arrow>
+                                        {/* <div className="flex items-center justify-center rounded-2xl mt-3 h-8 w-20 border border-saitPurple cursor-pointer hover:border-saitBlue group transition-colors duration-300"> 
+                                            <span className="font-normal text-saitBlack group-hover:text-saitBlue rounded-xl transition-colors duration-300">View</span>
+                                        </div> */}
                                         <IconButton
                                             sx={{
                                                 color: '#666666',
@@ -231,7 +246,7 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                                                 },
                                             }}    
                                         >
-                                            <VisibilityIcon sx={{ fontSize: 16 }} />
+                                            <VisibilityIcon sx={{ fontSize: 18 }} />
                                         </IconButton>
                                     </Tooltip>
                                 </div>
@@ -369,6 +384,7 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                         },
                     }}
                     pageSizeOptions={[10, 25, 50, 100]}
+                    onRowSelectionModelChange={handleRowSelectionChange}         
                 />
             </div>
 
@@ -379,6 +395,31 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                 handleConfirm={handleConfirm}
                 message="Are you sure you want to delete this user?"
             />
+
+            {/* Bulk selection button */}
+            {showMultipleSelection && (
+                <div className="flex justify-end items-end mt-4 w-full">
+                    {/* <button className={getButtonClasses(deleteButton)} onClick={handleBulkDelete}
+                        >Delete Selected
+                    </button> */}
+                    <ActionButton title="Delete Selected" textColor="text-saitDarkRed" hoverBgColor="bg-saitDarkRed" bgColor="bg-saitWhite"
+                        borderColor="border-saitDarkRed" hoverTextColor="text-saitWhite" hoverBorderColor="border-saitGray"
+                        onClick={handleBulkDelete}
+                        icon={<DeleteRoundedIcon/>}
+                    />
+                </div>
+            )}
+
+            <UserDeleteMultipleModal
+                usersData={selectedData}
+                userIds={selectedRows}
+                openDeleteModal={openDeleteMultipleModal}
+                handleDeleteModalClose={handleDeleteMultipleModalClose}
+                noEditor={true}
+                reFetchUsers={reFetchUsers}
+            />
+
+
         </div>
     );
 
