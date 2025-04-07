@@ -24,11 +24,11 @@ import { UserRole } from '@/app/types/user';
 export default function TableView({ users, filteredRole, fieldsByRole }: { users: any[]; filteredRole: UserRole; fieldsByRole: any }) {
     
     const [combinedUsers, setCombinedUsers] = useState<any[]>([]);
-    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
-    const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState<string>(null);
 
     
     const router = useRouter();
@@ -73,14 +73,13 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
         setOpenDialog(false);
     };
 
-    useEffect(() => {
-        console.log("Filtered Users:", filteredUsers);
-    }, [filteredUsers]);
+    // useEffect(() => {
+    //     console.log("Filtered Users:", filteredUsers);
+    // }, [filteredUsers]);
 
-
-    useEffect(() => {
-        console.log('fields by role :', fieldsByRole);
-    })
+    // useEffect(() => {
+    //     console.log('fields by role :', fieldsByRole);
+    // })
 
 
     useEffect(() => {
@@ -154,11 +153,6 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                     department_name: latestStudy ? latestStudy.Department?.name : null,
 
                     alumni_studies: roleData.AlumniStudy,
-                    // alumni_studies: alumniStudies, 
-                    // // Create display-friendly fields
-                    // program_names: programs,
-                    // department_names: departments,
-                    // graduation_years: graduationYears,
                 };
             }
 
@@ -176,11 +170,11 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
         switch (filteredRole) {
             case 'Student':
                 return [
-                    { field: "program_id", headerName: "Program ID", width: 150 },
-                    { field: "program_name", headerName: "Program", width: 150 },
-                    { field: "department_name", headerName: "Department", width: 150 },
+                    { field: "program_id", headerName: "Program ID", width: 108 },
+                    { field: "program_name", headerName: "Program", width: 240 },
+                    { field: "department_name", headerName: "Department", width: 280 },
                     { field: "intake", headerName: "Intake", width: 100 },
-                    { field: "intake_year", headerName: "Intake Year", width: 120 },
+                    { field: "intake_year", headerName: "Intake Year", width: 100 },
                     { field: "status", headerName: "Status", width: 100 }
                 ];
 
@@ -199,7 +193,7 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                     { field: "current_position", headerName: "Position", width: 150 },
                     { field: "company", headerName: "Company", width: 150 },
                     { field: "graduation_year", headerName: "Graduation Year", width: 120 },        // flattened latest 
-                    { field: "program_name", headerName: "Program", width: 150 },                   // flattened latest 
+                    { field: "program_name", headerName: "Program", width: 250 },                   // flattened latest 
                                     
                     // render dropdown component for AlumniStudy fields 
                     // { field: "graduation_year", headerName: "Graduation Year", width: 120, 
@@ -327,6 +321,14 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                     columns={columns}
                     getRowId={(row) => row.user_id}
                     checkboxSelection
+                    initialState={{
+                        pagination: {
+                            paginationModel: {
+                                pageSize: 50,
+                            },
+                        },
+                    }}
+                    pageSizeOptions={[10, 25, 50, 100]}
                 />
             </div>
 

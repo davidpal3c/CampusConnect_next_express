@@ -11,6 +11,7 @@ import Loader from "@/app/components/Loader/Loader";
 import TableView from "../../../components/PageComponents/Admin/User/TableView";
 import UserEditor from "@/app/components/PageComponents/Admin/User/UserEditor";
 import ActionButton from "@/app/components/Buttons/ActionButton";
+import { getStudentByStatus } from "@/app/api/admin/users/user";
 
 // Icons 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -148,30 +149,22 @@ export default function Users() {
 
         if (role === "Prospective Student") {
 
-           
-            const statusParam = 'Prospective';
-            console.log('>>>Fetching PROSPECTIVE students by status: ', statusParam);
-            // fetch students by status (Prospective)
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/students/${statusParam}`, {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json",
-                },
-                credentials: "include",
-            });
-            
-            const data = await response.json();
+            try {
+                const prospectiveStudentData = await getStudentByStatus({ status: 'Prospective' });
 
-            if (!response.ok) {
-                const errorData = data.error
-                toast.error(errorData || "An Error occurred fetching students.");
+                if (prospectiveStudentData.error) {
+                    toast.error(prospectiveStudentData.error || "An Error occurred fetching students by status.");
+                    return;
+                }
+
+                setUsers(prospectiveStudentData);
+                setRoleToFilter(role);
+                return;
+
+            } catch (error) {
+                toast.error("An Error occurred fetching students by status.");
                 return;
             }
-            console.log("Fetched students by status: ", data);
-
-            setUsers(data);
-            setRoleToFilter(role);
-            return;
 
         } else {  
             filteredUsers = originalUsers.filter(user => user.role.toLowerCase().includes(role.toLowerCase()));
