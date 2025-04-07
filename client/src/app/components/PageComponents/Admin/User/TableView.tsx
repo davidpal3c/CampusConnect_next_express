@@ -125,6 +125,10 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
             if (filteredRole === 'Alumni' && roleData) {
                 const alumniStudies = roleData.AlumniStudy || [];
                 const latestStudy = alumniStudies.find((study: any) => study.graduation_year === Math.max(...alumniStudies.map((s: any) => s.graduation_year))) || null;
+                
+                const graduation_year = alumniStudies.map((study: any) => study.graduation_year).join(', ');
+
+                // const graduation_year = alumniStudies.map((study: any) => study.graduation_year).join(', ');
                 // const latestStudy = alumniStudies[alumniStudies.length - 1] || null;
                 
                 // summary of all studies 
@@ -147,7 +151,7 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                     current_position: roleData.current_position,
                     company: roleData.company,
 
-                    graduation_year: latestStudy ? latestStudy.graduation_year : null,
+                    graduation_year: graduation_year,
                     program_id: latestStudy ? latestStudy.program_id : null,
                     program_name: latestStudy ? latestStudy.Program?.name : null,
                     department_name: latestStudy ? latestStudy.Department?.name : null,
@@ -192,14 +196,50 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                 return [
                     { field: "current_position", headerName: "Position", width: 150 },
                     { field: "company", headerName: "Company", width: 150 },
-                    { field: "graduation_year", headerName: "Graduation Year", width: 120 },        // flattened latest 
+                    { field: "view", headerName: "Grad. Overview", width: 120, renderCell: (params) => 
+                        {
+                            let alumniStudies = params.row?.alumni_studies || [];
+                            alumniStudies = alumniStudies.sort((a: any, b: any) => b.graduation_year - a.graduation_year);
+                            
+                            const latestStudy = [...alumniStudies].sort((a: any, b: any) => b.graduation_year - a.graduation_year)[0] || null;
+
+                            const tooltipContent = (
+                                <div className="p-2">
+                                    <div>
+                                    <p className="font-semibold">Program(s):</p>
+                                    {alumniStudies.map((study: any) => (
+                                        <div key={`${study.Program?.program_id}-${study.graduation_year}`}>
+                                            * {study.Program?.name} ({study.graduation_year})
+                                            {/* <span className="text-gray-600 ml-2">- {study.Department?.name}</span> */}
+                                        </div>
+                                    ))}
+                                    </div>
+                                </div>
+                            );
+
+                            return (
+                                <div className="flex items-center justify-between">
+                                    <Tooltip title={tooltipContent} arrow>
+                                        <IconButton
+                                            sx={{
+                                                color: '#666666',
+                                                '&:hover': {
+                                                    color: '#5c2876', 
+                                                    '& .MuiSvgIcon-root': {
+                                                    color: '##5c2876', 
+                                                    },
+                                                },
+                                            }}    
+                                        >
+                                            <VisibilityIcon sx={{ fontSize: 16 }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                </div>
+                            )
+                        } 
+                    },
+                    { field: "graduation_year", headerName: "Graduation Year", width: 130 },        // flattened latest 
                     { field: "program_name", headerName: "Program", width: 250 },                   // flattened latest 
-                                    
-                    // render dropdown component for AlumniStudy fields 
-                    // { field: "graduation_year", headerName: "Graduation Year", width: 120, 
-                    //   valueGetter: (params) => fieldsByRole[0]?.AlumniStudy?.[0]?.graduation_year },
-                    // { field: "program_id", headerName: "Program", width: 150, 
-                    //   valueGetter: (params) => fieldsByRole[0]?.AlumniStudy?.[0]?.Program?.name }, 
                 ];
             case 'Admin':
                 return [
