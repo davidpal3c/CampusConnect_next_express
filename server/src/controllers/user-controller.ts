@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/prismaClient';
+import { Status } from '@prisma/client';
 
 export interface AuthenticatedRequest extends Request {
     user?: any; 
@@ -166,6 +167,60 @@ export const getUserFieldsByRole = async (req: Request, res: Response) : Promise
         return; 
     } finally { 
         await prisma.$disconnect(); 
+    }
+};
+
+
+// GET /api/users/students/:status - Get students by status
+export const getStudentsByStatus = async (req: Request, res: Response) : Promise<void> => {
+    try {
+        
+        const status = req.params.status as Status;
+        
+        // Check if the statusParam is one of the allowed enum values.
+        if (!Object.values(Status).includes(status as Status)) {
+            res.status(400).json({ error: 'Invalid status value' });
+            return;
+        }
+
+        const students = await prisma.user.findMany({
+            where: {
+              role: 'Student',
+              Student: { 
+                status: status  
+              },
+            },
+            include: {
+                Student: {
+                    include: {
+                        Program: {
+                            select: {
+                                name: true,
+                                program_id: true,
+                                Department: {
+                                    select: {
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!students) {
+            res.status(404).json({ error: 'No students found for this status' });
+            return;
+        }
+
+        console.log("students", students);
+        res.status(200).json(students);
+        return;
+
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+        return;
     }
 };
 

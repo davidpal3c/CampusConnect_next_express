@@ -84,7 +84,13 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
 
 
     useEffect(() => {
-        if (!fieldsByRole || fieldsByRole === '' || !users) return;
+        if (filteredRole === 'All' || filteredRole === '') {
+            setCombinedUsers(users);
+            // setFilteredUsers(users);
+            return;
+        }
+
+        if (!Array.isArray(fieldsByRole)) return;
         
         // console.log('fieldsByRole data:', fieldsByRole);
         // console.log('users data:', users);
@@ -94,7 +100,7 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
             let roleData = fieldsByRole.find((item: any) => item.user_id === user.user_id);
             console.log('roleData: ', roleData);
             
-            if (filteredRole === 'Student' && roleData) {
+            if (filteredRole === 'Student' && roleData || filteredRole === 'Prospective Student' && roleData) {
                 return {
                     ...user,
                     program_id: roleData.program_id,
@@ -137,7 +143,6 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                 
                 // TODO: Set studies info to variable to pass to the dropdown component
 
-
                 return {
                     ...user,
                     current_position: roleData.current_position,
@@ -178,6 +183,17 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                     { field: "intake_year", headerName: "Intake Year", width: 120 },
                     { field: "status", headerName: "Status", width: 100 }
                 ];
+
+            case 'Prospective Student':
+                return [
+                    { field: "program_id", headerName: "Program ID", width: 150 },
+                    { field: "program_name", headerName: "Program", width: 150 },
+                    { field: "department_name", headerName: "Department", width: 150 },
+                    { field: "intake", headerName: "Intake", width: 100 },
+                    { field: "intake_year", headerName: "Intake Year", width: 120 },
+                    { field: "status", headerName: "Status", width: 100 }
+                ];
+
             case 'Alumni':
                 return [
                     { field: "current_position", headerName: "Position", width: 150 },
@@ -195,6 +211,7 @@ export default function TableView({ users, filteredRole, fieldsByRole }: { users
                 return [
                     { field: "permissions", headerName: "Permissions", width: 150 }
                 ];
+                
             default:
                 return [];
         }
