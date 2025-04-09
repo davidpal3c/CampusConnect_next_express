@@ -8,9 +8,17 @@ COPY tsconfig.json ./
 COPY prisma ./prisma
 COPY src ./src
 
+
 RUN npm install
 RUN npm run build
 
+# verify the build output
+RUN ls -R /app/dist 
+
+# RUN find /app/dist -type f 
+#  # This will show all built files
+# RUN pwd && ls -la /app/dist  
+# # Show directory structure
 
 # Stage 2: Production
 FROM node:20-alpine
@@ -23,8 +31,8 @@ ENV NODE_ENV=production
 COPY package*.json ./
 COPY prisma ./prisma
 COPY .env ./
+COPY --from=builder /app/dist ./dist
 
-# COPY --from=builder /app/dist ./dist
 # COPY --from=builder /app/node_modules ./node_modules
 
 
