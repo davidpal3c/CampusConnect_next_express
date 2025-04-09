@@ -151,7 +151,7 @@ export default function AdminLogin() {
             </div>
 
             {/* Main Column */}
-            <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-red-gradient p-8">
+            <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-side-red-gradient p-8">
                 <h1 className="text-saitWhite text-4xl mb-20 font-bold tracking-wider">STUDENT LOGIN</h1>
                 <div className="flex flex-col space-y-10">
                     {/* EMAIL INPUT */}
@@ -205,13 +205,13 @@ export default function AdminLogin() {
                                 className="text-saitWhite text-md"
                             >Or Sign in with</p>
                         </div>
-                        <button onClick={() => handleSignIn('microsoft')} className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
+                        <button onClick={() => handleSignIn('microsoft')} className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-saitBlue/50 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
                             <img src="/microsoft.png" alt="Microsoft Logo" className="w-8 h-auto mr-auto" />
                             <p className=" w-40 font-normal text-saitWhite"
                             >{loadingMicrosoft? "Signing in..." : "Sign in with Microsoft"}</p>
                         </button>
 
-                        <button onClick={() => handleSignIn('google')} className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-opacity-15 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
+                        <button onClick={() => handleSignIn('google')} className="h-24 w-full flex flex-row justify-center items-center bg-saitDarkRed hover:bg-saitBlue/50 border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl px-12">
                             <img src="/google-logo.png" alt="Google Logo" className="w-10 h-auto mr-auto" />
                             <p className=" w-40 font-normal text-saitWhite"
                             >{loadingGoogle ? "Signing in..." : "Sign in with Google"}</p>
@@ -219,8 +219,6 @@ export default function AdminLogin() {
                     </div>
                     
                 </div>
-
-
 
             </div>
             {/* Additional Info for Small Screens */}

@@ -36,7 +36,10 @@ dist
 .next
 *.log
 .git
-.env.local
+
+# Allow local env vars (temp)
+! .env.local
+# .env.local
 .env.development
 *.md
 
