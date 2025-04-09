@@ -4,14 +4,21 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 import SchoolIcon from '@mui/icons-material/School';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
 
-import { ArticleType } from "@/app/pages/user/props";
-
 const ICON_MAP: Record<ArticleType["name"], React.ComponentType<{ className?: string }>> = {
   "Pre-Arrival": FlightLandIcon,
   "News": NewspaperIcon,
   "General Information": HomeIcon,
   "Campus Information": SchoolIcon
 };
+
+type ArticleType = {
+  type_id: string; 
+  name: string; 
+  created_at: string; 
+  updated_at: string; 
+  isDefault: boolean; 
+};
+
 
 type ArticleTypeButtonProps = {
     articleType: ArticleType;

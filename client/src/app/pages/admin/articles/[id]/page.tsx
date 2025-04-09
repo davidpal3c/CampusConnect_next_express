@@ -13,8 +13,8 @@ import ArticleContent from "@/app/components/PageComponents/Admin/Articles/Artic
 
 import DOMpurify from 'dompurify';
 import { renderToString } from 'react-dom/server';
-import parse, { domToReact } from 'html-react-parser';
-
+import parse from 'html-react-parser';
+import domToReact from 'html-react-parser';
 // dynamic imports : code splitting
 // import dynamic from 'next/dynamic';
 
@@ -52,7 +52,7 @@ export default function Article() {
     //     }
     // );
 
-    const [articleData, setArticleData] = useState(null);
+    const [articleData, setArticleData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditPanelVisible, setIsEditPanelVisible] = useState(false);
 
@@ -112,7 +112,7 @@ export default function Article() {
     { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
     ]);
 
-    const handleImageError = (e) => {
+    const handleImageError = (e: any) => {
     // e.target.style.display = 'none';
         e.target.src = '/image_placeholder.png';
     };
@@ -241,21 +241,21 @@ export default function Article() {
                                         <option aria-label="None" value="" />
                                         {articleData?.audience.userTypes && articleData?.audience.userTypes.length > 0 && (
                                             <optgroup label='User Types'>
-                                                {articleData?.audience.userTypes.map((userType, index) => (
+                                                {articleData?.audience.userTypes.map((userType: any, index: number) => (
                                                     <option key={`userType.id-${index}`} value={userType}>{userType}</option>
                                                 ))}
                                             </optgroup>
                                         )}
                                         {articleData?.audience.programs && articleData?.audience.programs.length > 0 && (
                                             <optgroup key='programs' label='Programs'>
-                                                {articleData?.audience.programs.map((p) => (
+                                                {articleData?.audience.programs.map((p: any) => (
                                                     <option key={p.program_id} value={p.program_id}>{p.name}</option>
                                                 ))}
                                             </optgroup>
                                         )}
                                         {articleData?.audience.departments && articleData?.audience.departments.length > 0 && (
                                             <optgroup key='department' label="Departments">
-                                                {articleData?.audience.departments.map((d) => (
+                                                {articleData?.audience.departments.map((d: any) => (
                                                     <option key={d.department_id} value={d.department_id}>{d.name}</option>
                                                 ))}
                                             </optgroup>

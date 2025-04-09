@@ -5,7 +5,7 @@ import Link from 'next/link';
 interface UserItemProps {
     user_id: string;
     name: string;
-    role?: string;
+    role?: any;
     email: string;
     created_at: string;
 }

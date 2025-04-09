@@ -1,36 +1,38 @@
-FROM node:20-alpine
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
 WORKDIR /app
-COPY . .
+
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY prisma ./prisma
+COPY src ./src
+
 RUN npm install
 RUN npm run build
-EXPOSE 8080
-CMD ["node", "dist/server.js"]
 
 
+# Stage 2: Production
+FROM node:20-alpine
 
-# ARG NODE_VERSION=22.9.0
+WORKDIR /app
 
-# FROM node:20-alpine
+ENV NODE_ENV=production
 
-# ENV NODE_ENV production
+# copying only necessary files for production 
+COPY package*.json ./
+COPY prisma ./prisma
+COPY .env ./
 
-# WORKDIR /usr/src/app
-
-# RUN --mount=type=bind,source=package.json,target=package.json \
-#     --mount=type=bind,source=package-lock.json,target=package-lock.json \
-#     --mount=type=cache,target=/root/.npm \
-#     npm ci --omit=dev
-
-# # Run the application as a non-root user.
-# USER node
+# COPY --from=builder /app/dist ./dist
+# COPY --from=builder /app/node_modules ./node_modules
 
 
-# COPY . .
+# install only production dependencies
+RUN npm install --omit=dev
 
-# # Expose the port that the application listens on.
-# EXPOSE 8080
+# Generate Prisma client
+RUN npx prisma generate
 
-# # Run the application.
-# CMD npm run dev
-
+CMD ["node", "dist/src/server.js"]
 

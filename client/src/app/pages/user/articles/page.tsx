@@ -76,8 +76,8 @@ export default function Articles() {
   // Filter articles based on selected type (computed on re-render)
   const filteredArticles = useMemo(() => {                                                                //useMemo is used to memoize the result of a function. Memoize is
     if (typeName === "All") return allArticles;
-    const selectedType = articleTypes.find((t) => t.name === typeName);
-    return selectedType ? allArticles.filter(article => article.type_id === selectedType.type_id) : [];
+    const selectedType: any = articleTypes.find((t: any) => t.name === typeName);
+    return selectedType ? allArticles.filter((article: any) => article.type_id === selectedType.type_id) : [];
   }, [typeName, allArticles, articleTypes]);
 
   return (

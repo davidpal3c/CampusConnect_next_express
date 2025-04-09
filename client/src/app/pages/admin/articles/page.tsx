@@ -42,7 +42,7 @@ export default function Articles() {
   const [sortOption, setSortOption] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); 
 
-  const articleEditorRef = useRef(null);
+  const articleEditorRef = useRef<HTMLDivElement>(null);
 
 
   const { articleTypes, articleTypesData, fetchArticleTypes } = useArticleTypes();
@@ -185,7 +185,7 @@ export default function Articles() {
     setCurrentPage(1);
     setFilterType(type);  
 
-    const filtered = type ? originalArticles.filter((article) => article.type?.name === type) : [...originalArticles];
+    const filtered = type ? originalArticles.filter((article: any) => article.type?.name === type) : [...originalArticles];
     // if (!type) {
     //   setArticles([...originalArticles]);
     //   return;
@@ -199,7 +199,7 @@ export default function Articles() {
     let filtered = [...originalArticles];
 
     if (filterType) {
-      filtered = originalArticles.filter((article) => article.type?.name === filterType);
+      filtered = originalArticles.filter((article: any) => article.type?.name === filterType);
     }
 
     if (searchQuery) {
@@ -239,7 +239,7 @@ export default function Articles() {
 
     const lowerQuery = query.toLowerCase();
     const filtered = originalArticles.filter((article) => {
-      const matchesFilter = filterType ? article.type === filterType : true;
+      const matchesFilter = filterType ? (article as any).type === filterType : true;
       const matchesSearch = Object.values(article).some((value) => {
         typeof value === "string" && value.toLowerCase().includes(lowerQuery);
       });

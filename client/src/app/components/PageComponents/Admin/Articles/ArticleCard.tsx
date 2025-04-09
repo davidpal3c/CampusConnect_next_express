@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, MutableRefObject } from "react";
 import { adjustDateLetters, adjustDateOnlyNumerical } from "@/app/_utils/dateUtils"
 import Link from 'next/link';
 import Image from 'next/image';
@@ -29,13 +29,13 @@ export default function ArticleCard({ article } : { article: any }) {
                     <div>
                         <div className="rounded-lg overflow-hidden h-36">
                             <Image
-                                ref={ref}
+                                ref={ref as MutableRefObject<HTMLImageElement | null>}
                                 src={isVisible ? (article.imageUrl ? article.imageUrl : "/img_placeholder.png") : "/img_placeholder.png"}
                                 alt={`${article.title}-image` || "Placeholder image"}
                                 className="object-cover w-full h-full overflow-hidden"
                                 width={300}
                                 height={150}
-                                lazy="true"
+                                loading='lazy'
                                 onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
                             />
                             {/* <img

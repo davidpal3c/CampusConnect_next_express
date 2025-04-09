@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 
 // MUI Components
 import { DataGrid } from "@mui/x-data-grid";
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Tooltip, IconButton } from "@mui/material";
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -32,7 +33,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
-    const [userId, setUserId] = useState<string>(null);
+    const [userId, setUserId] = useState<string>('');
 
 
     // Article Delete Multiple Modal
@@ -182,7 +183,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
     
 
     
-    const getColumnsByRole = () => {
+    const getColumnsByRole = (): GridColDef[] => {
         switch (filteredRole) {
             case 'Student':
                 return [
@@ -208,7 +209,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                 return [
                     { field: "current_position", headerName: "Position", width: 150 },
                     { field: "company", headerName: "Company", width: 150 },
-                    { field: "view", headerName: "Grad. Overview", width: 120, renderCell: (params) => 
+                    { field: "view", headerName: "Grad. Overview", width: 120, renderCell: (params: any) => 
                         {
                             let alumniStudies = params.row?.alumni_studies || [];
                             alumniStudies = alumniStudies.sort((a: any, b: any) => b.graduation_year - a.graduation_year);
@@ -268,8 +269,8 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
 
 
     // Base columns for the table (All users)
-    const baseColumns = [
-        { field: "actions", headerName: "Actions", type: "actions", minWidth: 120, flex: 1, renderCell: (params) => {
+    const baseColumns: GridColDef[] = [
+        { field: "actions", headerName: "Actions", type: "actions", minWidth: 120, flex: 1, renderCell: (params: GridRenderCellParams) => {
             const userId = params.row.user_id;
             return (
                 <div className="flex items-center justify-center w-full h-full space-x-1">
@@ -321,7 +322,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                 </div>
             );
         }},
-        { field: "imageUrl", headerName: "Photo", minWidth: 80, renderCell: (params) => {
+        { field: "imageUrl", headerName: "Photo", minWidth: 80, renderCell: (params: GridRenderCellParams) => {
             const imageUrl = params.row.image_url;
             return (
                 <div className="flex items-center justify-center w-full h-full">
@@ -338,7 +339,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
         { field: "first_name", headerName: "First Name", minWidth: 150 },
         { field: "last_name", headerName: "Last Name", minWidth: 150 },
         { field: "email", headerName: "Email", minWidth: 200 },
-        { field: "role", headerName: "Role", minWidth: 90, renderCell: (params) => {
+        { field: "role", headerName: "Role", minWidth: 90, renderCell: (params: GridRenderCellParams) => {
             const role = params.row.role;
             let className = "bg-saitBlack"; 
       
@@ -348,7 +349,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
       
             return <span className={`${className} font-bold text-saitWhite p-1 rounded-md`}>{role}</span>;
         }},
-        { field: "created_at", headerName: "Created At", minWidth: 100, renderCell: (params) => 
+        { field: "created_at", headerName: "Created At", minWidth: 100, renderCell: (params: GridRenderCellParams) => 
             new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(new Date(params.row.created_at))
         },
     ];
@@ -372,9 +373,8 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
             <div className="w-full max-w-6xl">
                 <DataGrid
                     rows={filteredUsers}
-                    rowId="user_id"
-                    columns={columns}
                     getRowId={(row) => row.user_id}
+                    columns={columns}
                     checkboxSelection
                     initialState={{
                         pagination: {

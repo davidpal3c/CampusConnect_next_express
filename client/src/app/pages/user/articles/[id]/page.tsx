@@ -9,9 +9,9 @@ export default function ArticleContent({ params }: { params: Promise<{ id: strin
     const unwrappedParams = use(params);
     const articleId = unwrappedParams?.id; 
 
-    const [article, setArticle] = useState(null);
+    const [article, setArticle] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!articleId) return;

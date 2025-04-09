@@ -10,9 +10,19 @@ import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import { Tooltip } from '@mui/material';
 
 
+interface EventData {
+    name: string;
+    date: string;
+    location: string;
+    audience: any;
+    capacity: number;
+    current_attendees: number;
+    host: string;
+}
+
 export default function Event() {
 
-    const [eventData, setEventData] = useState([]);
+    const [eventData, setEventData] = useState<EventData | null>(null);
     const router = useRouter();
 
     const params = useParams();

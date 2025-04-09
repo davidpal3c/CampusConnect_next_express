@@ -130,7 +130,8 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
         }
     };
 
-    const handleIntakeChange = (intakeYear, intake, status) => {
+
+    const handleIntakeChange = (intakeYear: number, intake: string, status: string) => {
         setIntakeYear(intakeYear);
         setIntake(intake);
         setStatus(status);
@@ -170,7 +171,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
                                     </option>
                                 ))}
                             </select>
-                            {errors.role && <p className="text-red-500 text-sm">{errors.role.message}</p>}
+                            {errors.role && <p className="text-red-500 text-sm">{String(errors.role.message)}</p>}
                         </div>
 
                         <InputField label="Email Address *" id="email" register={register} inputType="email" errors={errors} required maxLength={100} />
@@ -194,7 +195,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
                                     </option>
                                 ))}
                             </select>
-                            {errors.role && <p className="text-red-500 text-sm">{errors.role.message}</p>}
+                            {errors.role && <p className="text-red-500 text-sm">{String(errors.role.message)}</p>}
                         </div>
                         )}
 
@@ -243,7 +244,7 @@ const InputField = ({ label, id, inputType = "text", register, errors, required 
                 pattern: pattern ? { value: pattern, message: `Invalid ${label}` } : undefined
             })}
             maxLength={maxLength}
-            onInput={(e) => {
+            onInput={(e: any) => {
                 if (e.target.value.length > maxLength) {
                   e.target.value = e.target.value.slice(0, maxLength); 
                 }

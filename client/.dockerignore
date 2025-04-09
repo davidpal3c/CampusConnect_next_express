@@ -30,5 +30,15 @@
 **/values.dev.yaml
 **/build
 **/dist
+
+node_modules
+dist
+.next
+*.log
+.git
+.env.local
+.env.development
+*.md
+
 LICENSE
 README.md

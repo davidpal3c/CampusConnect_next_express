@@ -11,6 +11,8 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 // import { useAppSelector } from "@/app/hooks";       
 
 import { DataGrid } from "@mui/x-data-grid";
+import { GridColDef } from '@mui/x-data-grid';
+import { GridRenderCellParams } from '@mui/x-data-grid';
 import IconButton from '@mui/material/IconButton';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/Edit';
@@ -23,6 +25,7 @@ type ArticleDetailedProps = {
     articlesData: Article[];
     reFetchArticles: any;
 };  
+
 
 const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, reFetchArticles }) => {
 
@@ -95,13 +98,13 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
         // setShowMultipleSelection(false);
     };
 
-    const columns = [
-        { field: 'actions', headerName: 'Actions', type: 'actions', width: 150, renderCell: (params) => {  
+    const columns: GridColDef<Article>[] = [
+        { field: 'actions', headerName: 'Actions', type: 'actions', width: 150, renderCell: (params: GridRenderCellParams<Article>) => {  
             const articleId = params.row.article_id;
             return(
                 <div className="flex items-center justify-center w-full h-full space-x-1">
                     <Tooltip title="Delete Article" arrow>
-                        <IconButton onClick={() => handleDeleteModalOpen(articleId)}
+                        <IconButton onClick={() => handleDeleteModalOpen(articleId ?? "")}
                             sx={{
                                 color: '#666666',
                                 '&:hover': {
@@ -138,7 +141,7 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="View Article" arrow>
-                        <IconButton onClick={() => handleViewArticle(articleId)}
+                        <IconButton onClick={() => handleViewArticle(articleId ?? "")}
                             sx={{
                                 color: '#666666',
                                 '&:hover': {
@@ -157,7 +160,7 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
         }},
         { field: 'article_id', headerName: 'ID', width: 90 },
         { field: 'title', headerName: 'Title', width: 200 },
-        { field: 'status', headerName: 'Status', width: 110, renderCell: (params) => { 
+        { field: 'status', headerName: 'Status', width: 110, renderCell: (params: any) => { 
             const status = params.row.status;
             const statusStyle = status === "Published" ? "bg-saitBlue" : "bg-saitPurple";
 
@@ -168,11 +171,11 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
             );
 
         }},
-        { field: 'type', headerName: 'Type', width: 108, renderCell: (params) => {
+        { field: 'type', headerName: 'Type', width: 108, renderCell: (params: any) => {
             return <span>{params.row.type?.name || "Unknown"}</span>;
         }},
         // { field: 'audience', headerName: 'Audience', width: 110 },
-        { field: 'audience', headerName: 'Audience', width: 110, renderCell: (params) => {
+        { field: 'audience', headerName: 'Audience', width: 110, renderCell: (params: any) => {
             const criteria = params.row.audience;
             const status = params.row.status;
 
@@ -229,27 +232,27 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
             );
         } },
         { field: 'author', headerName: 'Author', width: 125 },
-        { field: 'author_id', headerName: 'Author ID', width: 90, renderCell: (params) => { 
+        { field: 'author_id', headerName: 'Author ID', width: 90, renderCell: (params: GridRenderCellParams<Article>) => { 
             return(
                 <div className="flex items-center justify-center w-full h-full">
                     <span className="font-normal text-saitBlack p-2 rounded-xl">{params.row.author_id}</span>
                 </div>
             );
         }},
-        { field: 'created_at', headerName: 'Date Created', width: 210, renderCell: (params) => { 
+        { field: 'created_at', headerName: 'Date Created', width: 210, renderCell: (params: any) => { 
             return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.created_at)}</span>;
         }},
-        { field: 'updated_at', headerName: 'Date Updated', width: 210, renderCell: (params) => { 
+        { field: 'updated_at', headerName: 'Date Updated', width: 210, renderCell: (params: any) => { 
             return <span className="font-normal text-saitBlack p-2 rounded-xl">{formatToDateTime(params.row.updated_at)}</span>;
         }},
-        { field: 'datePublished', headerName: 'Date Published', width: 210, renderCell: (params) => { 
+        { field: 'datePublished', headerName: 'Date Published', width: 210, renderCell: (params: any) => { 
             if(params.row.status === "Draft") {
                 return <span className="font-normal text-saitLightPurple p-2">Not Published</span>;
             } else {    
                 return <span className="font-normal text-saitBlack p-2">{formatToDateTime(params.row.datePublished)}</span>;
             }
         }},
-        { field: 'imageUrl', headerName: 'Image URL', width: 200, renderCell: (params) => {
+        { field: 'imageUrl', headerName: 'Image URL', width: 200, renderCell: (params: any) => {
                 return <a href={params.row.imageUrl} target="_blank" className="font-normal text-saitBlack p-2 rounded-xl">{params.row.imageUrl}</a>;
             }
         },
@@ -282,7 +285,7 @@ const ArticlesTableDetailed: React.FC<ArticleDetailedProps> = ({ articlesData, r
                     // rows={articles}              // filtered articles
                     rows={articlesData}
                     columns={columns}
-                    getRowId={(row) => row.article_id}
+                    getRowId={(row) => row.article_id ?? "default-id"}
                     checkboxSelection
                     autoHeight   
                     onRowSelectionModelChange={handleRowSelectionChange}           

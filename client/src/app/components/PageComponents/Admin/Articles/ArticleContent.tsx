@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import DOMPurify from "dompurify";
-import parse, { domToReact } from "html-react-parser";
+import parse from "html-react-parser";
+import domToReact from "html-react-parser/lib/dom-to-react";
+
 
 const ArticleContent = ({ content }: { content: string }) => {
     const [isMounted, setIsMounted] = useState(false);

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: campusconnect
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 80                # Kubernetes service port (internal)
+      targetPort: 8080        # Backend application port (external) - port container app is listening on inside the pod
