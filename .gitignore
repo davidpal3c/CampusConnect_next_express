@@ -6,8 +6,8 @@
 
 /server/dist
 
-client/.next/
 client/.env
+/client/.env
 
 server/.env
 application-map.md
@@ -38,6 +38,7 @@ pipeline.md
 /.next/
 /out/
 /client/.next/
+client/.next/
 
 # production
 /build
