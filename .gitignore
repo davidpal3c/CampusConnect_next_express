@@ -16,6 +16,13 @@ load-db.sql
 load-db2.sql
 seed.sql
 
+flowchart_CI-CD.md
+pipeline.html
+pipeline2.html
+pipeline.md
+
+
+
 /.pnp
 .pnp.*
 .yarn/*

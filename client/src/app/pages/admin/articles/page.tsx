@@ -56,27 +56,10 @@ export default function Articles() {
   const [ articlesView, setArticlesView ] = useState("Simple");
   const [ selectedArticle, setSelectedArticle ] = useState({}); 
 
-  const [message, setMessage] = useState("Loading...");
+  const [message] = useState("No articles available.");
 
   // Loader
   const [isLoading, setIsLoading] = useState(true);
-
-
-  useEffect(() => {
-    // console.log("Articles: ", articles);
-      if (articles.length > 0) {
-        setIsLoading(false);
-      }
-
-      // if (articles.length === 0) {
-      //   setMessage("No articles found.");
-      // } else if (articles.length > 0) {
-      //   setMessage ("");
-      // }else {
-      //   setMessage("Loading...");
-      // }
-    }, [articles]);
-
 
 
   const fetchArticleData = async () => {
@@ -116,8 +99,10 @@ export default function Articles() {
         closeOnClick: true,
         pauseOnHover: true,
       });
+    } finally {
+      setIsLoading(false);
     }
-  }
+  } 
 
   useEffect(() => {
     fetchArticleData();
