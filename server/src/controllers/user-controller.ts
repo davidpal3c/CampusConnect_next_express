@@ -213,7 +213,7 @@ export const getStudentsByStatus = async (req: Request, res: Response) : Promise
             return;
         }
 
-        console.log("students", students);
+        // console.log("students", students);
         res.status(200).json(students);
         return;
 
