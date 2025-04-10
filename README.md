@@ -26,10 +26,12 @@ CampusConnect is a full-stack web application developed for SAIT's International
 - Blue-green deployment strategy is planned for future versions. -->
 
 ## 🛠️ In Progress
-- Transitioning to full CI/CD pipeline (currently live for both backend and frontend)
 - Blue-Green deployments and auto rollbacks
-- User Notification Service
+<!-- - User Notification Service -->
+- Authentication**: Firebase (Google SSO/Microsoft SSO)
 - Advanced monitoring & error alerting
+- Automated Testing in CICD (Unit, Integration, Security, and Performance Testing)
+- Advanced monitoring and logging (Apache Log4j)
 
 📣 **Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
 
@@ -47,7 +49,6 @@ k8s/                   # Kubernetes manifests (deployments, services, ingress)
   └── workflows/       # GitHub Actions CI/CD
 ```
 
----
 
 
 

@@ -50,7 +50,7 @@ app.use('/api/events', eventRoute);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello from the server!');
+  res.json('Hello from the server!');
 })
 
 app.listen(PORT, () => {
