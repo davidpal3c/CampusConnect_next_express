@@ -5,13 +5,12 @@ import Modal from '@mui/material/Modal';
 import { toast } from "react-toastify";
 import ActionButton from '@/app/components/Buttons/ActionButton';
 import { useArticleTypes } from '@/app/_utils/articleTypes-context';
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { IconButton } from "@mui/material";
 import { Tooltip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { get } from 'http';
 
 type ArticleTypesModalProps = {
     openArticleTypesModal: boolean;
@@ -41,7 +40,7 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
         // initializes an object with article type names as keys
         // and 0 as the initial count
         // object: { "type1": 0, "type2": 0, ... }
-        const counts = articleTypesData.reduce((acc, type) => {
+        const counts = articleTypesData.reduce((acc: any, type: any) => {
             acc[type.name] = 0;
             return acc;
         }, {});
@@ -72,7 +71,7 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
 
             // map article types data to include count
             const mappedData = articleTypesData.map((type: any) => {
-                const result = {
+                const result: any = {
                     id: type.type_id,
                     name: type.name,
                     count: 0,
@@ -139,7 +138,7 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
         mode: "onSubmit"
     });
 
-    const handleAddArticleType = async (data: string) => {
+    const handleAddArticleType = async (data: any) => {
         // console.log("Form Data:", data.addArticleType?.trim());
         const newArticleType = data.addArticleType.trim();
 
@@ -267,7 +266,7 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
                                             style={{ width: "calc(100% - 9.8rem)" }}
                                         >
                                             <form
-                                                onSubmit={handleSubmit((data) => handleAddArticleType(data))}
+                                                onSubmit={handleSubmit((data: any) => handleAddArticleType(data))}
                                                 className="flex flex-row items-center w-full space-x-4"
                                             >
                                                 <input
@@ -276,7 +275,7 @@ export default function ArticleTypesModal({ openArticleTypesModal, setOpenArticl
                                                     placeholder="Add New Type"
                                                     className="p-2 px-3 font-light border border-gray-300 rounded-xl w-48 xs:w-56 md:w-64 lg:w-80 focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent"
                                                     {...register("addArticleType", {
-                                                        validate: (value) => {
+                                                        validate: (value: any) => {
                                                             if (!value) {
                                                                 return "This field is required";
                                                             }

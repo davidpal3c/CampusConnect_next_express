@@ -33,16 +33,16 @@ import { UserRole } from "@/app/types/userTypes";
 export default function Users() {
 
     // State Management
-    const [users, setUsers] = useState([]);
-    const [roleToFilter, setRoleToFilter] = useState<UserRole>('');
+    const [users, setUsers] = useState<any []>([]);
+    const [roleToFilter, setRoleToFilter] = useState<UserRole | ''>('');
     const [roleFieldCache, setRoleFieldCache] = useState<Record<string, any>>({});
     // const [roleFieldCache, setRoleFieldCache] = useState<Record<UserRole, any >>({} as Record<UserRole, any>); 
     // const previousRoleRef = useRef<UserRole>('');
     // const fetchedRolesRef = useRef<Set<UserRole>>(new Set());
 
-    const [originalUsers, setOriginalUsers] = useState([]);
+    const [originalUsers, setOriginalUsers] = useState<any []>([]);
     const [usersView, setUsersView] = useState("List");
-    const [isPanelVisible, setIsPanelVisible] = useState(false);
+    const [isPanelVisible, setIsPanelVisible] = useState<boolean>(false);
     const userEditorRef = useRef(null);
     const [fieldsByRole, setFieldsByRole] = useState([]);
     
@@ -92,7 +92,7 @@ export default function Users() {
         if (searchValue === "") {
             setUsers(originalUsers); 
         } else {
-            const filteredUsers = originalUsers.filter((user) => {
+            const filteredUsers = originalUsers.filter((user: any) => {
                 const name = `${user.first_name} ${user.last_name}`;
                 return (
                     user.first_name.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -130,7 +130,7 @@ export default function Users() {
     // };
 
 
-    const filterByRole = async (role: UserRole) => {
+    const filterByRole = async (role: any) => {
         if (role === "" || role === "All" ) {
             setUsers(originalUsers);
             setRoleToFilter(role);
@@ -170,7 +170,7 @@ export default function Users() {
         setUsers(filteredUsers);
         setRoleToFilter(role);
 
-        if (role !== 'All' && role !== '') {
+        if (role !== 'All' && role !== '' && role !== 'Prospective Student') {
             await fetchFieldsByRole(role);
         }
 

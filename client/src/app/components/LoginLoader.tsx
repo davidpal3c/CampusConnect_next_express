@@ -79,9 +79,6 @@ export default function LoaderPage({ result, backdrop, routeType }: LoaderPagePr
     //     console.log("User-Authentication state updated:", user);    
     // }, [user]);
 
-    useEffect(() => {
-        console.log("UserData state updated:", userData);    
-    }, [userData]);
 
     return (
         <div className="bg-slate-800 flex justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">            

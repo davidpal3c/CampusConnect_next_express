@@ -21,10 +21,24 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import { Tooltip } from '@mui/material';
 
+type User = {
+    first_name?: string;
+    last_name?: string;
+    role?: string;
+    email?: string;
+    imageUrl?: string;
+    user_id?: string;
+    created_at?: string;
+    Student?: { Program?: { name?: string; Department?: { name?: string } } };
+    Admin?: { permissions?: string };
+    Alumni?: { graduation_year?: string; credentials?: string; current_position?: string; company?: string };
+}
+
+
 export default function UserDetails() {
 
     // State Management
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
     const [openDialog, setOpenDialog] = useState(false);
     const router = useRouter();
 
@@ -34,7 +48,9 @@ export default function UserDetails() {
 
     useEffect(() => {
         if (id) {
-        fetchUserData(id);
+            if (typeof id === "string") {
+                fetchUserData(id);
+            }
         }
     }, [id]);
 
@@ -101,7 +117,7 @@ export default function UserDetails() {
         setOpenDialog(false); 
     };
     
-    const handleSubmit = async (user) => {
+    const handleSubmit = async (user: any) => {
         setOpenDialog(false);
         console.log(user);
     };
@@ -193,7 +209,7 @@ export default function UserDetails() {
                             )}
                             <div className="flex flex-row space-x-4 items-center">
                                 <AccessTimeIcon className="text-saitBlack text-4xl" />
-                                <p className="text-lg text-saitBlack">Joined Campus Connect: {formatDate(created_at)}</p>
+                                <p className="text-lg text-saitBlack">Joined Campus Connect: {created_at ? formatDate(created_at) : "Unknown"}</p>
                             </div>
                         </div>
                     

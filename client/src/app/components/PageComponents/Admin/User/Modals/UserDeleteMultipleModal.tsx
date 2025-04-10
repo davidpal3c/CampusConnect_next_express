@@ -50,7 +50,7 @@ export default function UserDeleteMultipleModal({ usersData, userIds, noEditor, 
         handleDeleteModalClose();
 
         if(noEditor) return;            // only close editor if noEditor is false (using component with editor)
-        closeArticleEditor();
+        // closeArticleEditor();
     };
     
     useEffect(() => {

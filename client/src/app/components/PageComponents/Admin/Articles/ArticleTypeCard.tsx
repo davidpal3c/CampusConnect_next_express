@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import ActionButton from "@/app/components/Buttons/ActionButton";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useArticleTypes } from "@/app/_utils/articleTypes-context";
 import ArticleTypeDeleteModal from "./Modals/ArticleTypeDeleteModal";
 
@@ -154,13 +154,13 @@ export default function ArticleTypeCard({ articleType, fetchArticleData }: Artic
                         transition={{ duration: 0.2, ease: "easeOut" }}
                         className="flex flex-row items-center justify-between w-full mt-[0.4rem] bg-white shadow-md border border-transparent p-2 rounded-lg"
                     >
-                        <form className="flex flex-row items-center justify-between w-full" onSubmit={handleSubmit((data) => processEditArticleType(data))}>
+                        <form className="flex flex-row items-center justify-between w-full" onSubmit={handleSubmit((data: any) => processEditArticleType(data))}>
                             <input
                                 type="text"
                                 className="w-3/5 h-10 px-3 border border-gray-300 rounded-xl bg-saitWhite"
                                 placeholder={articleType?.name || ""}
                                 {...register("editArticleType", { 
-                                    validate: (value) => {
+                                    validate: (value: any) => {
                                         if (!value) {
                                             return "This field is required";
                                         }
