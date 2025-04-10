@@ -4,7 +4,7 @@ metadata:
   name: campusconnect-ingress
   namespace: campusconnect
   annotations:
-    # nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     cert-manager.io/cluster-issuer: letsencrypt-dns
@@ -28,8 +28,8 @@ spec:
                 name: backend-service
                 port:
                   number: 80
-          - path: /
-            pathType: Prefix
+          - path: /(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: frontend-service
