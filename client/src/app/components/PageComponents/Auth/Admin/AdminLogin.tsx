@@ -62,7 +62,7 @@ export default function AdminLogin() {
         handleLoaderOpen(provider);
         await delay(500);
 
-        const currentUser = auth.currentUser;
+        const currentUser = auth?.currentUser;
         if (currentUser) {                                          // sign out first if user is already signed in
             await signOutFirebase();
         }

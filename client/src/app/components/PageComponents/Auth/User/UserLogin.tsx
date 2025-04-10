@@ -64,7 +64,7 @@ export default function UserLogin() {
 
         console.log("Sign in with: ", provider);
 
-        const currentUser = auth.currentUser;
+        const currentUser = auth?.currentUser;
         if (currentUser) {
             await signOutFirebase();
         }
