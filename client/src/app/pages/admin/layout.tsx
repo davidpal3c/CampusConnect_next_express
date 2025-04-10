@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useMediaQuery } from "react-responsive";
-import Sidebar from '../../components/Sidebar/Sidebar';
+import Sidebar from '@/app/components/Sidebar/Sidebar';
 import AdminHeader from '@/app/components/Header/AdminHeader';
 import { ArticleTypesProvider } from '@/app/_utils/articleTypes-context';
 
