@@ -1,5 +1,6 @@
 //Student / Alumni login Page
 'use client';
+export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { useState } from "react";
