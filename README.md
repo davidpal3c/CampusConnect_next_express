@@ -1,4 +1,4 @@
-# CampusConnect
+# CampusConnect 🛠️ 
 
 CampusConnect is a full-stack web application developed for SAIT's International Centre to replace the current iCent platform. It serves international and domestic students, alumni, and administrators, offering key features like campus event registration, group messaging, user notifications, and analytics.
 
