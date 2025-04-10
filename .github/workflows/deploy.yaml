@@ -36,7 +36,11 @@ jobs:
 
     - name: Build and Push Backend Image
       run: |
-        docker build -t $ACR_NAME.azurecr.io/campusconnect-backend:${{ env.IMAGE_TAG }} ./server
+        docker build \
+          --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }} \
+          --build-arg NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }} \
+          --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }} \
+          -t $ACR_NAME.azurecr.io/campusconnect-backend:${{ env.IMAGE_TAG }} ./server
         docker push $ACR_NAME.azurecr.io/campusconnect-backend:${{ env.IMAGE_TAG }}
 
     - name: Build and Push Frontend Image

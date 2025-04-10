@@ -17,7 +17,7 @@ import { Tooltip } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 
-export default function AdminLogin() {
+export default function UserLogin() {
 
     const { googleSignIn, microsoftSignIn, signOutFirebase } = useUserAuth();
     const [backdrop, setBackdrop] = useState(false);
