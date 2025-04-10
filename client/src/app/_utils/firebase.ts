@@ -1,7 +1,7 @@
 
 // Firebase product SDKs 
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { getAuth } from "firebase/auth";
  
 
 // Your web app's Firebase configuration
@@ -15,13 +15,10 @@ const firebaseConfig = {
 };
  
 // ensuring firebase is not initialized during SSR or static export
-
-
 let app;
 if (typeof window !== "undefined" && getApps().length === 0) {
   app = initializeApp(firebaseConfig);
 }
-
 
 export const auth = typeof window !== "undefined" ? getAuth(app!) : null;
 
