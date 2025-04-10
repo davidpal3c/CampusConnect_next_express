@@ -17,7 +17,7 @@ spec:
         - name: acr-auth
       containers:
         - name: backend
-          image: campusconnectacr.azurecr.io/campusconnect-backend:1.0
+          image: campusconnectacr.azurecr.io/campusconnect-backend:1.0.1
           ports:
             - containerPort: 8080
           env:
