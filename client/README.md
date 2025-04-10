@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CampusConnect
 
-## Getting Started
+CampusConnect is a full-stack web application developed for SAIT's International Centre to replace the current iCent platform. It serves international and domestic students, alumni, and administrators, offering key features like campus event registration, group messaging, user notifications, and analytics.
 
-First, run the development server:
+## 🌐 Live Production (Testing)
+**URL**: [https://sait.campusconnect.it.com](https://sait.campusconnect.it.com)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Current Tech Stack
+- **Frontend**: Next.js + React + Tailwind CSS
+- **Backend**: Node.js + Express + Prisma ORM
+- **Database**: PostgreSQL (managed via Prisma)
+- **Containerization**: Docker
+- **Orchestration**: Kubernetes (AKS - Azure Kubernetes Service)
+- **CI/CD**: GitHub Actions → Azure Container Registry → AKS
+- **HTTPS & TLS**: Managed by cert-manager + Let's Encrypt using DNS-01 challenge via Azure DNS
+- **Ingress Controller**: NGINX
+- **Authentication**: Firebase (Google SSO)
+
+## 🔐 Secrets & Config
+- Secrets like Firebase credentials, database URL, and third-party keys are managed via Kubernetes Secrets.
+- Sensitive manifests (like `*-secret.yaml`) are **not** committed to the repo and must be applied manually.
+
+## 📦 Deployments
+- Docker images are built and pushed to **Azure Container Registry** (`campusconnectacr`).
+- Kubernetes deployments automatically pull updated images during CI/CD and roll out with zero-downtime updates.
+- Blue-green deployment strategy is planned for future versions.
+
+## 🛠️ In Progress
+- Transitioning to full CI/CD pipeline (currently live for both backend and frontend)
+- Blue-Green deployments and auto rollbacks
+- User Notification Service
+- Advanced monitoring & error alerting
+
+## 📁 Folder Structure
+```
+backend/               # Node.js + Express server
+frontend/              # Next.js frontend
+k8s/                   # Kubernetes manifests (deployments, services, ingress)
+  ├── backend/
+  ├── frontend/
+  ├── ingress.yaml
+  ├── certificate.yaml
+  └── cluster-issuer.yaml
+.github/
+  └── workflows/       # GitHub Actions CI/CD
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+📣 **Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
