@@ -16,20 +16,22 @@ CampusConnect is a full-stack web application developed for SAIT's International
 - **Ingress Controller**: NGINX
 - **Authentication**: Firebase (Google SSO)
 
-## 🔐 Secrets & Config
+<!-- ## 🔐 Secrets & Config
 - Secrets like Firebase credentials, database URL, and third-party keys are managed via Kubernetes Secrets.
 - Sensitive manifests (like `*-secret.yaml`) are **not** committed to the repo and must be applied manually.
 
 ## 📦 Deployments
 - Docker images are built and pushed to **Azure Container Registry** (`campusconnectacr`).
 - Kubernetes deployments automatically pull updated images during CI/CD and roll out with zero-downtime updates.
-- Blue-green deployment strategy is planned for future versions.
+- Blue-green deployment strategy is planned for future versions. -->
 
 ## 🛠️ In Progress
 - Transitioning to full CI/CD pipeline (currently live for both backend and frontend)
 - Blue-Green deployments and auto rollbacks
 - User Notification Service
 - Advanced monitoring & error alerting
+
+📣 **Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
 
 ## 📁 Folder Structure
 ```
@@ -47,5 +49,5 @@ k8s/                   # Kubernetes manifests (deployments, services, ingress)
 
 ---
 
-📣 **Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
+
 
