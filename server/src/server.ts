@@ -47,7 +47,9 @@ app.use('/api/articles', articleRoute);
 app.use('/api/audience', audienceRoute);
 // app.use('/api/programs', programRoute);
 app.use('/api/events', eventRoute);
-
+app.get('/api/ping', (req, res) => {
+  res.json('Pong there you go!');
+});
 
 app.get('/', (req, res) => {
   res.json('Hello from the server!');
