@@ -7,6 +7,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 COPY public ./public
 COPY . .
+
 # COPY styles ./styles
 # COPY src ./src
 # COPY .env.local ./

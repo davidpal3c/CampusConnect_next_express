@@ -6,9 +6,9 @@
 
 **/.classpath
 **/.dockerignore
-# allow all .env files (temp)
-!.env
-# **/.env
+# allow all .env files (local-test)
+# !.env
+**/.env
 **/.git
 **/.gitignore
 **/.project

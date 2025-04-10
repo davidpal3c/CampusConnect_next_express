@@ -9,4 +9,4 @@ spec:
   ports:
     - protocol: TCP
       port: 80                # Kubernetes service port (internal)
-      targetPort: 8080        # Backend application port (external) - port container app is listening on inside the pod
+      targetPort: 8080        # Backend application /cont port (external) - port container app is listening on inside the pod

@@ -4,11 +4,21 @@ metadata:
   name: campusconnect-ingress
   namespace: campusconnect
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-dns
+    force-cert-refresh: "true"
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    # nginx.ingress.kubernetes.io/use-regex: "true"
+    # nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    # nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
 spec:
   ingressClassName: nginx
   rules:
-    - host: campusconnect.local
+    - host: sait.campusconnect.it.com
       http:
         paths:
           - path: /api
@@ -18,10 +28,61 @@ spec:
                 name: backend-service
                 port:
                   number: 80
-          - path: /
-            pathType: Prefix
+          - path: /(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: frontend-service
                 port:
                   number: 80
+  tls:
+    - hosts:
+        - sait.campusconnect.it.com
+      secretName: campusconnect-tls
+
+
+# # Do this if frontend calls /api/..., but your backend is expecting /...
+# # Also fine-grained path handling using regular expressions
+# # Need more flexibility with routing and rewrites
+
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: campusconnect-ingress
+#   namespace: campusconnect
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /$2
+#     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#     cert-manager.io/cluster-issuer: letsencrypt-dns
+#     force-cert-refresh: "true"
+#     # nginx.ingress.kubernetes.io/rewrite-target: /
+#     # nginx.ingress.kubernetes.io/use-regex: "true"
+#     # nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+#     # nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+#     # nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+#     # nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#     - host: sait.campusconnect.it.com
+#       http:
+#         paths:
+#           - path: /api(/|$)(.*)
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: backend-service
+#                 port:
+#                   number: 80
+#           - path: /(.*)
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: frontend-service
+#                 port:
+#                   number: 80
+#   tls:
+#     - hosts:
+#         - sait.campusconnect.it.com
+#       secretName: campusconnect-tls

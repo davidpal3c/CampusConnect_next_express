@@ -30,7 +30,7 @@ ENV NODE_ENV=production
 # copying only necessary files for production 
 COPY package*.json ./
 COPY prisma ./prisma
-COPY .env ./
+# COPY .env ./
 COPY --from=builder /app/dist ./dist
 
 # COPY --from=builder /app/node_modules ./node_modules

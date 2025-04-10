@@ -37,9 +37,9 @@ dist
 *.log
 .git
 
-# Allow local env vars (temp)
-! .env.local
-# .env.local
+# Allow local env vars (temp - local test)
+# ! .env.local
+.env.local
 .env.development
 *.md
 

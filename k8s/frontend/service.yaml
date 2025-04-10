@@ -9,4 +9,4 @@ spec:
   ports:
     - protocol: TCP
       port: 80                    # service port exposed to ingress
-      targetPort: 8080            # Frontend container port (external)
+      targetPort: 3000            # Frontend container port (external)
