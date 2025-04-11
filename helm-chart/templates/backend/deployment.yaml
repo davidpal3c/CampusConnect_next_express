@@ -13,9 +13,11 @@ spec:
       labels:
         app: backend
     spec:
+      imagePullSecrets: 
+        - name: acr-auth
       containers:
         - name: backend
-          image: campusconnectacr/campusconnect-backend:latest
+          image: campusconnectacr.azurecr.io/campusconnect-backend:1.0
           ports:
             - containerPort: 8080
           env:
