@@ -166,7 +166,7 @@ export const AuthContextProvider = ({ children }) => {
       let token = user.currentToken;
 
       if (!token) {
-        console.log("No token in user object, attempting to fetch new token...");
+        console.log("No token in user object. Attempting to fetch new token...");
         token = await getIdToken(true);
       }
 
