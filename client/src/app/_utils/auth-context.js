@@ -182,10 +182,6 @@ export const AuthContextProvider = ({ children }) => {
         },
         credentials: "include",
       });
-
-      //temporary debugging - deployment
-      const text = await response.text();
-      console.log("🔎 RAW RESPONSE:", text);
       
       if (!response.ok) {
         const errorData = await response.json();
