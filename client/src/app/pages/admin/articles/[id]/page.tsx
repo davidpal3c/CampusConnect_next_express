@@ -140,7 +140,7 @@ export default function Article() {
 
     return(
         <div className="bg-saitWhite h-screen">
-            {isLoading ? (
+            {isLoading && !articleData ? (
                 <Loader isLoading={isLoading} />
             ) : (
                 <div className="p-4">
@@ -168,6 +168,8 @@ export default function Article() {
                                                 width={60} 
                                                 height={60}
                                                 loading='lazy'
+                                                unoptimized
+                                                priority
                                             >
                                             </Image>
                                             <div className="-space-y-1">
@@ -186,16 +188,35 @@ export default function Article() {
                                     </div>
 
 
-                                    {articleData?.imageUrl && (
+                                    {articleData?.imageUrl ? (
                                         <div className="w-full flex max-w-full h-auto object-contain mb-4 mt-6">
-                                            <Image src={articleData.imageUrl} alt={articleData.title} 
-                                                style={{ maxHeight: "400px"}} className="w-10/12 h-96 object-cover rounded-md"    
-                                                loading='lazy'
-                                                width={800}
-                                                height={400}
+                                            <Image 
+                                            src={articleData.imageUrl}
+                                            alt={articleData.title || `${articleData.type?.name} article image`} 
+                                            className="w-10/12 h-96 object-cover rounded-md"    
+                                            style={{ maxHeight: "400px" }}
+                                            loading="lazy"
+                                            width={800}
+                                            height={400}
+                                            unoptimized
+                                            priority
+                                            onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
                                             />
                                         </div>
-                                    )}
+                                        ) : (
+                                        <div className="w-full flex max-w-full h-auto object-contain mb-4 mt-6">
+                                            <Image 
+                                            src="/img_placeholder.png"
+                                            alt="Article Placeholder" 
+                                            className="w-10/12 h-96 object-cover rounded-md"
+                                            style={{ maxHeight: "400px" }}
+                                            width={800}
+                                            height={400}
+                                            unoptimized
+                                            priority
+                                            />
+                                        </div>
+                                        )}
 
                                     {containsHTML(articleData.content) ? (
                                         <div 

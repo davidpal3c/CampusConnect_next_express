@@ -42,6 +42,7 @@ jobs:
     - name: Build and Push Frontend Image
       run: |
         docker build \
+          --build-arg NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }} \
           --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }} \
           --build-arg NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }} \
           --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }} \
@@ -63,15 +64,33 @@ jobs:
 
     # Wait for Backend Deployment to be ready
     - name: Wait for API to become healthy
+      # run: |
+      #   for i in {1..10}; do
+      #     echo "Attempt $i: Checking API health..."
+      #     if curl --fail --silent https://sait.campusconnect.it.com/api/health; then
+      #       echo "✅ API is healthy!"
+      #       exit 0
+      #     fi
+      #     echo "⚠️ Waiting for API to become ready..."
+      #     sleep 5
+      #   done
+      #   echo "❌ API did not become healthy in time."
+      #   exit 1
       run: |
-        for i in {1..10}; do
+        for i in {1..20}; do
           echo "Attempt $i: Checking API health..."
-          if curl --fail --silent https://sait.campusconnect.it.com/api/health; then
+          RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" https://sait.campusconnect.it.com/api/health)
+          BODY=$(echo $RESPONSE | sed -e 's/HTTPSTATUS\:.*//g')
+          STATUS=$(echo $RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+          echo "Status: $STATUS"
+          echo "Body: $BODY"
+          if [ "$STATUS" -eq 200 ]; then
             echo "✅ API is healthy!"
             exit 0
           fi
-          echo "⚠️ Waiting for API to become ready..."
+          echo "⚠️ Waiting 5s for API to become ready..."
           sleep 5
         done
         echo "❌ API did not become healthy in time."
         exit 1
+

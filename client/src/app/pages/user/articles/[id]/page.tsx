@@ -53,6 +53,8 @@ export default function ArticleContent({ params }: { params: Promise<{ id: strin
                     width={600}
                     height={300}
                     className="w-full h-64 object-cover"
+                    unoptimized
+                    priority
                 />
 
                 <div className="p-8">
