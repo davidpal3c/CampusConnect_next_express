@@ -1,4 +1,4 @@
-/campusconnect-chart
+
 
 # dependencies
 /node_modules
@@ -28,6 +28,11 @@ pipeline.md
 backend-secret.yaml
 frontend-secret.yaml
 azure-secret.yaml
+
+#Helm
+/campusconnect-chart/templates/backend/backend-secret.yaml
+/campusconnect-chart/templates/frontend/frontend-secret.yaml
+
 
 azure-dns-creds.json
 old_records.json

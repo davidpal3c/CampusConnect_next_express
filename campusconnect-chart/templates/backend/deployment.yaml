@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: campusconnect
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: campusconnectacr/campusconnect-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: FIREBASE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_API_KEY
+            - name: FIREBASE_AUTH_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_AUTH_DOMAIN
+            - name: FIREBASE_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_PROJECT_ID
+            - name: FIREBASE_STORAGE_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_STORAGE_BUCKET
+            - name: FIREBASE_MESSAGING_SENDER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_MESSAGING_SENDER_ID
+            - name: FIREBASE_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_APP_ID
+            - name: FIREBASE_MEASUREMENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_MEASUREMENT_ID
+            - name: FIREBASE_SDK_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_TYPE
+            - name: FIREBASE_SDK_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_PROJECT_ID
+            - name: FIREBASE_SDK_PRIVATE_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_PRIVATE_KEY_ID
+            - name: FIREBASE_SDK_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_PRIVATE_KEY
+            - name: FIREBASE_SDK_CLIENT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_CLIENT_EMAIL
+            - name: FIREBASE_SDK_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_CLIENT_ID
+            - name: FIREBASE_SDK_AUTH_URI
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_AUTH_URI
+            - name: FIREBASE_SDK_TOKEN_URI
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_TOKEN_URI
+            - name: FIREBASE_SDK_AUTH_PROVIDER_X509_CERT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_AUTH_PROVIDER_X509_CERT_URL
+            - name: FIREBASE_SDK_CLIENT_X509_CERT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_CLIENT_X509_CERT_URL
+            - name: FIREBASE_SDK_UNIVERSE_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FIREBASE_SDK_UNIVERSE_DOMAIN
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: DATABASE_URL
+            - name: CLIENT_ORIGIN
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: CLIENT_ORIGIN
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: NODE_ENV
+
+          

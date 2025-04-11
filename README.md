@@ -5,6 +5,13 @@ CampusConnect is a full-stack web application developed for SAIT's International
 ## 🌐 Live Production (Testing)
 **URL**: [https://sait.campusconnect.it.com](https://sait.campusconnect.it.com)
 
+
+## Explore Documentation and Charts
+[Application Overview](documentation/application-overview.md) <br>
+[Application Architecture - Kubernetes Cluster](documentation/charts/k8s_cluster.md) <br>
+[Upcoming Deployment Blue-Green Strategy](documentation/charts/k8s_cluster2.md) <br>
+[CI/CD Pipeline](documentation/charts/cicd-flowchart.md)
+
 ## 🚀 Current Tech Stack
 - **Frontend**: Next.js + React + Tailwind CSS
 - **Backend**: Node.js + Express + Prisma ORM
@@ -28,29 +35,15 @@ CampusConnect is a full-stack web application developed for SAIT's International
 ## 🛠️ In Progress
 - Blue-Green deployments and auto rollbacks
 - Use Helm (k8s pkm) to improve DevOps experience
-<!-- - User Notification Service -->
 - Authentication**: Firebase (Google SSO/Microsoft SSO)
 - Advanced monitoring & error alerting
 - Automated Testing in CICD (Unit, Integration, Security, and Performance Testing)
 - Advanced monitoring and logging (Apache Log4j)
-
+<!-- - User Notification Service -->
+<br>
 
 📣 **Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
 
-## 📁 Folder Structure
-```
-backend/               # Node.js + Express server
-frontend/              # Next.js frontend
-k8s/                   # Kubernetes manifests (deployments, services, ingress)
-  ├── backend/
-  ├── frontend/
-  ├── ingress.yaml
-  ├── certificate.yaml
-  └── cluster-issuer.yaml
-.github/
-  └── workflows/       # GitHub Actions CI/CD
-```
-
-
+<!-- 📬 **Organization Email.** support@campusconnect.it.com  -->
 
 
