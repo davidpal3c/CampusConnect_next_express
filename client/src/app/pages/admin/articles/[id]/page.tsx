@@ -169,7 +169,6 @@ export default function Article() {
                                                 height={60}
                                                 loading='lazy'
                                                 unoptimized
-                                                priority
                                             >
                                             </Image>
                                             <div className="-space-y-1">
@@ -199,7 +198,6 @@ export default function Article() {
                                             width={800}
                                             height={400}
                                             unoptimized
-                                            priority
                                             onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
                                             />
                                         </div>
@@ -213,7 +211,7 @@ export default function Article() {
                                             width={800}
                                             height={400}
                                             unoptimized
-                                            priority
+                                            loading="lazy"
                                             />
                                         </div>
                                         )}

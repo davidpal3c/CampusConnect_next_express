@@ -79,14 +79,35 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
                         className="flex items-center mr-3 active:scale-75 transition-shadow duration-300 ease-in-out">
 
                         <Image 
-                            src={userData?.image_url || user?.photoURL || 'https://i.ibb.co/5g3zzK2s/avatar-generic.jpg'} 
+                            src={user?.photoURL || userData?.image_url || 'https://i.ibb.co/5g3zzK2s/avatar-generic.jpg'} 
                             alt="user-avatar-photo" 
                             width={36}
                             height={36}
                             className="ml-3 mr-2 rounded-full border border-slate-500"
                             unoptimized
-                            priority
+                            loading="lazy"
                         />
+                        {/* {userData?.profileImageUrl ? (
+                            <Image 
+                                src={user?.photoURL || userData?.image_url} 
+                                alt="user-avatar-photo" 
+                                width={36}
+                                height={36}
+                                className="ml-3 mr-2 rounded-full border border-slate-500"
+                                unoptimized
+                                loading="lazy"
+                            />
+                        ) : (
+                            <Image 
+                                src='https://i.ibb.co/5g3zzK2s/avatar-generic.jpg'
+                                alt="user-avatar-photo" 
+                                width={36}
+                                height={36}
+                                className="ml-3 mr-2 rounded-full border border-slate-500"
+                                unoptimized
+                                loading="lazy"
+                            />
+                        )} */}
                     </button>
                     
                 </Tooltip>

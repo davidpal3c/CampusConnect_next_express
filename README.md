@@ -39,7 +39,8 @@ CampusConnect is a full-stack web application developed for SAIT's International
 - Authentication**: Firebase (Google SSO/Microsoft SSO)
 - Advanced monitoring & error alerting
 - Automated Testing in CICD (Unit, Integration, Security, and Performance Testing)
-- Advanced monitoring and logging (Apache Log4j)
+- Advanced monitoring and logging
+- Code Documentation 
 <!-- - User Notification Service -->
 <br>
 

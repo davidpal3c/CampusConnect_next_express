@@ -38,7 +38,6 @@ export default function ArticleCard({ article } : { article: any }) {
                                     height={150}
                                     loading='lazy'
                                     unoptimized
-                                    priority
                                     onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
                                 />
                             ) : (
@@ -49,8 +48,8 @@ export default function ArticleCard({ article } : { article: any }) {
                                     className="object-cover w-full h-full overflow-hidden"
                                     width={300}
                                     height={150}
-                                    loading='lazy'
-                                    priority
+                                    loading="lazy"
+                                    
                                 />
                             )}
                             

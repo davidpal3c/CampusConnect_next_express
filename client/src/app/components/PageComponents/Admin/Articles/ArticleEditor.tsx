@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useAsyncState from '@/app/hooks/useAsyncState';
 import { useForm } from "react-hook-form";
+import { compressImage } from '@/app/_utils/image-service';
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
@@ -156,18 +157,37 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         const content = contentMode === "richText" ? articleContent : data.content;
 
         let imageUrl = data.imageUrl;
+        // let compressedBlob;
 
         if (data.imageUrl && data.imageUrl[0] instanceof File) {                                        //only runs if a new image is uploaded
-            imageUrl = await uploadImage(data.imageUrl[0]);
             
-            if (!imageUrl) {
-                toast.error('Failed to upload image. creating article without image. Please contact support.');
-                return; 
-            }
+            try {
+                
+                const compressedBlob = await compressImage(data.imageUrl[0], { maxDimension: 1024, quality: 0.7 });
 
-            if (typeof imageUrl === 'object' && imageUrl.error) {
-                toast.error(imageUrl.error || 'Failed to upload image. creating article without image. Please contact support.');
-                return;  
+                const compressedFile = new File(
+                    [compressedBlob as Blob],
+                    `${data.imageUrl[0].name}-compressed`,                                                              // retain original file name (or modify if desired)
+                    { type: "image/jpeg" }
+                );
+
+                imageUrl = await uploadImage(compressedFile);
+
+                if (!imageUrl) {
+                    toast.error('Failed to upload image. creating article without image. Please contact support.');
+                    return; 
+                }
+    
+                if (typeof imageUrl === 'object' && imageUrl.error) {
+                    toast.error(imageUrl.error || 'Failed to upload image. creating article without image. Please contact support.');
+                    return;  
+                }
+                toast.success('Image compressed and uploaded successfully');
+
+            } catch (error) {
+                console.log("Error uploading image: ", error);
+                toast.error('An error occurred while compressing the image');
+                return; 
             }
         }
 
