@@ -206,7 +206,7 @@ export const AuthContextProvider = ({ children }) => {
       router.push("/admin/");
     } catch (error) {
       console.error("Sign In process error:", error);
-      toast.error(error.message || "Oops Something went wrong!...", {
+      toast.error(error.message || "Oops Something went wrong!", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
