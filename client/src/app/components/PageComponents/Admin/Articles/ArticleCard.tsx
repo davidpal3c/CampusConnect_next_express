@@ -28,16 +28,32 @@ export default function ArticleCard({ article } : { article: any }) {
                 {article ? (
                     <div>
                         <div className="rounded-lg overflow-hidden h-36">
-                            <Image
-                                ref={ref as MutableRefObject<HTMLImageElement | null>}
-                                src={isVisible ? (article.imageUrl ? article.imageUrl : "/img_placeholder.png") : "/img_placeholder.png"}
-                                alt={`${article.title}-image` || "Placeholder image"}
-                                className="object-cover w-full h-full overflow-hidden"
-                                width={300}
-                                height={150}
-                                loading='lazy'
-                                onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
-                            />
+                            {article ? (
+                                <Image
+                                    ref={ref as MutableRefObject<HTMLImageElement | null>}
+                                    src={article.imageUrl}
+                                    alt={`${article.title}-image` || "Placeholder image"}
+                                    className="object-cover w-full h-full overflow-hidden"
+                                    width={300}
+                                    height={150}
+                                    loading='lazy'
+                                    unoptimized
+                                    priority
+                                    onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
+                                />
+                            ) : (
+                                <Image
+                                    ref={ref as MutableRefObject<HTMLImageElement | null>}
+                                    src="/img_placeholder.png"
+                                    alt="Placeholder image"
+                                    className="object-cover w-full h-full overflow-hidden"
+                                    width={300}
+                                    height={150}
+                                    loading='lazy'
+                                    priority
+                                />
+                            )}
+                            
                             {/* <img
                                 src={article.imageUrl ? article.imageUrl : "/img_placeholder.png"}
                                 alt={`${article.title}-image` || "Placeholder image"} 

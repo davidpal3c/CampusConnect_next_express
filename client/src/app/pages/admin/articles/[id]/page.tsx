@@ -192,7 +192,7 @@ export default function Article() {
                                         <div className="w-full flex max-w-full h-auto object-contain mb-4 mt-6">
                                             <Image 
                                             src={articleData.imageUrl}
-                                            alt={articleData.title || "Article Image"} 
+                                            alt={articleData.title || `${articleData.type?.name} article image`} 
                                             className="w-10/12 h-96 object-cover rounded-md"    
                                             style={{ maxHeight: "400px" }}
                                             loading="lazy"
