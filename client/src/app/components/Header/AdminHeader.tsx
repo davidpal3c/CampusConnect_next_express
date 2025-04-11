@@ -22,6 +22,7 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
     const { userData } = useUserData();
+    const [avatarImg, setAvatarImg] = useState<string | null>(null);
     const router = useRouter();
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -46,6 +47,16 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
             console.log("Sign Out error:", err);
         }
     }
+
+    useEffect(() => {
+        if (userData?.image_url || user?.photoURL) {
+            setAvatarImg(userData?.image_url || user?.photoURL);
+        }
+    }, [user, userData]);
+
+    useEffect(() => {
+        console.log("User: ", user);
+    }, [user]);
 
     return (
         <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-2 -mt-2 w-full">
@@ -78,7 +89,7 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
                         onClick={handleMenuClick}
                         className="flex items-center mr-3 active:scale-75 transition-shadow duration-300 ease-in-out">
 
-                        <Image 
+                        {/* <Image 
                             src={user?.photoURL || userData?.image_url || 'https://i.ibb.co/5g3zzK2s/avatar-generic.jpg'} 
                             alt="user-avatar-photo" 
                             width={36}
@@ -86,16 +97,17 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
                             className="ml-3 mr-2 rounded-full border border-slate-500"
                             unoptimized
                             loading="lazy"
-                        />
-                        {/* {userData?.profileImageUrl ? (
+                        /> */}
+                        {avatarImg ? (
                             <Image 
-                                src={user?.photoURL || userData?.image_url} 
+                                src={avatarImg} 
                                 alt="user-avatar-photo" 
                                 width={36}
                                 height={36}
                                 className="ml-3 mr-2 rounded-full border border-slate-500"
                                 unoptimized
                                 loading="lazy"
+                                onError={(e) => (e.currentTarget.src = 'https://i.ibb.co/5g3zzK2s/avatar-generic.jpg')}
                             />
                         ) : (
                             <Image 
@@ -107,7 +119,7 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
                                 unoptimized
                                 loading="lazy"
                             />
-                        )} */}
+                        )}
                     </button>
                     
                 </Tooltip>

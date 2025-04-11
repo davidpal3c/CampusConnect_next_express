@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import UserCard from "@/app/components/PageComponents/Admin/User/UserCard";
 import { getCurrentSeason } from "../../components/PageComponents/Admin/User/IntakePicker";
+import Image from "next/image";
 
 import { useUserData } from "@/app/_utils/userData-context";
 import { useUserAuth } from "@/app/_utils/auth-context";
@@ -177,11 +178,20 @@ export default function UserPage() {
   const unauthorized = (
     <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
       <div>
-        <img
+        <Image 
+          src="/sait-logo.png"
+          alt="Campus Connect"
+          className="rounded-lg mb-6 mx-auto w-40 md:w-60"
+          width={100}
+          height={100}
+          unoptimized
+          loading="lazy"
+        />
+        {/* <img
           src="/sait-logo-trans.png"
           alt="Campus Connect"
           className="rounded-lg mb-6 mx-auto w-40 md:w-60"
-        />
+        /> */}
         <div>
           <h1 className="text-4xl text-white font-bold">403</h1>
           <h2 className="text-2xl text-white font-semibold">

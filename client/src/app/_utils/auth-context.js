@@ -184,7 +184,7 @@ export const AuthContextProvider = ({ children }) => {
       });
       
 
-      console.log("BACKEND_URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
+      // console.log("BACKEND_URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
       
       if (!response.ok) {
         const errorData = await response.json();

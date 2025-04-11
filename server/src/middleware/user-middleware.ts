@@ -78,6 +78,18 @@ export const validatePermissions = (allowedPermissions: string[]) => {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 // export const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 //     try {
 //         const { decodedClaims } = req.user;     
