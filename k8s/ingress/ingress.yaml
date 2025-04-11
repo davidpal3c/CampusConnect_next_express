@@ -21,15 +21,15 @@ spec:
     - host: sait.campusconnect.it.com
       http:
         paths:
-          - path: /api(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api
+            pathType: Prefix
             backend:
               service:
                 name: backend-service
                 port:
                   number: 80
-          - path: /
-            pathType: Prefix
+          - path: /(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: frontend-service

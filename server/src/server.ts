@@ -51,6 +51,10 @@ app.get('/api/ping', (req, res) => {
   res.json('Pong there you go!');
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.get('/', (req, res) => {
   res.json('Hello from the server!');
 })

@@ -61,6 +61,17 @@ jobs:
       run: |
         kubectl set image deployment/frontend frontend=$ACR_NAME.azurecr.io/campusconnect-frontend:${{ env.IMAGE_TAG }} -n campusconnect
 
-    # Optional Health Check
-    - name: Check API Health
-      run: curl --fail --silent https://sait.campusconnect.it.com/api/ || exit 1
+    # Wait for Backend Deployment to be ready
+    - name: Wait for API to become healthy
+        run: |
+          for i in {1..10}; do
+            echo "Attempt $i: Checking API health..."
+            if curl --fail --silent https://sait.campusconnect.it.com/api/health; then
+              echo "✅ API is healthy!"
+              exit 0
+            fi
+            echo "⚠️ Waiting for API to become ready..."
+            sleep 5
+          done
+          echo "❌ API did not become healthy in time."
+          exit 1
