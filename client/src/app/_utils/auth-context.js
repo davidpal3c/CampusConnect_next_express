@@ -186,7 +186,7 @@ export const AuthContextProvider = ({ children }) => {
       if (!response.ok) {
         const errorData = await response.json();
         console.log("Login failed:", errorData);
-        toast.error(errorData.message || "Login failed: unknown error occurred");
+        toast.error(errorData.message || "Login failed: Unknown error occurred");
 
         await signOutFirebase();
         closeLoaderBackdrop();
