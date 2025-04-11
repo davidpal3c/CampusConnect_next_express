@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    domains: [
+      'i.ibb.co',
+      'lh3.googleusercontent.com', // if using Google Auth
+    ],
     remotePatterns: [
       {
         protocol: 'https',

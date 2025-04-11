@@ -168,6 +168,8 @@ export default function Article() {
                                                 width={60} 
                                                 height={60}
                                                 loading='lazy'
+                                                unoptimized
+                                                priority
                                             >
                                             </Image>
                                             <div className="-space-y-1">
@@ -193,6 +195,8 @@ export default function Article() {
                                                 loading='lazy'
                                                 width={800}
                                                 height={400}
+                                                unoptimized
+                                                priority
                                             />
                                         </div>
                                     )}

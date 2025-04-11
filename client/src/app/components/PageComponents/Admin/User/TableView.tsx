@@ -328,7 +328,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                 <div className="flex items-center justify-center w-full h-full">
                     {imageUrl ? (
                         // <img src={imageUrl} alt="User" className="w-8 h-8 rounded-full border-saitBlack border" />
-                        <Image src={imageUrl} alt="User" width={32} height={32} className="rounded-full border-saitBlack border" />
+                        <Image src={imageUrl} alt="User" width={32} height={32} className="rounded-full border-saitBlack border" unoptimized priority/>
                     ) : (
                         <AccountCircleIcon className="text-gray-500 w-8 h-8" />
                     )}

@@ -83,7 +83,9 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
                             alt="user-avatar-photo" 
                             width={36}
                             height={36}
-                            className="ml-3 mr-2 rounded-full border border-slate-500" 
+                            className="ml-3 mr-2 rounded-full border border-slate-500"
+                            unoptimized
+                            priority
                         />
                     </button>
                     

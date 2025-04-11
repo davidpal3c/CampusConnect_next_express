@@ -234,6 +234,7 @@ export default function AdminPage() {
                 fill
                 sizes="100vw" 
                 className="object-contain" // Prevents cropping, maintains aspect ratio
+                unoptimized
                 priority
               />
             </div>
