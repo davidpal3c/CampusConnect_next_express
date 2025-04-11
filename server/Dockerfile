@@ -42,5 +42,5 @@ RUN npm install --omit=dev
 # Generate Prisma client
 RUN npx prisma generate
 
-CMD ["node", "dist/src/server.js"]
+CMD ["node", "dist/server.js"]
 
