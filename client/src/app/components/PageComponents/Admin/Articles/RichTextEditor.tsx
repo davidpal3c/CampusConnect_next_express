@@ -83,7 +83,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ article, setContent }) 
             images_reuse_filename: true,
           }}
           value={editorValue}
-          onEditorChange={(newValue) => handleContentChange(newValue)}
+          onEditorChange={(newValue: any) => handleContentChange(newValue)}
           ref={editorRef}
         />
         {/* <button onClick={handleSubmit}>Submit Article</button> */}

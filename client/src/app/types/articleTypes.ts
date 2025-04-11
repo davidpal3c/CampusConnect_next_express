@@ -1,5 +1,6 @@
 export type Article = {
     id: string;
+    article_id?: string;
     title: string;
     datePublished: string;
     content: string;
@@ -9,4 +10,6 @@ export type Article = {
     author_id: string;
     author: string;
     type: string;
+    created_at: string;
+    updated_at: string;
 }

@@ -3,7 +3,15 @@ import { Tooltip } from '@mui/material';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { DeleteIcon } from "lucide-react";
 
-const EventListView = ({ events, onEventSelect, onEventDelete }) => {
+
+type EventListViewProps = {
+  events: any[];
+  onEventSelect: (event: any) => void;
+  onEventDelete: (event: any) => void;
+};
+
+
+const EventListView: React.FC<EventListViewProps> = ({ events, onEventSelect, onEventDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(10);
 

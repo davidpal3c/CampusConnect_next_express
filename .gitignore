@@ -1,3 +1,5 @@
+/campusconnect-chart
+
 # dependencies
 /node_modules
 
@@ -21,6 +23,15 @@ pipeline.html
 pipeline2.html
 pipeline.md
 
+# Opearations / CI-CD
+
+backend-secret.yaml
+frontend-secret.yaml
+azure-secret.yaml
+
+azure-dns-creds.json
+old_records.json
+encoded.txt
 
 
 /.pnp

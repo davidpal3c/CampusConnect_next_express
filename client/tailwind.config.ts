@@ -62,7 +62,8 @@ export default {
         "blue-gradient": `linear-gradient(to top, #2b64ae, #449dde)`,
         "purple-gradient": `linear-gradient(to top, #722a7a, #8d4990)`,
         "red-gradient": `linear-gradient(to top, #ff8b7e, #ca3929)`,
-        "side-red-gradient": `linear-gradient(to right, #ca3929, #932728)`,
+        "side-red-gradient": `linear-gradient(to right, #e43f2e, #932728)`,
+        // "side-red-gradient": `linear-gradient(to right, #ca3929, #932728)`,
       },
       screens: {
         '2xs': '320px',

@@ -20,24 +20,22 @@ dotenv.config();
 const app = express();
 const PORT = 8080;
 
-app.use(cookieParser());
-app.use(express.json({ limit: '20mb' }));
-app.use(express.urlencoded({ limit: '20mb', extended: true }));
-
 // server Middlewares
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN,
   credentials: true
 }));
 
+app.use(cookieParser());
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
-app.use(express.json());   
 
-// global error handling middleware 
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+// Health check route
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
+
 
 // Routes
 app.use('/api/auth', adminAuthRoute);
@@ -48,10 +46,15 @@ app.use('/api/audience', audienceRoute);
 // app.use('/api/programs', programRoute);
 app.use('/api/events', eventRoute);
 
-
 app.get('/', (req, res) => {
-  res.send('Hello from the server!');
+  res.json('Hello from the server!');
 })
+
+// global error handling middleware 
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);

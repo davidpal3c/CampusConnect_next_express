@@ -14,7 +14,9 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
-export default function UserHeader({handleSidebarToggle, shouldShowButton}) {
+
+
+export default function UserHeader({handleSidebarToggle, shouldShowButton}: {handleSidebarToggle: () => void, shouldShowButton: boolean}) {
   const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
   const router = useRouter();
 
