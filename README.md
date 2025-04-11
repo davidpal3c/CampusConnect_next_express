@@ -8,6 +8,7 @@ CampusConnect is a full-stack web application developed for SAIT's International
 
 ## Explore Documentation and Charts
 [Application Overview](documentation/application-overview.md) <br>
+[Application Overview Diagram](documentation/charts/app-overview-chart.md)<br>
 [Application Architecture - Kubernetes Cluster](documentation/charts/k8s_cluster.md) <br>
 [Upcoming Deployment Blue-Green Strategy](documentation/charts/k8s_cluster2.md) <br>
 [CI/CD Pipeline](documentation/charts/cicd-flowchart.md)

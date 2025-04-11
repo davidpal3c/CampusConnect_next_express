@@ -1,9 +1,8 @@
 # CampusConnect - Student App Development
 
 ## Project Overview
-- **Project Sponsor**: Shannon Erwin
-  - Title: International Student Engagement Coordinator at SAIT
-  - Contact: Shannon.Erwin@edu.sait.ca
+- **Project Sponsor**: International Student Engagement Coordinator at SAIT
+  - Contact: SAIT International Center
 - **Current System**: iCent
   - Limitations:
     - Poor UX/UI design
@@ -17,9 +16,9 @@
     - Direct notifications
     - UI/UX improvements
     - User integration (social media, messaging)
-    - Landing page with events, links, and notifications
+    - Landing page with events, articles, links, and notifications
 
-## Use Case Diagram and Descriptions
+## Use Case Descriptions
 - **Administrator Use Cases**
   - Register Admin Account
   - Log into Admin Account
@@ -39,24 +38,119 @@
   - Interaction with Groups
 
 ## Data Sets
-- **Article Data**
-  - Fields: Title, Date Published, Category, Content, Image, Author
+
+- **User Data**
+  - Fields: user_id, email, password, first_name, last_name, middle_name, image_url, role, created_at, updated_at
   - Format: JSON
+
 - **Student Information**
-  - Fields: SAIT ID, Name, Age, Email, Program, Department
-  - Format: Excel (.xlsx)
+  - Fields: user_id, program_id, department_id, status, intake, intake_year
+  - Format: JSON / Excel (.xlsx) / CSV
+
 - **Alumni Information**
-  - Fields: Name, Age, Email, Credential(s), Year of Graduation, Current Position, Company
-  - Format: Excel (.xlsx)
-- **Events**
-  - Fields: Event Name, Date, Location, Target Categories, Host
+  - Fields: user_id, current_position, company
+  - Format: JSON / Excel (.xlsx) / CSV
+
+- **Alumni Study Records**
+  - Fields: alumni_id, program_id, department_id, graduation_year
   - Format: JSON
-- **Administrative Account Information**
-  - Fields: Email, Password, SAIT ID, Name, Position, Permissions
+
+- **Program Data**
+  - Fields: program_id, name, department_id
+  - Format: JSON / Excel (.xlsx) 
+
+- **Department Information**
+  - Fields: department_id, name, contact_email, contact_phone
+  - Format: JSON / Excel (.xlsx)
+
+- **Article Data**
+  - Fields: article_id, title, datePublished, content, imageUrl, audience, created_at, updated_at, status, author_id, type_id, tags
   - Format: JSON
+
+- **Article Types**
+  - Fields: type_id, name, created_at, updated_at, isDefault
+  - Format: JSON
+
+- **Article Categories**
+  - Fields: id, article_id, category_id
+  - Format: JSON
+
+- **Event Data**  
+  - Fields: event_id, name, date, location, audience, host, contact, capacity, current_attendees, form_id
+  - Format: JSON
+
+- **Form Definitions**
+  - Fields: id, title, fields (structure), isDraft, createdAt
+  - Format: JSON
+
+- **Form Submissions**
+  - Fields: id, formId, data (user responses), createdAt
+  - Format: JSON
+
+- **Event Categories**
+  - Fields: id, event_id, category_id
+  - Format: JSON
+
+- **Category Tags**
+  - Fields: category_id, name
+  - Format: JSON
+
+- **Group Data**
+  - Fields: group_id, name, owner_id, audience, allowed_users
+  - Format: JSON
+
+- **Group Messages**
+  - Fields: message_id, content, timestamp, sender_id, group_id
+  - Format: JSON
+
+- **User Events**
+  - Fields: id, user_id, event_id, rsvp, user_email, owned
+  - Format: JSON
+
+- **User Groups**
+  - Fields: id, user_id, group_id
+  - Format: JSON
+
+- **Notifications**
+  - Fields: notification_id, description, audience, created_at, type
+  - Format: JSON
+
+- **User Notifications**
+  - Fields: id, user_id, notification_id, accessed
+  - Format: JSON
+
 - **Data Analytics**
-  - Fields: Event Associated, Date, Time, Engagement Quantities by Program, Engagement Totals
-  - Format: JSON
+  - Fields: id, user_id, notification_id, accessed
+  - Format: JSON / CSV
+
+
+
+## Data Analytics - Data Sets
+
+- **Article Engagement Dataset**
+  - Purpose: Measure content reach, author contribution, and publishing trends.
+  - Fields: article_id, title, datePublished, status (Draft, Published), author_id, author, type_id, tags, audience (JSON)
+  - Format: JSON / CSV
+  - Use Case Examples: Most common tags used, Article volume per author, Time to publish (draft → published)
+
+- **Event Participation Dataset**
+  - Purpose: Analyze event attendance, capacity utilization, and interest by demographic.
+  - Fields: event_id, name, date, location, capacity, current_attendees, audience (JSON), rsvp (from UserEvent), user_id (from UserEvent)
+  - Format: JSON / CSV
+  - Use Case Examples: Event attendance rate, RSVPs by user type, Regional participation heatmaps
+
+- **Form Submission Analytics**
+  - Purpose: Extract insights from form data tied to events (like surveys or feedback).
+  - Fields: submission_id, form_id, form_title, submission_data (flattened JSON), submitted_at
+  - Format: JSON / CSV
+  - Use Case Examples: Satisfaction scores, Feedback sentiment analysis, Survey participation rate
+
+- **Notifications Delivery Dataset**
+  - Purpose: Monitor notification effectiveness and access behavior.
+  - Fields: notification_id, type (Article, Event, Group), audience (JSON), created_at, user_id (via UserNotification), accessed.
+  - Format: JSON / CSV
+  - Use Case Examples: Notification Open Rate, Access rate by notification type, Notification delivery heatmap, Unread rate per student program/department, and Targeting effectiveness (measure which audience segments are more responsive). 
+
 
 ## Data Storage and Persistence
 - **Database**: PostgreSQL
