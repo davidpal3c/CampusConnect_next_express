@@ -32,5 +32,9 @@
 **/values.dev.yaml
 **/build
 **/dist
+# (temp)
+**/__test__
+/__test__
+__test__
 LICENSE
 README.md

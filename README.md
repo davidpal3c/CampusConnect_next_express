@@ -22,29 +22,25 @@ CampusConnect is a full-stack web application developed for SAIT's International
 - **CI/CD**: GitHub Actions → Azure Container Registry → AKS
 - **HTTPS & TLS**: Managed by cert-manager + Let's Encrypt using DNS-01 challenge via Azure DNS
 - **Ingress Controller**: NGINX
-- **Authentication**: Firebase (Google SSO)
+- **Authentication**: Firebase (Google & Microsoft SSO)
 
-<!-- ## 🔐 Secrets & Config
-- Secrets like Firebase credentials, database URL, and third-party keys are managed via Kubernetes Secrets.
+## 🔐 Secrets & Configuration Management
+- ConfigMaps & Secrets externalizing configuration from containers. 
 - Sensitive manifests (like `*-secret.yaml`) are **not** committed to the repo and must be applied manually.
 
-## 📦 Deployments
-- Docker images are built and pushed to **Azure Container Registry** (`campusconnectacr`).
-- Kubernetes deployments automatically pull updated images during CI/CD and roll out with zero-downtime updates.
-- Blue-green deployment strategy is planned for future versions. -->
-
 ## 🛠️ In Progress
+- User Notifications
+- Groups and Real-Time messaging using WebSockets 
+
 - Blue-Green deployments and auto rollbacks
-- Use Helm (k8s pkm) to improve DevOps experience
-- Advanced monitoring & error alerting
-- Automated Testing in CICD (Unit, Integration, Security, and Performance Testing)
-- Advanced monitoring and logging
+- Use Helm (k8s pkm) to improve DevOps best practices
+- Automated Validation and Testing in CICD pipeline (Unit, Integration, Security, and Performance Testing)
+- Advanced monitoring, logging and alerting
 - Code Documentation 
-<!-- - User Notification Service -->
 <br>
 
 📣 **Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
 
-<!-- 📬 **Organization Email.** support@campusconnect.it.com  -->
+<!-- 📬 **Organization Email.** support@campusconnect.it.com -->
 
 
