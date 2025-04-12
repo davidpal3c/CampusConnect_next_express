@@ -60,7 +60,6 @@ export default function ArticlesDashboard() {
   // Loader
   const [isLoading, setIsLoading] = useState(true);
 
-
   const fetchArticleData = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/`, {

@@ -11,7 +11,11 @@ export interface AuthenticatedRequest extends Request {
   
 const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 * 1000; 
 
-
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    
     try {      
@@ -49,8 +53,7 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
             data: enrichedUser,
         });
 
-        // console.log("logged user response:", res.cookie.toString());
-        
+        // console.log("logged user response:", res.cookie.toString()); 
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error' });
@@ -59,6 +62,11 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
     }
 };
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const checkSession = async (req: AuthenticatedRequest, res: Response) => {
     
     try {
@@ -83,6 +91,11 @@ export const checkSession = async (req: AuthenticatedRequest, res: Response) => 
     }
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const logout = async (req: AuthenticatedRequest, res: Response) => {
     try {
         res.clearCookie('session', {

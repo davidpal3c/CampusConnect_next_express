@@ -36,7 +36,6 @@ CampusConnect is a full-stack web application developed for SAIT's International
 ## 🛠️ In Progress
 - Blue-Green deployments and auto rollbacks
 - Use Helm (k8s pkm) to improve DevOps experience
-- Authentication**: Firebase (Google SSO/Microsoft SSO)
 - Advanced monitoring & error alerting
 - Automated Testing in CICD (Unit, Integration, Security, and Performance Testing)
 - Advanced monitoring and logging

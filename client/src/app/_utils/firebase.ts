@@ -22,19 +22,3 @@ if (typeof window !== "undefined" && getApps().length === 0) {
 
 export const auth = typeof window !== "undefined" ? getAuth(app!) : null;
 
-
-// Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-
-// export const auth = getAuth(app);
-
-
-// Enable local persistence
-// setPersistence(auth, browserLocalPersistence)
-//   .then(() => {
-//     console.log("Session persistence set to local");
-//   })
-//   .catch((error) => {
-//     console.error("Error setting local persistence:", error);
-//   });
-

@@ -51,7 +51,6 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-
   const microsoftSignIn = async () => {
     if (isProcessingAuth) return;
     setIsProcessingAuth(true);
@@ -79,10 +78,6 @@ export const AuthContextProvider = ({ children }) => {
       setIsProcessingAuth(false);
     }
   };
-
-
-
-
 
   const clearLocalStorage = () => {
     localStorage.removeItem("user");
