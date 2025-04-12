@@ -11,7 +11,11 @@ export interface AuthenticatedRequest extends Request {
   
 const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 * 1000; 
 
-
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    
     try {      
@@ -59,6 +63,11 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
     }
 };
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const checkSession = async (req: AuthenticatedRequest, res: Response) => {
     
     try {
@@ -83,6 +92,11 @@ export const checkSession = async (req: AuthenticatedRequest, res: Response) => 
     }
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const logout = async (req: AuthenticatedRequest, res: Response) => {
     try {
         res.clearCookie('session', {

@@ -1,7 +1,4 @@
 // const express = require('express');
-// const userRouter = require('./routes/userRoutes');
-// const cors = require('cors');               //so that the server can accept requests from the client
-
 import express from 'express';
 import userRoute from './routes/user-route';
 import adminAuthRoute from './routes/adminAuth-route';
