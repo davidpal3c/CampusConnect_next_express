@@ -44,7 +44,6 @@ export const UserDataProvider = ({ children }) => {
         }
     };
 
-
     return (
         <UserDataContext.Provider value={{ userData, updateUserData, reFetchUserData, loadingUser }}>
             {children}

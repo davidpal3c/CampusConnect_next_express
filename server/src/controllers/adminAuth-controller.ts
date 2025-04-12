@@ -53,8 +53,7 @@ export const loginAdmin = async (req: AuthenticatedRequest, res: Response): Prom
             data: enrichedUser,
         });
 
-        // console.log("logged user response:", res.cookie.toString());
-        
+        // console.log("logged user response:", res.cookie.toString()); 
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error' });
