@@ -51,48 +51,43 @@ model Student {
 }
 
 model Alumni {
-  user_id           String   @id @unique
-  current_position  String?
-  company           String?
- 
-  // Relation
-  User              User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  AlumniStudy     AlumniStudy[]
+  user_id          String        @id @unique
+  current_position String?
+  company          String?
+  User             User          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  AlumniStudy      AlumniStudy[]
 }
 
 model AlumniStudy {
-  id              String   @id @unique @default(uuid())
+  id              String     @id @unique @default(uuid())
   alumni_id       String
   program_id      String?
   department_id   String
   graduation_year Int?
-  
-  // Relations
-  Alumni          Alumni    @relation(fields: [alumni_id], references: [user_id], onDelete: Cascade)
-  Program         Program?  @relation(fields: [program_id], references: [program_id])
+  Alumni          Alumni     @relation(fields: [alumni_id], references: [user_id], onDelete: Cascade)
   Department      Department @relation(fields: [department_id], references: [department_id])
+  Program         Program?   @relation(fields: [program_id], references: [program_id])
 
-  @@unique([alumni_id, program_id, department_id, graduation_year]) 
+  @@unique([alumni_id, program_id, department_id, graduation_year])
 }
 
- 
 model Program {
-  program_id    String     @id
+  program_id    String        @id
   name          String
   department_id String
-  Department    Department @relation(fields: [department_id], references: [department_id])
-  Students      Student[]
   AlumniStudies AlumniStudy[]
+  Department    Department    @relation(fields: [department_id], references: [department_id])
+  Students      Student[]
 }
 
 model Department {
-  department_id String    @id @unique
+  department_id String        @id @unique
   name          String
   contact_email String
   contact_phone String
+  AlumniStudies AlumniStudy[]
   Programs      Program[]
   Students      Student[]
-  AlumniStudies AlumniStudy[]
 }
 
 model Article {
@@ -132,44 +127,43 @@ model ArticleCategory {
 }
 
 model Event {
-  event_id          String   @id @unique @default(uuid())
+  event_id          String          @id @unique @default(uuid())
   name              String
   date              DateTime
   location          String
   audience          Json
-  host              String? // descriptive (eg. department name, program name,etc)
+  host              String?
   contact           String
   capacity          Int
-  current_attendees Int      @default(0)
-  form_id           String?  @unique
-
-  //Relation
-  Categories EventCategory[]
-  UserEvents UserEvent[]
-  Form       Form?           @relation(fields: [form_id], references: [form_id])
-
-  //User            User  @relation(fields: [owner], references: [user_id])
-  //@@index([owner])
+  current_attendees Int             @default(0)
+  updated_at    DateTime          @updatedAt
+  Categories        EventCategory[]
+  UserEvents        UserEvent[]
+  Form       Form?
 
   @@index([host])
 }
 
 //Made changes to this
 model Form {
-  id          String   @id @default(uuid())
+  form_id     String           @id @default(uuid())
   title       String
-  fields      Json     // Stores form structure (e.g., [{ type: "text", title: "Name" }])
-  isDraft     Boolean @default(true)
-  createdAt   DateTime @default(now())
+  fields      Json             // Stores form structure
+  isDraft     Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updated_at    DateTime          @updatedAt
+  event_id    String?     @unique
+  Event       Event?      @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
   submissions FormSubmission[]
 }
 
-//User Side for them to see the form... Hopefully
 model FormSubmission {
   id        String   @id @default(uuid())
-  form      Form     @relation(fields: [formId], references: [id])
+  form      Form     @relation(fields: [formId], references: [form_id], onDelete: Cascade)
   formId    String
-  data      Json     // Stores user responses (e.g., { q1: "John" })
+  user_id   String?  // Added to track who submitted the form
+  user      User?    @relation(fields: [user_id], references: [user_id], onDelete: SetNull)
+  data      Json     // Stores user responses
   createdAt DateTime @default(now())
 }
 

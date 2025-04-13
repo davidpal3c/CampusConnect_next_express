@@ -23,16 +23,18 @@ const EventCardView = ({ events, onEventSelect, onEventDelete, isAdminView = fal
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {currentEvents.map((event, index) => (
+        {currentEvents.map((event, index) => (   
           <EventCard 
             key={index}
             event={event}
             onEventSelect={onEventSelect}
             onEventDelete={onEventDelete}
-            isAdminView={isAdminView}
-          />
+            isAdminView={isAdminView}            
+          />    
         ))}
       </div>
+
+      
       
       <div className="flex justify-between items-center mt-6">
         <button 

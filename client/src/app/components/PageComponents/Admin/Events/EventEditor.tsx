@@ -48,34 +48,34 @@ function EventEditor({
         <h2 className="text-xl font-bold mb-4">Preview</h2>
         
         <p className="font-medium mt-4">Name:</p>
-        <p className="text-gray-600">{name || 'Name field is required.'}</p>
+        <p className="text-gray-600 overflow-hidden text-ellipsis">{name || 'Name field is required.'}</p>
         
         <p className="font-medium mt-4">Date:</p>
-        <p className="text-gray-600">{date || 'Date field is required.'}</p>
+        <p className="text-gray-600 overflow-hidden text-ellipsis">{date || 'Date field is required.'}</p>
         
         <p className="font-medium mt-4">Location:</p>
-        <p className="text-gray-600">{location || 'Location is required.'}</p>
+        <p className="text-gray-600 overflow-hidden text-ellipsis">{location || 'Location is required.'}</p>
         
         <p className="font-medium mt-4">Audience:</p>
-        <p className="text-gray-600">{audience}</p>
+        <p className="text-gray-600 overflow-hidden text-ellipsis">{audience}</p>
         
         <p className="font-medium mt-4">Programs:</p>
-        <p className="text-gray-600">{programs}</p>
+        <p className="text-gray-600 overflow-hidden text-ellipsis">{programs}</p>
         
         <p className="font-medium mt-4">Description:</p>
-        <p className="text-gray-600">{description || 'Default description is empty.'}</p>
+        <p className="text-gray-600 overflow-hidden text-ellipsis">{description || 'Default description is empty.'}</p>
         
         <p className="font-medium mt-4">Host:</p>
-        <p className="text-gray-600">{host}</p>
+        <p className="text-gray-600 overflow-hidden text-ellipsis">{host}</p>
         
         <p className="font-medium mt-4">Capacity:</p>
-        <p className="text-gray-600">{capacity || 'Capacity is required.'}</p>
+        <p className="text-gray-600 text-ellipsis">{capacity || 'Capacity is required.'}</p>
         
         <p className="font-medium mt-4">Image File:</p>
         <p className="text-gray-600">Default Image File is empty.</p>
       </div>
       
-      {/* Form */}
+      {/* Stupid dumbie dumb Form */}
       <div className="w-3/4 bg-white p-6 rounded-lg shadow">
         <div className="grid grid-cols-2 gap-6">
           {/* Name and Image */}
