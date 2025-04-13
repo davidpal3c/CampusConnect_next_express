@@ -39,7 +39,7 @@ const INITIAL_DATA = {
   time: '',
   description: '',
   host: 'SAIT',
-  capacity: ''
+  capacity: 0, // Set capacity as a number
 }
 
 const Events = () => {
@@ -90,7 +90,7 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
   const handleOpenCreatePanel = () => setShowEventEditor(true);
   const handleCloseCreatePanel = () => setShowEventEditor(false);
 
-  const handleEventSelect = (event) => {
+  const handleEventSelect = (event: any) => {
     setSelectedEvent(event);
     setAction("Edit");
     handleOpenCreatePanel();
@@ -117,7 +117,8 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
     try {
       const eventData = {
         ...data,
-        capacity: parseInt(data.capacity, 10), // Convert capacity to an integer
+        capacity: data.capacity
+        // capacity: parseInt(data.capacity, 10), // Convert capacity to an integer
       }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`, {

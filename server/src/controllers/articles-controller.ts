@@ -79,64 +79,64 @@ export const getArticleCountByType = async (req: Request, res: Response) => {
 
 
 // GET /api/articles/type/counts - Get article type counts
-export  const getArticleCountsByType = async (req: Request, res: Response) => {
-    try {
-        // // fetch article counts grouped by type_id
-        // const typeCounts = await prisma.article.groupBy({
-        //     by: ['type_id'],
-        //     _count: {
-        //         article_id: true
-        //     }
-        // });
+// export  const getArticleCountsByType = async (req: Request, res: Response) => {
+//     try {
+//         // // fetch article counts grouped by type_id
+//         // const typeCounts = await prisma.article.groupBy({
+//         //     by: ['type_id'],
+//         //     _count: {
+//         //         article_id: true
+//         //     }
+//         // });
 
-        // // fetch all article types to map type_id to type name
-        // const articleTypes = await prisma.articleType.findMany({
-        //     select: {
-        //         type_id: true,
-        //         name: true,
-        //     }
-        // })
+//         // // fetch all article types to map type_id to type name
+//         // const articleTypes = await prisma.articleType.findMany({
+//         //     select: {
+//         //         type_id: true,
+//         //         name: true,
+//         //     }
+//         // })
 
-        // // map of type_id (key) to type name (value)
-        // const typeMap = articleTypes.reduce((acc: any, type: any) => {
-        //     acc[type.type_id] = type.name;
-        //     return acc;
-        // }, {});
+//         // // map of type_id (key) to type name (value)
+//         // const typeMap = articleTypes.reduce((acc: any, type: any) => {
+//         //     acc[type.type_id] = type.name;
+//         //     return acc;
+//         // }, {});
 
-        // // transform result to include type names
-        // // map over the typeCounts array to include the type_name in the result using the typeMap.
-        // const result = typeCounts.map((count: any) => ({
-        //     type_id: count.type_id,
-        //     type_name: typeMap[count.type_id],
-        //     count: count._count.article_id 
-        // }));
+//         // // transform result to include type names
+//         // // map over the typeCounts array to include the type_name in the result using the typeMap.
+//         // const result = typeCounts.map((count: any) => ({
+//         //     type_id: count.type_id,
+//         //     type_name: typeMap[count.type_id],
+//         //     count: count._count.article_id 
+//         // }));
 
-        // // console.log("Type Counts: ", typeCounts);   
-        // console.log("Article Type Counts: ", result);
+//         // // console.log("Type Counts: ", typeCounts);   
+//         // console.log("Article Type Counts: ", result);
 
-        const result = await prisma.$queryRaw`
-            SELECT t.name AS type_name, COUNT(a.article_id) AS count
-            FROM "Article" a
-            JOIN "Type" t ON a.type_id = t.type_id
-            GROUP BY t.name
-        `;
+//         const result = await prisma.$queryRaw`
+//             SELECT t.name AS type_name, COUNT(a.article_id) AS count
+//             FROM "Article" a
+//             JOIN "Type" t ON a.type_id = t.type_id
+//             GROUP BY t.name
+//         `;
 
-        // [
-        //     { type_name: "Pre-Arrival", count: 2 },
-        //     { type_name: "Campus Life", count: 2 },
-        //     { type_name: "General", count: 1 },
-        // ]
+//         // [
+//         //     { type_name: "Pre-Arrival", count: 2 },
+//         //     { type_name: "Campus Life", count: 2 },
+//         //     { type_name: "General", count: 1 },
+//         // ]
 
-        console.log("Type Counts with Names: ", result);
-        res.status(200).json(result);
-        return;
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error: error fetching article type count', error: error });
-        return;
-    } finally {
-        await prisma.$disconnect();
-    }
-};
+//         console.log("Type Counts with Names: ", result);
+//         res.status(200).json(result);
+//         return;
+//     } catch (error) {
+//         res.status(500).json({ message: 'Server Error: error fetching article type count', error: error });
+//         return;
+//     } finally {
+//         await prisma.$disconnect();
+//     }
+// };
 
 // GET /api/articles/type/:typeId - Get all articles of a specific type
 export const getArticlesByType = async (req: Request, res: Response) => {
@@ -297,7 +297,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (type_id) updateArticleData.type_id = type_id;
         if (tags) updateArticleData.tags = tags;
 
-        console.log('Article audience : ', audience);
+        // console.log('Article audience : ', audience);
 
         await prisma.article.update({
             where: { article_id: id },

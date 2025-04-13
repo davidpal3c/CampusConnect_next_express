@@ -14,7 +14,14 @@ declare module 'express-serve-static-core' {
     }
   }
 
-
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
+// middleware to protect routes
 export const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         // firebase initialization
@@ -40,7 +47,14 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
     }
 }
 
-
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
+// middleware to check if user is admin
 export const adminRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 
         try {
@@ -82,6 +96,14 @@ export const adminRoute = async (req: AuthenticatedRequest, res: Response, next:
     }
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
+// middleware to set custom claims in firebase
 export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const { decodedToken, dbUser, adminPermissions } = req.user;
@@ -112,6 +134,13 @@ export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, 
     }
 }    
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
 export const setUserImage = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const { decodedToken } = req.user;
@@ -141,6 +170,13 @@ export const setUserImage = async (req: AuthenticatedRequest, res: Response, nex
 };
 
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
 // session request route: verify session cookie and set user object in request
 export const verifySession = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {

@@ -28,7 +28,7 @@ export const UserDataProvider = ({ children }) => {
             );
 
             const user = await response.json();
-
+            
             if (!response.ok) {
                 console.error("Error fetching user: ", userData);
                 // setUser(null); 
@@ -44,9 +44,8 @@ export const UserDataProvider = ({ children }) => {
         }
     };
 
-
     return (
-        <UserDataContext.Provider value={{ userData, updateUserData }}>
+        <UserDataContext.Provider value={{ userData, updateUserData, reFetchUserData, loadingUser }}>
             {children}
         </UserDataContext.Provider>
     );

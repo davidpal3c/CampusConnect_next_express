@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
-import { hostname } from "os";
+// import path from "path";
 
 const nextConfig: NextConfig = {
   images: {
+    domains: [
+      'i.ibb.co',
+      'lh3.googleusercontent.com', // if using Google Auth
+    ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -42,6 +46,11 @@ const nextConfig: NextConfig = {
       { source: '/user/articles/:id', destination: '/pages/user/articles/:id'},
     ];
   },
+
+  // webpack(config) {
+  //   config.resolve.alias['@'] = path.resolve(__dirname, 'src');
+  //   return config;
+  // },
 };
 
 export default nextConfig;

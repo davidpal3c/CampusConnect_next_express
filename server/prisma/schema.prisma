@@ -27,7 +27,6 @@ model User {
   UserEvents    UserEvent[]
   UserGroups    UserGroup[]
   Notifications UserNotification[]
-  Forms         Form[]
 
   @@index([email, user_id])
 }
@@ -135,11 +134,16 @@ model Event {
   host              String?
   contact           String
   capacity          Int
-  current_attendees Int             @default(0)
-  updated_at    DateTime          @updatedAt
+  current_attendees Int      @default(0)
+  form_id           String?  @unique
+
+  //Relation
   Categories        EventCategory[]
   UserEvents        UserEvent[]
-  Form       Form?
+  form              Form?    @relation("EventForm", fields: [form_id], references: [id])
+
+  //User            User  @relation(fields: [owner], references: [user_id])
+  //@@index([owner])
 
   @@index([host])
 }
@@ -155,6 +159,9 @@ model Form {
   event_id    String?     @unique
   Event       Event?      @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
   submissions FormSubmission[]
+
+  //inverse relation
+  event       Event?   @relation("EventForm")
 }
 
 model FormSubmission {

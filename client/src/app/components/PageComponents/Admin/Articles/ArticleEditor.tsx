@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useAsyncState from '@/app/hooks/useAsyncState';
 import { useForm } from "react-hook-form";
+import { compressImage } from '@/app/_utils/image-service';
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import { getTodayDate, formatToDateOnly } from "@/app/_utils/dateUtils";
 import { useUserData } from '@/app/_utils/userData-context';
@@ -11,7 +12,7 @@ import ArticleDeleteModal from './Modals/ArticleDeleteModal';
 import RichTextEditor from './RichTextEditor';
 import AudienceSelectionModal from '@/app/components/PageComponents/Admin/Articles/AudienceSelectionModal';
 import CriteriaAccordion from './CriteriaAccordion';
-
+import { uploadImage } from '@/app/api/upload-image'
 import { toast } from "react-toastify";
 
 //mui
@@ -103,6 +104,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         },
     });
     
+
     useEffect(() => {
         if (action === "Edit" && articleObject) {
             reset({
@@ -146,50 +148,6 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         reset({ ...articleObject, imageUrl: null });
     }
 
-    // upload image to imgbb API
-    const handleImageUpload = async(file: File) => {
-        if (!file) {
-            return null;
-        }
-
-        const formData = new FormData();
-        formData.append("image", file);
-
-        // const base64image = await fileToBase64(file);
-
-        try {
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`, {
-                method: "POST",
-                body: formData,
-            });
-
-            const responseData = await response.json();
-
-            if(!response.ok) {
-                console.log("Error uploading image: ", responseData);
-                toast.error("An error occurred uploading image");
-                return;
-            }
-
-            console.log("Image upload response: ", responseData)
-            if (responseData.success) {
-                return responseData.data.url; // Return the image URL
-            } else {
-                // console.log(responseData.error?.message || 'Image upload failed');
-                toast.error(responseData.error?.message || 'Image upload failed');
-                return null;
-            }
-        } catch (error) {
-            console.log("Error: ", error);
-            toast.error("An error occurred uploading image");
-
-            return null;
-        }
-        // finally {
-        //     // set loader to false
-        // }
-    }
-
     const submitForm = async (data: any, type:  "publish" | "save-preview" | "update" ) => {
         handleLoaderOpen();
 
@@ -199,12 +157,37 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         const content = contentMode === "richText" ? articleContent : data.content;
 
         let imageUrl = data.imageUrl;
+        // let compressedBlob;
 
         if (data.imageUrl && data.imageUrl[0] instanceof File) {                                        //only runs if a new image is uploaded
-            imageUrl = await handleImageUpload(data.imageUrl[0]);
-            if (!imageUrl) {
-                toast.error('Failed to upload image. creating article without image. Please contact support.');
-                // return; 
+            
+            try {
+                
+                const compressedBlob = await compressImage(data.imageUrl[0], { maxDimension: 1024, quality: 0.7 });
+
+                const compressedFile = new File(
+                    [compressedBlob as Blob],
+                    `${data.imageUrl[0].name}-compressed`,                                                              // retain original file name (or modify if desired)
+                    { type: "image/jpeg" }
+                );
+
+                imageUrl = await uploadImage(compressedFile);
+
+                if (!imageUrl) {
+                    toast.error('Failed to upload image. creating article without image. Please contact support.');
+                    return; 
+                }
+    
+                if (typeof imageUrl === 'object' && imageUrl.error) {
+                    toast.error(imageUrl.error || 'Failed to upload image. creating article without image. Please contact support.');
+                    return;  
+                }
+                toast.success('Image compressed and uploaded successfully');
+
+            } catch (error) {
+                console.log("Error uploading image: ", error);
+                toast.error('An error occurred while compressing the image');
+                return; 
             }
         }
 
@@ -229,6 +212,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         } else {
             processUpdateArticle(articleData);
         }
+
         handleLoaderClose();
     }
 
@@ -347,7 +331,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
             </header>
             <section className="relative flex items-center bg-white p-4 rounded-lg mb-6 shadow-md">
                 {/* <form onSubmit={handleSubmit(action === "Create" ? handleCreate : handleUpdate) } className="flex flex-row flex-wrap w-full"> */}
-                <form onSubmit={handleSubmit((data) => submitForm(data, ))} className="flex flex-row flex-wrap w-full">
+                <form onSubmit={handleSubmit((data: any) => submitForm(data, "publish"))} className="flex flex-row flex-wrap w-full">
                     <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
 
                         {/* title */}
@@ -373,14 +357,14 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                                 {...register('imageUrl', {
                                     required: false,
                                     validate: {
-                                    isImage: (value: FileList) => {
+                                    isImage: (value: any) => {
                                         if (!value || value.length === 0 || typeof value === 'string') return true;
                                         
                                         const file = value[0];
                                         // if (!file) return false;
                                         return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type) || 'Only image files (jpeg, png, gif) are allowed';
                                     },
-                                    isSizeValid: (value: FileList) => {
+                                    isSizeValid: (value: any) => {
                                         if (!value || typeof value === 'string') return true;
 
                                         const file = value[0];
@@ -447,18 +431,32 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                         {/* author name */}
                         {action === "Create" ? (
                             <div>
-                                <label className={formStyling.labelStyling} htmlFor="author">Author</label>
+                                <label className={formStyling.labelStyling} htmlFor="author">Author <span className="text-saitRed text-xs italic">(*defaults to user)</span></label>
                                 <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
-                                    {...register("author")}
+                                    {...register("author", {
+                                        required: false,
+                                        pattern: {
+                                            value: /^[a-zA-Z\s]*$/,
+                                            message: "Author name should only contain letters and spaces",
+                                        }
+                                    })}
                                 />
+                                {errors.author && (<p className={formStyling.errorStyle}>{errors.author.message}</p>)}
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className={formStyling.labelStyling} htmlFor="author">Author <span className="text-saitRed text-xs italic">(*defaults to current user)</span></label>
-                                    <input className={formStyling.inputStyling} type="text" id="author" placeholder={userFullName || "Enter Author's Name" }
-                                        {...register("author")}
+                                    <label className={formStyling.labelStyling} htmlFor="author">Author</label>
+                                    <input className={formStyling.inputStyling} type="text" id="author" placeholder={articleObject.author || "Enter Author's Name" }
+                                        {...register("author", {
+                                            required: false,
+                                            pattern: {
+                                                value: /^[a-zA-Z\s]*$/,
+                                                message: "Author name should only contain letters and spaces",
+                                            }
+                                        })}
                                     />
+                                    {errors.author && (<p className={formStyling.errorStyle}>{errors.author.message}</p>)}
                                 </div>
                                 <div>
                                     <label className={formStyling.labelStyling} htmlFor="status">Status</label>
@@ -565,17 +563,22 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
 
                     {action === "Create" ? (
                         <div className="flex flex-row items-center justify-between w-full space-x-5">
-                            <ActionButton title="Publish" onClick={handleSubmit((data) => submitForm(data, "publish"))}    
+                            <ActionButton title="Publish" onClick={handleSubmit((data: any) => submitForm(data, "publish"))}    
                             textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
-                            <ActionButton title="Save & Preview" onClick={handleSubmit((data) => submitForm(data, "save-preview"))}
-                                textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
+
+                            <Tooltip title="Save as Draft" arrow>
+                                <div>
+                                    <ActionButton title="Save & Preview" onClick={handleSubmit((data: any) => submitForm(data, "save-preview"))}
+                                        textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
+                                </div>
+                            </Tooltip>
                         </div>
                     ) : (
                         <div className="flex flex-row items-center justify-between w-full ">
                             <div className=""></div>
 
                             <div className="flex flex-row items-center space-x-4">
-                                <ActionButton title="Submit Update" onClick={handleSubmit((data) => submitForm(data, "update"))}
+                                <ActionButton title="Submit Update" onClick={handleSubmit((data: any) => submitForm(data, "update"))}
                                     textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>                            
                                 <ActionButton title="Cancel" onClick={closeOnClick} type="button"       // type button to prevent form submission
                                     textColor="text-slate-800" borderColor="border-slate-800" hoverBgColor="bg-saitBlack" hoverTextColor="text-saitDarkRed"/>

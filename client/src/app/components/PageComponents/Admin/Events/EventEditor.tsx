@@ -13,7 +13,7 @@ type EventData = {
 };
 
 type EventProps = EventData & {
-  updateFields: (fields: Partial<EventData>) => void;
+  updateFields: any;
 };
 
 function EventEditor({

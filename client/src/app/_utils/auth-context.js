@@ -51,7 +51,6 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-
   const microsoftSignIn = async () => {
     if (isProcessingAuth) return;
     setIsProcessingAuth(true);
@@ -79,10 +78,6 @@ export const AuthContextProvider = ({ children }) => {
       setIsProcessingAuth(false);
     }
   };
-
-
-
-
 
   const clearLocalStorage = () => {
     localStorage.removeItem("user");
@@ -166,7 +161,7 @@ export const AuthContextProvider = ({ children }) => {
       let token = user.currentToken;
 
       if (!token) {
-        console.log("No token in user object, attempting to fetch new token...");
+        console.log("No token in user object. Attempting to fetch new token...");
         token = await getIdToken(true);
       }
 
@@ -182,11 +177,14 @@ export const AuthContextProvider = ({ children }) => {
         },
         credentials: "include",
       });
+      
 
+      // console.log("BACKEND_URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
+      
       if (!response.ok) {
         const errorData = await response.json();
         console.log("Login failed:", errorData);
-        toast.error(errorData.message || "Login failed: unknown error occurred");
+        toast.error(errorData.message || "Login failed: Unknown error occurred");
 
         await signOutFirebase();
         closeLoaderBackdrop();

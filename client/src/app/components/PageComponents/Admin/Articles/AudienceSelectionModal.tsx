@@ -11,7 +11,6 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { IconButton } from "@mui/material";
 import { Tooltip } from '@mui/material';
-import { set } from 'react-hook-form';
 
 type AudienceSelectionModalProps = {
     openAudienceSelectionModal: boolean;
@@ -157,7 +156,7 @@ export default function AudienceSelectionModal({
                             <h1 className="text-xl font-bold">Select Audience</h1>
                         </div>
                         <div className="">
-                            <Tooltip title="Close">
+                            <Tooltip title="Close" arrow>
                                 <IconButton onClick={handleAudienceSelectionClose}>
                                     <CloseRoundedIcon />
                                 </IconButton>

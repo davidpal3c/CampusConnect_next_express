@@ -1,0 +1,46 @@
+# This file contains the configuration for a ClusterIssuer using DNS01 challenge with Azure DNS.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-dns
+spec:
+  acme:
+    email: davidpal3c@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-dns
+    solvers:
+      - dns01:
+          azureDNS:
+            environment: AzurePublicCloud
+            hostedZoneName: campusconnect.it.com
+            resourceGroupName: cc-resource-group
+            subscriptionID: 45ff196c-3719-4924-a2ef-6641f47096cd
+            tenantID: 0402062f-f1d4-4e12-8f12-7268a1047bd7
+            clientID: 80feb8a5-80a1-4ddf-9e02-e82eb0f83389
+            clientSecretSecretRef:
+              name: az-dns-sp-secret
+              key: azure.json
+
+
+# apiVersion: cert-manager.io/v1
+# kind: ClusterIssuer
+# metadata:
+#   name: letsencrypt-dns
+# spec:
+#   acme:
+#     server: https://acme-v02.api.letsencrypt.org/directory
+#     email: davidpal3c@gmail.com
+#     privateKeySecretRef:
+#       name: letsencrypt-dns
+#     solvers:
+#       - dns01:
+#           azureDNS:
+#             clientID: 80feb8a5-80a1-4ddf-9e02-e82eb0f83389
+#             clientSecretSecretRef:
+#               name: az-dns-sp-secret
+#               key: azure.json
+#             subscriptionID: 45ff196c-3719-4924-a2ef-6641f47096cd
+#             tenantID: 0402062f-f1d4-4e12-8f12-7268a1047bd7
+#             resourceGroupName: cc-resource-group
+#             hostedZoneName: campusconnect.it.com

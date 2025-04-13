@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import EventCard from "./EventCard";
 
+type EventCardViewProps = {
+  events: any[];
+  onEventSelect: (event: any) => void;
+  onEventDelete: (eventId: string) => void;
+  isAdminView?: boolean;
+};
 
-const EventCardView = ({ events, onEventSelect, onEventDelete, isAdminView = false }) => {
+const EventCardView: React.FC<EventCardViewProps> = ({ events, onEventSelect, onEventDelete, isAdminView = false }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(8);
 

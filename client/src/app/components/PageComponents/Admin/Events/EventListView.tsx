@@ -3,7 +3,15 @@ import { Tooltip } from '@mui/material';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { DeleteIcon } from "lucide-react";
 
-const EventListView = ({ events, onEventSelect, onEventDelete }) => {
+
+type EventListViewProps = {
+  events: any[];
+  onEventSelect: (event: any) => void;
+  onEventDelete: (event: any) => void;
+};
+
+
+const EventListView: React.FC<EventListViewProps> = ({ events, onEventSelect, onEventDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(10);
 
@@ -39,7 +47,7 @@ const EventListView = ({ events, onEventSelect, onEventDelete }) => {
             {/* Action Buttons - positioned absolutely at top-right */}
             <div className="absolute top-3 right-3 flex space-x-2">
               {/* Edit Button */}
-              <Tooltip title="Edit Event">
+              <Tooltip title="Edit Event" arrow>
                 <button 
                   onClick={() => onEventSelect(event)}
                   className="p-1 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
@@ -49,7 +57,7 @@ const EventListView = ({ events, onEventSelect, onEventDelete }) => {
               </Tooltip>
 
               {/* Delete Button */}
-              <Tooltip title="Delete Event">
+              <Tooltip title="Delete Event" arrow>
                 <button 
                   onClick={() => onEventDelete(event)}
                   className="p-1 text-red-600 hover:bg-red-100 rounded-full transition-colors"

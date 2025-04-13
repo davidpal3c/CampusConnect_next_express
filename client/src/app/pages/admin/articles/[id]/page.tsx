@@ -9,7 +9,12 @@ import OptionsButton from "@/app/components/Buttons/OptionsButton";
 import Loader from "@/app/components/Loader/Loader";
 import ArticleEditor from "@/app/components/PageComponents/Admin/Articles/ArticleEditor";
 import ResourceShareModal from "@/app/components/PageComponents/Admin/ResourceShareModal";
+import ArticleContent from "@/app/components/PageComponents/Admin/Articles/ArticleContent";
 
+import DOMpurify from 'dompurify';
+import { renderToString } from 'react-dom/server';
+import parse from 'html-react-parser';
+import domToReact from 'html-react-parser';
 // dynamic imports : code splitting
 // import dynamic from 'next/dynamic';
 
@@ -17,6 +22,7 @@ import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import { Tooltip } from '@mui/material';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import IconButton from '@mui/material/IconButton';
 
 // audience grouping dropdown
 import InputLabel from '@mui/material/InputLabel';
@@ -46,7 +52,7 @@ export default function Article() {
     //     }
     // );
 
-    const [articleData, setArticleData] = useState(null);
+    const [articleData, setArticleData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditPanelVisible, setIsEditPanelVisible] = useState(false);
 
@@ -106,32 +112,46 @@ export default function Article() {
     { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
     ]);
 
-    useEffect(() => {
-        fetchArticleData();
-    }, []);
+    const handleImageError = (e: any) => {
+    // e.target.style.display = 'none';
+        e.target.src = '/image_placeholder.png';
+    };
+
 
     useEffect(() => {
-        if (articleData || articleData !== null) {
-          setIsLoading(false);
+        fetchArticleData();
+    }, [id]);
+
+    useEffect(() => {
+        if (articleData) {
+            setIsLoading(false);
             setArticleUrl(`${process.env.NEXT_PUBLIC_CLIENT_URL}/user/articles/${id}`);
             setArticleTitle(articleData?.title);
         }
-      }, [articleData]);
+
+        // console.log("articleData: ", articleData);
+    }, [articleData, id]);
+
+    
+    if (isLoading) {
+        return <Loader isLoading={isLoading} />;
+    }
+
 
     return(
         <div className="bg-saitWhite h-screen">
-            {isLoading ? (
+            {isLoading && !articleData ? (
                 <Loader isLoading={isLoading} />
             ) : (
                 <div className="p-4">
                     <div className="flex justify-between items-center">
                         <Tooltip title="Back to Articles" arrow>
-                            <button onClick={() => router.push("/admin/articles")} className="flex items-center mb-6">
-                                <ArrowBackIosRoundedIcon className="mr-4"/>
-                            </button>
+                            <IconButton onClick={() => router.push("/admin/articles")} className="flex items-center mb-6 hover:bg-opacity-10 hover:text-saitPurple">
+                                <ArrowBackIosRoundedIcon />
+                            </IconButton>
                         </Tooltip>
                     </div>
-                    
+
                     <div className="flex flex-row justify-center space-x-4 w-full">
                         <div className="bg-white p-7 rounded-lg shadow-md w-11/12">
                             {articleData ? (
@@ -148,6 +168,7 @@ export default function Article() {
                                                 width={60} 
                                                 height={60}
                                                 loading='lazy'
+                                                unoptimized
                                             >
                                             </Image>
                                             <div className="-space-y-1">
@@ -165,25 +186,48 @@ export default function Article() {
                                         <p className="font-semibold text-lg">Article Type: <span className="font-normal font-serif text-md">{articleData.type?.name || ""} </span></p>
                                     </div>
 
-                                    <div className="w-full flex max-w-full h-auto object-contain mb-4 mt-6">
-                                        <Image src={articleData?.imageUrl || null} alt={articleData.title} 
-                                            style={{ maxHeight: "400px"}} className="w-10/12 h-96 object-cover rounded-md"    
-                                            loading='lazy'
+
+                                    {articleData?.imageUrl ? (
+                                        <div className="w-full flex max-w-full h-auto object-contain mb-4 mt-6">
+                                            <Image 
+                                            src={articleData.imageUrl}
+                                            alt={articleData.title || `${articleData.type?.name} article image`} 
+                                            className="w-10/12 h-96 object-cover rounded-md"    
+                                            style={{ maxHeight: "400px" }}
+                                            loading="lazy"
                                             width={800}
                                             height={400}
-                                        />
-                                        {/* <caption></caption> */}
-                                    </div>
-                                    
+                                            unoptimized
+                                            onError={(e) => (e.currentTarget.src = "/img_placeholder.png")}
+                                            />
+                                        </div>
+                                        ) : (
+                                        <div className="w-full flex max-w-full h-auto object-contain mb-4 mt-6">
+                                            <Image 
+                                            src="/img_placeholder.png"
+                                            alt="Article Placeholder" 
+                                            className="w-10/12 h-96 object-cover rounded-md"
+                                            style={{ maxHeight: "400px" }}
+                                            width={800}
+                                            height={400}
+                                            unoptimized
+                                            loading="lazy"
+                                            />
+                                        </div>
+                                        )}
 
                                     {containsHTML(articleData.content) ? (
-                                        <div dangerouslySetInnerHTML={{__html: articleData.content}}></div>
+                                        <div 
+                                            dangerouslySetInnerHTML={{ __html: DOMpurify.sanitize(articleData.content) }}
+                                            onError={(e) => handleImageError(e)}
+                                        /> 
+                                        // <ArticleContent content={articleData.content} />
                                     ) : (
-                                        <div className="mt-8">                                    
+                                        <div className="mt-8">                                   
                                             <p className="flex justify-center items-center">{articleData.content}</p> 
                                         </div>
-                                    )}
-                                    
+                                    )} 
+
                                 </div>
                             ) : (
                                 <p>Loading...</p>
@@ -216,21 +260,21 @@ export default function Article() {
                                         <option aria-label="None" value="" />
                                         {articleData?.audience.userTypes && articleData?.audience.userTypes.length > 0 && (
                                             <optgroup label='User Types'>
-                                                {articleData?.audience.userTypes.map((userType, index) => (
+                                                {articleData?.audience.userTypes.map((userType: any, index: number) => (
                                                     <option key={`userType.id-${index}`} value={userType}>{userType}</option>
                                                 ))}
                                             </optgroup>
                                         )}
                                         {articleData?.audience.programs && articleData?.audience.programs.length > 0 && (
                                             <optgroup key='programs' label='Programs'>
-                                                {articleData?.audience.programs.map((p) => (
+                                                {articleData?.audience.programs.map((p: any) => (
                                                     <option key={p.program_id} value={p.program_id}>{p.name}</option>
                                                 ))}
                                             </optgroup>
                                         )}
                                         {articleData?.audience.departments && articleData?.audience.departments.length > 0 && (
                                             <optgroup key='department' label="Departments">
-                                                {articleData?.audience.departments.map((d) => (
+                                                {articleData?.audience.departments.map((d: any) => (
                                                     <option key={d.department_id} value={d.department_id}>{d.name}</option>
                                                 ))}
                                             </optgroup>
@@ -248,7 +292,7 @@ export default function Article() {
                         </div>
                     </div>
                     
-                    {/* TODO: edit, share, delete buttons, article data analysis placeholder  */}
+
                     {/* Create Article Panel */}
                     <AnimatePresence>
                         {isEditPanelVisible &&

@@ -1,11 +1,15 @@
+
+
 # dependencies
 /node_modules
 
 /server/node_modules
 /client/node_modules
 
-client/.next/
+/server/dist
+
 client/.env
+/client/.env
 
 server/.env
 application-map.md
@@ -13,6 +17,27 @@ application-map.md
 load-db.sql
 load-db2.sql
 seed.sql
+
+flowchart_CI-CD.md
+pipeline.html
+pipeline2.html
+pipeline.md
+
+# Opearations / CI-CD
+
+backend-secret.yaml
+frontend-secret.yaml
+azure-secret.yaml
+
+#Helm
+/campusconnect-chart/templates/backend/backend-secret.yaml
+/campusconnect-chart/templates/frontend/frontend-secret.yaml
+
+
+azure-dns-creds.json
+old_records.json
+encoded.txt
+
 
 /.pnp
 .pnp.*
@@ -29,6 +54,7 @@ seed.sql
 /.next/
 /out/
 /client/.next/
+client/.next/
 
 # production
 /build
@@ -79,4 +105,4 @@ Thumbs.db
 # Prisma seed files
 /server/prisma/seed.ts
 /server/prisma/seed.js
-/server/prisma/seed(old).ts
+/server/prisma/seed(old).tsserver/dist/

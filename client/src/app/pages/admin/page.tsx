@@ -28,32 +28,48 @@ export default function AdminPage() {
     return null;                                                // prevent rendering until the component is mounted on the client side
   }
 
-
-
   return (
     user?.role !== "Admin" ? (
+      
       <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
         <div>
+          <Image 
+            src="/sait-logo-trans.png"
+            alt="Campus Connect"
+            className="rounded-lg mb-6 mx-auto w-40 md:w-60"
+            width={100}
+            height={100}
+            unoptimized
+            loading="lazy"
+          />
+          {/* <img
+            src="/sait-logo-trans.png"
+            alt="Campus Connect"
+            className="rounded-lg mb-6 mx-auto w-40 md:w-60"
+          /> */}
           <div>
             <h1 className="text-4xl text-white font-bold">403</h1>
-            <h2 className="text-2xl text-white font-semibold">Forbidden Access</h2>
-            <p className="text-white">You must Log In as an Administrator to view this page.</p>
+            <h2 className="text-2xl text-white font-semibold">
+              Forbidden Access
+            </h2>
+            <p className="text-white">You must Log In to view this page.</p>
           </div>
-        
+  
           <div className="flex flex-row justify-center items-center space-x-4 mt-6">
-            <button 
-              onClick={handleLoginRedirectButton} 
-              className="w-32 flex flex-row justify-center items-center hover:bg-saitBlue border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl">
+            <button
+              onClick={handleLoginRedirectButton}
+              className="w-32 flex flex-row justify-center items-center hover:bg-saitBlue border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl"
+            >
               <p className="text-saitWhite">Login</p>
             </button>
-            <button 
-              onClick={handleHomeRedirectButton} 
-              className="w-32 flex flex-row justify-center items-center  hover:bg-saitBlue border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl">
+            <button
+              onClick={handleHomeRedirectButton}
+              className="w-32 flex flex-row justify-center items-center  hover:bg-saitBlue border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl"
+            >
               <p className="text-saitWhite">Home</p>
             </button>
           </div>
-        </div>      
-
+        </div>
       </main>
     ) : (
       <main className="min-h-screen bg-gray-100 text-black m-4">
@@ -133,7 +149,7 @@ export default function AdminPage() {
           <div className="bg-white p-4 rounded-xl shadow-md flex flex-col space-y-2 cursor-pointer">
             <h2 className="text-lg font-semibold mb-4">Articles</h2>
 
-            <div className="flex flex-row items-center justify-between bg-saitBlue text-white rounded-md p-4">
+            <div className="flex flex-row items-center justify-between border border-saitBlue bg-saitWhite text-saitBlack rounded-md p-4">
               <div className="flex flex-col w-4/5">
                 <h3 className="font-bold">Upon Arrival in Canada</h3>
                 <p className="text-sm">Published: 11/1/2024</p>
@@ -148,7 +164,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="flex flex-row items-center justify-between bg-saitBlue text-white rounded-md p-4">
+            <div className="flex flex-row items-center justify-between border border-saitBlue bg-saitWhite text-saitBlack rounded-md p-4">
               <div className="flex flex-col w-4/5">
                 <h3 className="font-bold">Upon Arrival in Canada</h3>
                 <p className="text-sm">Published: 11/1/2024</p>
@@ -234,6 +250,7 @@ export default function AdminPage() {
                 fill
                 sizes="100vw" 
                 className="object-contain" // Prevents cropping, maintains aspect ratio
+                unoptimized
                 priority
               />
             </div>
