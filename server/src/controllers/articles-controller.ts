@@ -282,7 +282,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         const { title, datePublished, content, imageUrl, audience, status, 
             author_id, author, type_id, tags } = req.body;
 
-        console.log("Audience: ", audience);
+        // console.log("Audience: ", audience);
         
         const updateArticleData: any = {};
 

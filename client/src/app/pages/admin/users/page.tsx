@@ -14,10 +14,12 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 
 // Icons 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import ViewModuleRoundedIcon from '@mui/icons-material/FormatListBulleted';
-import ViewListRoundedIcon from '@mui/icons-material/TableChart';
+import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
+import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
+// import ViewModuleRoundedIcon from '@mui/icons-material/FormatListBulleted';
+// import ViewListRoundedIcon from '@mui/icons-material/TableChart';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import AddIcon from '@mui/icons-material/Add';
+import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded';
 
 // libraries
 import { toast } from "react-toastify";
@@ -139,7 +141,7 @@ export default function Users() {
                                 <h1 className="text-2xl font-bold">Users</h1>
                                 {/* Left side container for filters */}
                                 <div className="flex flex-1 items-center justify-center gap-4 px-4">
-                                    <div className="flex flex-row w-20 h-10 items-center justify-evenly bg-white border-2 rounded-lg p-1">
+                                    <div className="flex flex-row w-[4.3rem] h-10 items-center justify-evenly bg-white border-2 rounded-lg p-1">
                                         <Tooltip title="List View">
                                             <button onClick={() => handleUsersView("List")}>
                                                 <ViewModuleRoundedIcon sx={usersView === "List" ? { color: '#2b64ae', fontSize: 26 } :
@@ -182,11 +184,11 @@ export default function Users() {
               
 
                                      {/* Right side container for the Add button */}
-                                    <Tooltip title="Import Users">
+                                    <Tooltip title="Import Users from Excel">
                                         <div>
-                                            <ActionButton title="Import Excel" icon={<AddRoundedIcon />} 
-                                                onClick={handlePanel} borderColor="border-saitBlue" textColor="text-saitGray" 
-                                                hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"
+                                            <ActionButton title="Import Excel" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
+                                                onClick={handlePanel} borderColor="border-saitPurple" textColor="text-saitGray" 
+                                                hoverBgColor="bg-saitPurple" hoverTextColor="text-saitWhite"
                                             />
                                         </div>
                                     </Tooltip>
