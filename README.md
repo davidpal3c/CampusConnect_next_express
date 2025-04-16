@@ -42,6 +42,9 @@ CampusConnect is a full-stack web application developed for SAIT's International
 - Code Documentation 
 <br>
 
+## Codebase Walkthrough
+**Youtube**: [https://www.youtube.com/watch?v=RZQtdscfpSs](https://www.youtube.com/watch?v=RZQtdscfpSs)
+
 📣 **Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
 
 <!-- 📬 **Organization Email.** support@campusconnect.it.com -->
