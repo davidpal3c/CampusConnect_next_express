@@ -6,7 +6,7 @@ CampusConnect is a full-stack web application developed for SAIT's International
 **URL**: [https://sait.campusconnect.it.com](https://sait.campusconnect.it.com)
 
 ## Video Walkthrough
-**Youtube**: [https://www.youtube.com/watch?v=RZQtdscfpSs]
+**Youtube**: [https://www.youtube.com/watch?v=RZQtdscfpSs](https://www.youtube.com/watch?v=RZQtdscfpSs)
 
 ## Explore Documentation and Charts
 [Application Overview](documentation/application-overview.md) <br>
