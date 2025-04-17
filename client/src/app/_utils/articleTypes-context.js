@@ -21,7 +21,7 @@ export const ArticleTypesProvider = ({ children }) => {
             const articleTypesData = await response.json();
       
             if (!response.ok) {
-              console.error("Error fetching article types: articleTypes-context error");
+              console.error("Error fetching article types: articleTypes context error");
               // throw new Error("An Error occurred fetching article types.");
               return;
             }

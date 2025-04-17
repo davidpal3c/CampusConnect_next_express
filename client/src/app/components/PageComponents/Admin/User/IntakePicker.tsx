@@ -12,7 +12,7 @@ export const getCurrentSeason = () => {
   return "Fall"; // Sep - Dec
 };
 
-export default function IntakePicker({ onIntakeChange }) {
+export default function IntakePicker({ onIntakeChange }: { onIntakeChange: (year: number, season: string, status: string) => void }) {
   const [intake, setIntake] = useState({
     year: currentYear,
     season: getCurrentSeason(),
@@ -20,7 +20,7 @@ export default function IntakePicker({ onIntakeChange }) {
   });
 
   // Function to update the intake state
-  const updateIntake = (newYear, newSeason) => {
+  const updateIntake = (newYear: number, newSeason: string) => {
     const isFuture =
       newYear > currentYear ||
       (newYear === currentYear && seasons.indexOf(newSeason) > seasons.indexOf(getCurrentSeason()));

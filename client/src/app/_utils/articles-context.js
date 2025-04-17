@@ -70,7 +70,7 @@ const fetchAllArticles = async () => {
         console.error("Error fetching articles:", error);
         return null;
     }
-  };
+};
   
 const fetchArticleTypes = async () => {
     try {

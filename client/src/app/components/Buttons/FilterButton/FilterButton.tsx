@@ -11,7 +11,7 @@ interface FilterInputProps {
 interface FilterDropdownProps {
   title: string;
   options: string[];
-  handleSelect: (value: string) => void;
+  handleSelect: any;
 }
 
 

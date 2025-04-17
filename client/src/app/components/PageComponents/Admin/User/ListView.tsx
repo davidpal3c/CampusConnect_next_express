@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 import UserItem from '@/app/components/PageComponents/Admin/User/UserItem';
 
 
-export default function UserListView({ users }) {
+export default function UserListView({ users }: { users: any[] }) {
 
     // State Management
     const [currentPage, setCurrentPage] = useState(1);

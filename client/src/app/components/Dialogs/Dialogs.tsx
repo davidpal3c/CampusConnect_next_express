@@ -1,7 +1,18 @@
 import React, {useState} from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Select, InputLabel, MenuItem } from '@mui/material';
 
-export function DeleteDialog({
+
+type DeleteDialogProps = {
+  open: boolean;
+  handleClose: () => void;
+  handleConfirm: () => void;
+  message: string;
+  title?: string;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+}
+
+export const DeleteDialog: React.FC<DeleteDialogProps> = ({
   open,
   handleClose,
   handleConfirm,
@@ -9,7 +20,7 @@ export function DeleteDialog({
   title = 'Delete Confirmation',
   confirmButtonText = 'Delete',
   cancelButtonText = 'Cancel',
-}) {
+}) => {
   return (
     <Dialog
       open={open}

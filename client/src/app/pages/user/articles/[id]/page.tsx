@@ -20,6 +20,7 @@ const ArticleContent = () => {
     // Get the article ID from the URL
     const { id } = useParams();
 
+<<<<<<< HEAD
     // Context
     const { allArticles, articleTypes } = useArticlesContext();
     const { userData } = useUserData();
@@ -29,6 +30,11 @@ const ArticleContent = () => {
     // State Management
     const [article, setArticle] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+=======
+    const [article, setArticle] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+>>>>>>> dev
 
     useEffect(() => {
         if (id) {

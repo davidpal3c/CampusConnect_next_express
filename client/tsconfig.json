@@ -20,7 +20,9 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/_utils/adminUser-context.js", "src/app/_utils/user-context.js", "src/app/_utils/articleTypes-context.js", "src/app/pages/user/articles/ArticlesLayout.js", "src/app/_utils/articles-context.js"],
   "exclude": ["node_modules"]

@@ -29,8 +29,20 @@ export const UserDataProvider = ({ children }) => {
                 credentials: "include",
             });
 
+
             const data = await handleApiResponse(response);
             setUserData(data); // Set user data (null if error occurs)
+
+            // const user = await response.json();
+            
+            // if (!response.ok) {
+            //     console.error("Error fetching user: ", userData);
+            //     // setUser(null); 
+            //     return;
+            // }
+
+            // setUserData(user);
+
         } catch (error) {
             console.error("Error fetching user data:", error);
             setUserData(null);

@@ -336,7 +336,7 @@ export const updateArticle = async (req: Request, res: Response) => {
         if (type_id) updateArticleData.type_id = type_id;
         if (tags) updateArticleData.tags = tags;
 
-        console.log('Article audience : ', audience);
+        // console.log('Article audience : ', audience);
 
         await prisma.article.update({
             where: { article_id: id },

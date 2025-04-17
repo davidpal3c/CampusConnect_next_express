@@ -1,0 +1,5 @@
+apiVersion: v2
+name: campusconnect
+description: A Helm chart for CampusConnect app (frontend + backend)
+version: 0.1.0
+appVersion: "1.0"

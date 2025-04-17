@@ -11,6 +11,7 @@ import Loader from "@/app/components/Loader/Loader";
 import TableView from "../../../components/PageComponents/Admin/User/TableView";
 import UserEditor from "@/app/components/PageComponents/Admin/User/UserEditor";
 import ActionButton from "@/app/components/Buttons/ActionButton";
+import { getUsersData, getStudentsByStatus } from "@/app/api/admin/users/user";
 
 // Icons 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -26,22 +27,28 @@ import { toast } from "react-toastify";
 import { Tooltip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// types
+import { UserRole } from "@/app/types/userTypes";
 
 export default function Users() {
 
     // State Management
-    const [users, setUsers] = useState([]);
-    const [roleToFilter, setRoleToFilter] = useState("");
-    const [originalUsers, setOriginalUsers] = useState([]);
+    const [users, setUsers] = useState<any []>([]);
+    const [roleToFilter, setRoleToFilter] = useState<UserRole | ''>('');
+    const [roleFieldCache, setRoleFieldCache] = useState<Record<string, any>>({});
+    // const [roleFieldCache, setRoleFieldCache] = useState<Record<UserRole, any >>({} as Record<UserRole, any>); 
+    // const previousRoleRef = useRef<UserRole>('');
+    // const fetchedRolesRef = useRef<Set<UserRole>>(new Set());
+
+    const [originalUsers, setOriginalUsers] = useState<any []>([]);
     const [usersView, setUsersView] = useState("List");
-    const [isPanelVisible, setIsPanelVisible] = useState(false);
+    const [isPanelVisible, setIsPanelVisible] = useState<boolean>(false);
     const userEditorRef = useRef(null);
-    const [fieldsByRole, setFieldsByRole] = useState({});
+    const [fieldsByRole, setFieldsByRole] = useState([]);
     
     useEffect(() => {
        fetchUserData();
     }, []);
-
 
     // Loader
     const [isLoading, setIsLoading] = useState(true);
@@ -52,27 +59,21 @@ export default function Users() {
         }
       }, [users]);
 
-    
+        
     // Fetch data from the API
     const fetchUserData = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
-                method: "GET",
-                headers: {
-                  "content-type": "application/json",
-                },
-                credentials: "include",  
-            });
+            const userData = await getUsersData();
 
-            const data = await response.json();
-            if (!response.ok) {
-                const errorData = data;
-                toast.error(errorData.message || "An Error occurred fetching users.");
+            if (userData.error) {
+                toast.error(userData.error || 'An error occurred fetching users. from call');
+                console.log('Error fetching users: ', userData.error);
                 return;
             }
 
-            setUsers(data);
-            setOriginalUsers(data); 
+            setUsers(userData);
+            setOriginalUsers(userData); 
+            
         } catch (error) {
             console.error(error);
             toast.error("Unknown error occurred fetching users! : " + error, {
@@ -80,18 +81,18 @@ export default function Users() {
                 autoClose: 3000,
                 hideProgressBar: true,
                 closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-              });
+                pauseOnHover: false,
+            });
         }
     };
+
     
     // Search and filter functions
     const searchByName = (searchValue: string) => {
         if (searchValue === "") {
             setUsers(originalUsers); 
         } else {
-            const filteredUsers = originalUsers.filter((user) => {
+            const filteredUsers = originalUsers.filter((user: any) => {
                 const name = `${user.first_name} ${user.last_name}`;
                 return (
                     user.first_name.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -104,17 +105,6 @@ export default function Users() {
         }
     };
 
-    const filterByRole = (role: string) => {
-        if (role === "") {
-            setUsers(originalUsers);
-        } else {
-            const filteredUsers = originalUsers.filter((user) =>
-                user.role.toLowerCase().includes(role.toLowerCase())
-            );
-            setUsers(filteredUsers);
-            setRoleToFilter(role);
-        }
-    }
 
     // Handle Users View 
     const handleUsersView = (view: string) => {
@@ -127,13 +117,87 @@ export default function Users() {
         setIsPanelVisible(!isPanelVisible);
     };
 
+    // const filterByRole = async (role: UserRole) => {
+    //     // Client-side filtering
+    //     const filteredUsers = role === "All" ? originalUsers 
+    //         : originalUsers.filter(u => u.role === role);
+        
+    //     setUsers(filteredUsers);
+    //     setRoleToFilter(role);
+
+    //     // Background field loading (cached)
+    //     if (role !== "All") await fetchFieldsByRole(role);
+    // };
+
+
+    const filterByRole = async (role: any) => {
+        if (role === "" || role === "All" ) {
+            setUsers(originalUsers);
+            setRoleToFilter(role);
+            return;
+
+        } 
+
+        let filteredUsers; 
+
+        if (role === "Prospective Student") {
+
+            try {
+                const prospectiveStudentData = await getStudentsByStatus({ status: 'Prospective' });
+
+                if (prospectiveStudentData.error) {
+                    toast.error(prospectiveStudentData.error || "An Error occurred fetching students by status.");
+                    return;
+                }
+
+                setUsers(prospectiveStudentData);
+                setRoleToFilter(role);
+                return;
+
+            } catch (error) {
+                toast.error("An Error occurred fetching students by status.");
+                return;
+            }
+
+        } else {  
+            filteredUsers = originalUsers.filter(user => user.role.toLowerCase().includes(role.toLowerCase()));
+        }
+
+        // const filteredUsers = role === 'Prospective Student' 
+        // ? originalUsers.filter(user => user.role.toLowerCase().includes('student'))
+        // : originalUsers.filter(user => user.role.toLowerCase().includes(role.toLowerCase()));
+
+        setUsers(filteredUsers);
+        setRoleToFilter(role);
+
+        if (role !== 'All' && role !== '' && role !== 'Prospective Student') {
+            await fetchFieldsByRole(role);
+        }
+
+    }
+
+
 
     // fetch fields by role
-    const fetchFieldsByRole = async (role: string) => {
+    const fetchFieldsByRole = async (role: UserRole) => {
+        if (!role || role === 'All') return;
+        if (roleFieldCache[role]) {
+
+            console.log(">>>Using cached fields for role: ", role);
+            return roleFieldCache[role];
+        }
+            
+        const roleData = await fetchRoleData(role);
+        setRoleFieldCache(prev => ({...prev, [role]: roleData }));
+
+        return roleData;
+    }
+
+    const fetchRoleData = async (role: UserRole) => {
         try {       
             console.log(">>>Fetching fields by role: ", role);
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${role}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/roles/${role}`, {
                 method: "GET",
                 headers: {
                     "content-type": "application/json",
@@ -142,14 +206,21 @@ export default function Users() {
             });
 
             const data = await response.json();
+            console.log('Fetched roles data: ', data)
 
             if (!response.ok) {
-                const errorData = await response.json();
-                toast.error(errorData.message || "An Error occurred fetching fields by role.");
+                const errorData = data.error
+                toast.error(errorData || "An Error occurred fetching fields by role.");
                 return;
             }
 
-            setFieldsByRole(data); // Reset fieldsByRole state
+            // update cache (client side - temporary)
+            setRoleFieldCache(prev => ({
+                ...prev,
+                [role]: data
+            }));
+
+            setFieldsByRole(data); 
 
         } catch (error) {
             console.error(error);
@@ -164,10 +235,16 @@ export default function Users() {
         }
     };
 
+
     useEffect(() => {
         if (roleToFilter) {
             fetchFieldsByRole(roleToFilter);
         }
+
+        // if (roleToFilter && roleToFilter !== previousRoleRef.current) {
+        //     fetchFieldsByRole(roleToFilter);
+        //     previousRoleRef.current = roleToFilter;
+        // }
     }, [roleToFilter]);
 
     return (
@@ -205,8 +282,8 @@ export default function Users() {
                                         handleChange={searchByName}
                                     />
                                     <FilterDropdown 
-                                        title="Role" 
-                                        options={["Admin", "Student", "Alumni", "Prospective Student"]}
+                                        title="Filter By Role"
+                                        options={["All", "Admin", "Student", "Alumni", "Prospective Student"]}
                                         handleSelect={filterByRole}
                                     />
                                 </div>
@@ -238,7 +315,12 @@ export default function Users() {
                     {usersView === "List" ? (
                             <UserListView users={users}/>
                         ) : (
-                            <TableView users={users} filteredRole={roleToFilter}/>
+                            <TableView 
+                                users={users} 
+                                filteredRole={roleToFilter} 
+                                fieldsByRole={fieldsByRole}
+                                reFetchUsers={fetchUserData}
+                            />
                         )}
 
                     {/* Create New User */}

@@ -7,9 +7,6 @@ import ArticlesLayout from "./ArticlesLayout";
 import { ArticleTypeInterface} from "../props";
 import ArticleTypeButton from "@/app/components/PageComponents/User/Articles/ArticleTypeButton";
 
-type TypesCount = {
-  [key: string]: number;
-};
 
 const Articles = () => {
 

@@ -85,7 +85,7 @@ export default function ArticleDeleteMultipleModal({ articlesData, articleIds, o
                     <p className="text-center">Are you sure you want to delete {articleIds.length > 1 ? ('these articles?') : ('this article?')}</p>
                     <div className="flex flex-col items-center justify-center w-full mt-4">
                         {articleIds.length > 1 ? <p className="text-center font-semibold italic text-sm mb-2">You are about to delete <span className='text-lg text-red-500'>{articleIds.length}</span> articles.</p> : null}    
-                        {articlesData.map((data, index) => {
+                        {articlesData.map((data: any, index: number) => {
                             return (
                                 <p key={index} className="text-center italic text-sm text-color-500">
                                     {`Article Title: ${data.title}`}
