@@ -1,29 +1,16 @@
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 
-import HomeIcon from '@mui/icons-material/Home';
-import EventIcon from '@mui/icons-material/Event';
-import GroupIcon from '@mui/icons-material/Group';
-import ArticleIcon from '@mui/icons-material/Article';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigatorButton from "./NavigatorButton";
 
 import { getCurrentSeason } from "../../components/PageComponents/Admin/User/IntakePicker";
-
-
-type NavigatorButtonProps = {
-    href: string;
-    icon: React.ComponentType<{
-        className?: string;
-      }>;
-    name: React.ReactNode;
-};
 
 export default function TopBarNavigator({ userId }: { userId: string }) {
 
     const currentRoute = usePathname();
 
-    const routeArray = [];
+    const routeArray: { route: string; routeName: string }[] = [];
     let lastDash = currentRoute.length; 
     let route = "";
     let routeName = "";
@@ -39,7 +26,7 @@ export default function TopBarNavigator({ userId }: { userId: string }) {
             lastDash = i;
 
             if (routeName) {
-                routeArray.unshift({ route, routeName }); // Use unshift() for correct order
+                routeArray.unshift({ route, routeName }); 
             }
         }
     }
@@ -52,6 +39,7 @@ export default function TopBarNavigator({ userId }: { userId: string }) {
                         href={route.route} 
                         icon={AdjustIcon} 
                         name={route.routeName} 
+                        parent={index > 0 ? routeArray[index - 1].routeName : null}
                     />
                     
                     {/* Add NavigateNextIcon if it's NOT the last item */}
@@ -68,40 +56,3 @@ export default function TopBarNavigator({ userId }: { userId: string }) {
     );
 }
 
-function NavigatorButton(props: NavigatorButtonProps) {
-
-    let name = props.name;
-    let Icon = props.icon;
-
-    switch (props.name) {
-        case "user":
-            name = "Dashboard";
-            Icon = HomeIcon;
-            break;
-        case "events":
-            name = "Events";
-            Icon = EventIcon;            
-            break;
-        case "groups":
-            name = "Groups";
-            Icon = GroupIcon;
-            break;
-        case "articles":
-            name = "Articles";
-            Icon = ArticleIcon;
-            break;
-        default:
-            break;
-    }
-
-
-    return (
-        <Link 
-            href={props.href} 
-            className="flex items-center flex-row text-saitBlack mx-2 mr-4"
-        >
-            <Icon className="size-4 mr-1" />
-            <h1>{name}</h1>
-        </Link>
-    );
-}

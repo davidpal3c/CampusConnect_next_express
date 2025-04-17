@@ -12,7 +12,7 @@ export function ArticleCard(props: ArticleInterface) {
 
     return (  
         <div className="border-gray-100 rounded-2xl shadow-lg border-2 transition-transform transform hover:scale-[1.03] hover:shadow-xl overflow-hidden">
-            <Link href={`articles/${article_id}`} passHref>
+            <Link href={`/user/articles/${article_id}`} passHref>
                 <img 
                     src={imageUrl || "/img_placeholder.png"}
                     alt="Article Image" 

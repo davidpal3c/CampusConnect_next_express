@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import UserCard from "@/app/components/PageComponents/Admin/User/UserCard";
-import { getCurrentSeason } from "../../components/PageComponents/Admin/User/IntakePicker";
 
 import { UserDataProvider, useUserData } from "@/app/_utils/userData-context";
 import { useUserAuth } from "@/app/_utils/auth-context";
@@ -11,7 +9,12 @@ import UserPageMenu from "@/app/components/PageComponents/User/UserPageMenu";
 import OverViewCard from "@/app/components/PageComponents/User/Dashboard/OverviewCard";
 import EventCard from "@/app/components/PageComponents/User/Dashboard/EventCard";
 import { ArticleCard } from "@/app/components/PageComponents/User/Articles/ArticleCards";
+import { fetchRecentArticles, fetchRecentEvents } from "./dashboardFetch";
 
+import { EventInterface, ArticleInterface } from "@/app/pages/user/props";
+
+import { toast } from "react-toastify";
+ 
 
 // Student/Alumni Dashboard (Home)
 export default function UserPage() {
@@ -21,8 +24,29 @@ export default function UserPage() {
   const [isClient, setIsClient] = useState(false); // dummy state to track code is running client-side
   const router = useRouter();
 
-  const currentYear = new Date().getFullYear();
-  const currentSeason = getCurrentSeason();
+  // State Management
+  const [articles, setArticles] = useState<ArticleInterface[]>([]);
+  const [events, setEvents] = useState<EventInterface[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchDashboardData = async () => {
+    try {
+      const articlesData = await fetchRecentArticles();
+      const eventsData = await fetchRecentEvents();
+      setArticles(articlesData);
+      setEvents(eventsData);
+    } catch (error) {
+        toast.error("Error fetching data");
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
+  // Use Effect for fetching Recent Articles and Events
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
 
   const handleLoginRedirectButton = () => {
     router.push("/user/login");
@@ -64,115 +88,7 @@ export default function UserPage() {
     },
   ];
 
-  const testEvents = [
-    {
-      title: "Applied Technology Seminar",
-      date: "March 18, 2025",
-      time: "10:00 AM - 12:00 PM",
-      image: "/seminar.jpg",
-      text: "Join us for an exclusive Technology Seminar where industry experts will unveil the latest trends, breakthroughs, and insights shaping the tech world.",
-    },
-    {
-      title: "Zen Den | Origami workshop",
-      date: "March 19, 2025",
-      time: "11:00 AM - 1:00 PM",
-      image: "/origami.jpg",
-      text: "Relax and recharge by crating beautiful paper designs in this meditative workshop.",
-    },
-    {
-      title: "Drop in and Learn - Exam Writing Skills",
-      date: "March 18, 2025",
-      time: "10:00 AM - 12:00 PM",
-      image: "/exam.jpg",
-      text: "Tests and exams can be a source of stress, but having solid strategies can help!",
-    },
-  ];
-  const testArticles = [
-    {
-      article_id: "",
-      title: "First article",
-      content: " ",
-      type_id: "",
-      imageUrl: "/seminar.jpg",
-      datePublished: "2002",
-      created_at: "2001",
-      updated_at: "2002",
-      author: "John",
-      author_id: "",
-      audience: "Hungry people",
-      status: "great",
-      type: {
-        type_id: "",
-        name: "d",
-        created_at: "2001",
-        updated_at: "2002",
-        isDefault: true,
-      },
-    },
-    {
-      article_id: "",
-      title: "Second article",
-      content: " ",
-      type_id: "",
-      imageUrl: "/seminar.jpg",
-      datePublished: "2002",
-      created_at: "2001",
-      updated_at: "2002",
-      author: "John",
-      author_id: "",
-      audience: "Hungry people",
-      status: "great",
-      type: {
-        type_id: "",
-        name: "d",
-        created_at: "2001",
-        updated_at: "2002",
-        isDefault: true,
-      },
-    },
-    {
-      article_id: "",
-      title: "Third article",
-      content: " ",
-      type_id: "",
-      imageUrl: "/seminar.jpg",
-      datePublished: "2002",
-      created_at: "2001",
-      updated_at: "2002",
-      author: "John",
-      author_id: "",
-      audience: "Hungry people",
-      status: "great",
-      type: {
-        type_id: "",
-        name: "d",
-        created_at: "2001",
-        updated_at: "2002",
-        isDefault: true,
-      },
-    },
-    {
-      article_id: "",
-      title: "Fourth article",
-      content: " ",
-      type_id: "",
-      imageUrl: "/seminar.jpg",
-      datePublished: "2002",
-      created_at: "2001",
-      updated_at: "2002",
-      author: "John",
-      author_id: "",
-      audience: "Hungry people",
-      status: "great",
-      type: {
-        type_id: "",
-        name: "d",
-        created_at: "2001",
-        updated_at: "2002",
-        isDefault: true,
-      },
-    },
-  ];
+  
 
   const unauthorized = (
     <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
@@ -246,43 +162,21 @@ export default function UserPage() {
           ))}
         </div>
 
-        <h1 className="flextext-2xl text-xl font-semibold mt-4">Events</h1>
+        <h1 className="flex text-2xl font-bold mt-4">Events</h1>
 
         <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
-          {testEvents.slice(0, 3).map((event, index) => (
-            <EventCard
-              key={index}
-              title={event.title}
-              date={event.date}
-              time={event.time}
-              image={event.image}
-              text={event.text}
-            />
+          {events.map((event) => (
+            <EventCard key={event.event_id} {...event}/>
           ))}
         </div>
 
-        <h1 className="flextext-2xl text-xl font-semibold mt-4">
+        <h1 className="flex text-2xl font-bold mt-4">
           Latest Articles
         </h1>
 
         <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
-          {testArticles.slice(0, 3).map((article, index) => (
-            <ArticleCard
-              key={index}
-              article_id={article.article_id}
-              title={article.title}
-              content={article.content}
-              type_id={article.type_id}
-              imageUrl={article.imageUrl}
-              datePublished={article.datePublished}
-              created_at={article.created_at}
-              updated_at={article.updated_at}
-              author={article.author}
-              author_id={article.author_id}
-              audience={article.audience}
-              status={article.status}
-              type={article.type}
-            />
+          {articles.map((article, index) => (
+            <ArticleCard key={index} {...article}/>
           ))}
         </div>
       </main>

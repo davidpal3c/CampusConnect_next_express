@@ -43,6 +43,27 @@ export const getAllEvents = async (req: Request, res: Response) => {
     }
 }   
 
+// GET /api/events/recent/ - Get all events
+export const getRecentEvents = async (req: Request, res: Response) => {
+    try {
+        const events = await prisma.event.findMany({
+            orderBy: {
+                date: "desc",
+            },
+            take:3,
+        });
+
+        res.status(200).json(events);
+        return;
+
+    } catch (error) {
+        console.log("Error getting recent events", error);
+        res.status(500).json({ message: "Server Error: could not fetch events", error: error });
+    } finally {
+        await prisma.$disconnect(); 
+    }
+}   
+
 // GET /api/events/:id - Get event by ID
 export const getEventById = async (req: Request, res: Response) : Promise<void> => {
     try {
@@ -61,7 +82,7 @@ export const getEventById = async (req: Request, res: Response) : Promise<void> 
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal server error: Article could not be fetched' });
+        res.status(500).json({ error: 'Internal server error: Event could not be fetched' });
         return;
     }
 }

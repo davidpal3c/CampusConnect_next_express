@@ -79,11 +79,6 @@ const ArticleContent = () => {
                                 day: "numeric",
                             })}
                         </p>
-
-                        <div className="flex items-center ml-auto gap-2">
-                            <button className="text-sm font-semibold hover:text-saitLighterBlue transition duration-200">Print</button>
-                            <PrintIcon className="text-gray-700" />
-                        </div>
                     </div>
 
                     <div className="flex items-center mt-4">
@@ -106,46 +101,47 @@ const ArticleContent = () => {
             </div>
 
             {/* Other Articles Sidebar */}
-            <aside className="flex flex-col lg:ml-12 mt-12 lg:mt-0 bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-                <h2 className="text-2xl font-bold text-gray-900 border-b pb-2">Related Articles</h2>
+            <aside className="flex flex-col lg:ml-12 mt-12 lg:mt-0">
+                <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+                    <h2 className="text-2xl font-bold text-gray-900 border-b pb-2">Related Articles</h2>
 
-                <div className="flex flex-col mt-4">
-                    {allArticles
-                        .filter((a: ArticleInterface) => a.article_id !== article_id && a.type.name === typeName)
-                        .map((a: ArticleInterface) => (
-                            <Link key={a.article_id} href={`/user/articles/${a.article_id}`} passHref 
-                                className="flex flex-col mb-4 p-4 rounded-lg hover:bg-gray-100 transition duration-200 cursor-pointer">
-                                
+                    <div className="flex flex-col mt-4">
+                        {allArticles
+                            .filter((a: ArticleInterface) => a.article_id !== article_id && a.type.name === typeName)
+                            .map((a: ArticleInterface) => (
+                                <Link key={a.article_id} href={`/user/articles/${a.article_id}`} passHref 
+                                    className="flex flex-col mb-4 p-4 rounded-lg hover:bg-gray-100 transition duration-200 cursor-pointer">
+                                    
+                                    <p className="text-lg font-semibold text-gray-900">{a.title}</p>
+                                    <p className="text-sm text-gray-500 mt-1">Author: {a.author}</p>
+                                </Link>
+                            ))}
+                    </div>
+
+                    {/* Articles for {DEPARTMENT}*/}
+                    <h2 className="text-2xl font-bold text-gray-900 border-b pb-2 mt-6">Articles Tailored to Your School</h2>
+
+                    <div className="flex flex-col mt-4">
+                        {allArticles
+                            .filter((a: ArticleInterface) => 
+                                a.article_id !== article_id && 
+                                Array.isArray(a.audience.departments) && // Check if it's an array
+                                a.audience.departments.some(department => department.department_id === departmentId)
+                            )
+                            .map((a: ArticleInterface) => (
+                            <Link 
+                                key={a.article_id} 
+                                href={`/user/articles/${a.article_id}`} 
+                                passHref 
+                                className="flex flex-col mb-4 p-4 rounded-lg hover:bg-gray-100 transition duration-200 cursor-pointer"
+                            >
                                 <p className="text-lg font-semibold text-gray-900">{a.title}</p>
                                 <p className="text-sm text-gray-500 mt-1">Author: {a.author}</p>
                             </Link>
-                        ))}
+                            ))
+                        }
+                    </div>
                 </div>
-            
-            {/* Articles for {DEPARTMENT}*/}
-                <h2 className="text-2xl font-bold text-gray-900 border-b pb-2 mt-6">Articles Tailored to Your School</h2>
-
-                <div className="flex flex-col mt-4">
-                    {allArticles
-                        .filter((a: ArticleInterface) => 
-                            a.article_id !== article_id && 
-                            Array.isArray(a.audience.departments) && // Check if it's an array
-                            a.audience.departments.some(department => department.department_id === departmentId)
-                        )
-                        .map((a: ArticleInterface) => (
-                        <Link 
-                            key={a.article_id} 
-                            href={`/user/articles/${a.article_id}`} 
-                            passHref 
-                            className="flex flex-col mb-4 p-4 rounded-lg hover:bg-gray-100 transition duration-200 cursor-pointer"
-                        >
-                            <p className="text-lg font-semibold text-gray-900">{a.title}</p>
-                            <p className="text-sm text-gray-500 mt-1">Author: {a.author}</p>
-                        </Link>
-                        ))
-                    }
-                </div>
-
             </aside>
         </main>
 

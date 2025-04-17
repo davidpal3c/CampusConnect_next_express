@@ -33,6 +33,37 @@ export const getAllArticles = async (req: Request, res: Response) => {
     }
 }
 
+// GET /api/articles/recent/ - Get the 3 most recent articles
+export const getRecentArticles = async (req: Request, res: Response) => {
+    try {
+        const articles = await prisma.article.findMany({
+            where: {
+                status: "Published"
+            },
+
+            include: {
+                type: {
+                    select: { name: true }
+                }
+            } as any,
+
+            orderBy: {
+                updated_at: "desc",
+            },
+            take:3,
+        });
+
+        res.status(200).json(articles);
+        return;
+    } catch (error) {
+        console.log('Error fetching articles:', error);
+        res.status(500).json({ message: 'Server Error: error fetching articles', error: error });
+        return;
+    } finally {
+        await prisma.$disconnect();
+    }
+}
+
 // GET /api/articles/categories - Get article categories
 // export const getArticleCategories = async (req: Request, res: Response) => {
 //     try {

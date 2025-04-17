@@ -30,11 +30,22 @@ export const AuthContextProvider = ({ children }) => {
 
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
+    provider.addScope("https://www.googleapis.com/auth/calendar"); 
+    provider.addScope("https://www.googleapis.com/auth/calendar.events"); 
 
     let result;
 
     try {
       result = await signInWithPopup(auth, provider);
+
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential?.accessToken;
+
+      if (token) {
+        localStorage.setItem("googleAccessToken", token);
+      } else {
+        console.warn("No token received");
+      }
 
       const normalizedUser = await normalizeUser(result.user);
       setUser(normalizedUser);
