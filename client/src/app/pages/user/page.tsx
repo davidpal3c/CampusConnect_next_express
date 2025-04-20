@@ -13,12 +13,10 @@ import OverViewCard from "@/app/components/PageComponents/User/Dashboard/Overvie
 import EventCard from "@/app/components/PageComponents/User/Dashboard/EventCard";
 import { ArticleCard } from "@/app/components/PageComponents/User/Articles/ArticleCards";
 
-
 // Student/Alumni Dashboard (Home)
 export default function UserPage() {
   const { userData } = useUserData();
-  const { user, authUserLoading } = useUserAuth();  
-  const { user_id, first_name, last_name, role, status } = userData?.user || {};
+  const { authUserLoading } = useUserAuth();
   const [isClient, setIsClient] = useState(false); // dummy state to track code is running client-side
   const router = useRouter();
 
@@ -37,6 +35,7 @@ export default function UserPage() {
     setIsClient(true);
   }, []);
 
+  useEffect(() => {});
 
   function onClickOverview() {
     // TODO
@@ -51,7 +50,7 @@ export default function UserPage() {
   }
 
   if (authUserLoading || !isClient) {
-    return null;                                                // prevent rendering until the component is mounted on the client side
+    return null; // prevent rendering until the component is mounted on the client side
   }
 
   const testOverviewItems = [
@@ -178,7 +177,7 @@ export default function UserPage() {
   const unauthorized = (
     <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
       <div>
-        <Image 
+        <Image
           src="/sait-logo.png"
           alt="Campus Connect"
           className="rounded-lg mb-6 mx-auto w-40 md:w-60"
@@ -222,7 +221,9 @@ export default function UserPage() {
     <main className="m-8 flex-col text-saitBlack">
       <div className="flex justify-between items-center h-full">
         <div className="flex-col">
-          <h1 className="text-4xl font-bold">Welcome back, {first_name}!</h1>
+          <h1 className="text-4xl font-bold">
+            Welcome back, {userData?.first_name}!
+          </h1>
           <p className="text-saitGray mt-4">
             Here's what's happening at SAIT today.{" "}
           </p>
@@ -246,13 +247,13 @@ export default function UserPage() {
 
       <div className="grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 mt-4">
         {testOverviewItems.slice(0, 4).map((item, index) => (
-            <OverViewCard
-              key={index}
-              title={item.title}
-              icon={item.icon}
-              number={item.number}
-              text={item.text}
-            />
+          <OverViewCard
+            key={index}
+            title={item.title}
+            icon={item.icon}
+            number={item.number}
+            text={item.text}
+          />
         ))}
       </div>
 
