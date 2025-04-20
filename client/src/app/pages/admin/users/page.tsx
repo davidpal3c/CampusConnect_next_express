@@ -183,7 +183,7 @@ export default function Users() {
         if (!role || role === 'All') return;
         if (roleFieldCache[role]) {
 
-            console.log(">>>Using cached fields for role: ", role);
+            // console.log(">>>Using cached fields for role: ", role);
             return roleFieldCache[role];
         }
             
@@ -195,7 +195,7 @@ export default function Users() {
 
     const fetchRoleData = async (role: UserRole) => {
         try {       
-            console.log(">>>Fetching fields by role: ", role);
+            // console.log(">>>Fetching fields by role: ", role);
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/roles/${role}`, {
                 method: "GET",
@@ -256,7 +256,6 @@ export default function Users() {
                     <PageHeader 
                         filter={
                             <div className="flex flex-col md:flex-row w-full justify-between items-center gap-4 md:space-y-3 xs:space-y-3">
-
                                 <h1 className="text-2xl font-bold">Users</h1>
                                 {/* Left side container for filters */}
                                 <div className="flex flex-1 items-center justify-center gap-4 px-4">
