@@ -18,8 +18,8 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Campus Connect",
-  description: "A platform for students to connect with their campus",
+  title: "CampusConnect",
+  description: "A platform for students and alumni to connect with their campus",
 };
 
 export default function RootLayout({
