@@ -139,7 +139,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                     intake: roleData.intake,
                     intake_year: roleData.intake_year,
                     status: roleData.status,
-                    isDomestic: roleData.isDomestic,
+                    student_type: roleData.student_type,
                 };
             }
 
@@ -188,13 +188,13 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
         switch (filteredRole) {
             case 'Student':
                 return [
-                    { field: "isDomestic", headerName: "StudentType", width: 140, renderCell: (params: GridRenderCellParams) => {
-                        const isDomestic = params.row.isDomestic;
-                        const className = isDomestic ? "bg-saitLightBlue" : "bg-saitLightPurple";
+                    { field: "student_type", headerName: "StudentType", width: 140, renderCell: (params: GridRenderCellParams) => {
+                        const studentType = params.row.student_type as string;
+                        const className = studentType === 'Domestic' ? "bg-saitLightBlue" : "bg-saitLightPurple";
 
                         return (
                             <div className={`flex items-center justify-center ${className} w-32 rounded-2xl px-2 mt-3 h-8 border border-saitPurple`}>
-                                <span className="font-normal text-saitWhite">{isDomestic ? 'Domestic' : 'International'}</span>
+                                <span className="font-normal text-saitWhite">{studentType}</span>
                             </div>
                         );
                     }},
@@ -208,13 +208,13 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
 
             case 'Prospective Student':
                 return [
-                    { field: "isDomestic", headerName: "StudentType", width: 140, renderCell: (params: GridRenderCellParams) => {
-                        const isDomestic = params.row.isDomestic;
-                        const className = isDomestic ? "bg-saitLightBlue" : "bg-saitLightPurple";
+                    { field: "student_type", headerName: "StudentType", width: 140, renderCell: (params: GridRenderCellParams) => {
+                        const studentType = params.row.student_type as string;
+                        const className = studentType === 'Domestic' ? "bg-saitLightBlue" : "bg-saitLightPurple";
 
                         return (
                             <div className={`flex items-center justify-center ${className} w-32 rounded-2xl px-2 mt-3 h-8 border border-saitPurple`}>
-                                <span className="font-normal text-saitWhite">{isDomestic ? 'Domestic' : 'International'}</span>
+                                <span className="font-normal text-saitWhite">{studentType}</span>
                             </div>
                         );
                     }},
