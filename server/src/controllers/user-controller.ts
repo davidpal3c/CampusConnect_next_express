@@ -136,7 +136,7 @@ export const getUserFieldsByRole = async (req: Request, res: Response) : Promise
                                 }
                             }
                         }
-                    }
+                    } as any
                 } 
             });
             userFields = alumni;
