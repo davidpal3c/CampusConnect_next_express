@@ -179,7 +179,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
     
         setCombinedUsers(combined);
 
-        console.log('Combined Users:', combined);
+        // console.log('Combined Users:', combined);
     }, [users, fieldsByRole, filteredRole]);
     
 
@@ -190,7 +190,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                 return [
                     { field: "student_type", headerName: "StudentType", width: 140, renderCell: (params: GridRenderCellParams) => {
                         const studentType = params.row.student_type as string;
-                        const className = studentType === 'Domestic' ? "bg-saitLightBlue" : "bg-saitLightPurple";
+                        const className = studentType === 'Domestic' ? "bg-saitBlue" : "bg-saitPurple";
 
                         return (
                             <div className={`flex items-center justify-center ${className} w-32 rounded-2xl px-2 mt-3 h-8 border border-saitPurple`}>

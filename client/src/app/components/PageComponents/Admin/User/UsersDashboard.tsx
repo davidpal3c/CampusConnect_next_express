@@ -17,7 +17,8 @@ import { getUsersData, getStudentsByStatus } from "@/app/api/admin/users/user";
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
 import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
+// import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded';
 
 // libraries
@@ -35,7 +36,6 @@ export default function UsersDashboard() {
     const [users, setUsers] = useState<any []>([]);
     const [roleToFilter, setRoleToFilter] = useState<UserRole | ''>('');
     const [roleFieldCache, setRoleFieldCache] = useState<Record<string, any>>({});
-    // const [roleFieldCache, setRoleFieldCache] = useState<Record<UserRole, any >>({} as Record<UserRole, any>); 
     // const previousRoleRef = useRef<UserRole>('');
     // const fetchedRolesRef = useRef<Set<UserRole>>(new Set());
 
@@ -44,19 +44,20 @@ export default function UsersDashboard() {
     const [isPanelVisible, setIsPanelVisible] = useState<boolean>(false);
     const userEditorRef = useRef(null);
     const [fieldsByRole, setFieldsByRole] = useState([]);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+
+    // Loader
+    const [isLoading, setIsLoading] = useState(true);
     
     useEffect(() => {
        fetchUserData();
     }, []);
 
-    // Loader
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        if (users.length > 0) {
-          setIsLoading(false);
-        }
-      }, [users]);
+    // useEffect(() => {
+    //     if (users.length > 0) {
+    //       setIsLoading(false);
+    //     }
+    //   }, [users]);
 
         
     // Fetch data from the API
@@ -82,27 +83,61 @@ export default function UsersDashboard() {
                 closeOnClick: true,
                 pauseOnHover: false,
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
     
     // Search and filter functions
-    const searchByName = (searchValue: string) => {
+    const handleSearch = (searchValue: string) => {
         if (searchValue === "") {
             setUsers(originalUsers); 
+            return
         } else {
             const filteredUsers = originalUsers.filter((user: any) => {
-                const name = `${user.first_name} ${user.last_name}`;
-                return (
-                    user.first_name.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    user.last_name.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    name.toLowerCase().includes(searchValue.toLowerCase())
-                );
+                const matchesFilter = !roleToFilter || roleToFilter === 'All' ||
+                    user.role.toLowerCase().includes(roleToFilter.toLowerCase()) || 
+                    (roleToFilter === 'Prospective Student' && user.role.toLowerCase().includes('student'));    
+
+                if (!matchesFilter) return false;
+
+                const stringFields = [
+                    user.user_id,
+                    user.first_name,
+                    user.last_name,
+                    user.email,
+                    user.role,
+                    user.program_id,
+                    user.program_name,
+                    user.department_name,
+                    user.intake,
+                    user.status,
+                    user.current_position,
+                    user.company,
+                    user.student_type
+                ].filter(Boolean);   // filter out any null or undefined values
+
+                const otherFields = [
+                    user.intake_year?.toString(),
+                    user.graduation_year?.toString(),
+                    new Date(user.created_at).toLocaleDateString()
+                ].filter(Boolean); 
+
+                const combinedFields: string[] = [...stringFields, ...otherFields];
+
+                return combinedFields.some((field: any) => 
+                    field.toLowerCase().includes(searchValue.toLowerCase()));
+
             });
             
             setUsers(filteredUsers);
         }
     };
+
+    // useEffect(() => {
+
+    // }, []);
 
 
     // Handle Users View 
@@ -116,17 +151,6 @@ export default function UsersDashboard() {
         setIsPanelVisible(!isPanelVisible);
     };
 
-    // const filterByRole = async (role: UserRole) => {
-    //     // Client-side filtering
-    //     const filteredUsers = role === "All" ? originalUsers 
-    //         : originalUsers.filter(u => u.role === role);
-        
-    //     setUsers(filteredUsers);
-    //     setRoleToFilter(role);
-
-    //     // Background field loading (cached)
-    //     if (role !== "All") await fetchFieldsByRole(role);
-    // };
 
 
     const filterByRole = async (role: any) => {
@@ -134,7 +158,6 @@ export default function UsersDashboard() {
             setUsers(originalUsers);
             setRoleToFilter(role);
             return;
-
         } 
 
         let filteredUsers; 
@@ -277,7 +300,7 @@ export default function UsersDashboard() {
                                     <FilterInput 
                                         title="Search"
                                         icon={<SearchOutlinedIcon className="text-saitGray" fontSize="small" />} 
-                                        handleChange={searchByName}
+                                        handleChange={handleSearch}
                                     />
                                     <FilterDropdown 
                                         title="Filter By Role"
@@ -297,7 +320,7 @@ export default function UsersDashboard() {
                                     </Tooltip>
                                     <Tooltip title="Add User" arrow>
                                         <div>
-                                            <ActionButton title="Add" icon={<AddRoundedIcon />} 
+                                            <ActionButton title="Register User" icon={<AccountCircleRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} 
                                                 onClick={handlePanel} borderColor="border-saitBlue" textColor="text-saitGray" 
                                                 hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                                             />
