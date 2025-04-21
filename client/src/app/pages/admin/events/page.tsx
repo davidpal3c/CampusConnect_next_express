@@ -15,9 +15,8 @@ type EventData = {
   id?: string;
   name: string;
   date: string;
-  time: string;
   location: string;
-  departments: string;
+  audience: string;
   programs: string;
   description: string;
   host: string;
@@ -32,9 +31,8 @@ const INITIAL_DATA: EventData = {
   name: '',
   date: '',
   location: '',
-  departments: 'Default departments are all.',
+  audience: 'Default departments are all.',
   programs: 'Default programs are all.',
-  time: '',
   description: '',
   host: 'SAIT',
   capacity: 0
@@ -75,6 +73,45 @@ const Events = () => {
     }
   };
 
+  const handleSubmitEvent = async (eventData: EventData) => {
+    try {
+
+      //Very hardcoded very bad but I just want the event to submit holy molely
+      if (!eventData.date.includes(":00")) {
+        // Append ":00" for seconds and "-07:00" for Calgary (Mountain Time)
+        // Note: You may need to adjust -07:00 to -06:00 during Daylight Saving Time
+        eventData.date = `${eventData.date}:00-07:00`;
+      }
+
+      const url = action === "Create" 
+        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`
+        : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${selectedEvent?.id}`;
+  
+      const method = action === "Create" ? "POST" : "PUT";
+  
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(eventData),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || "An error occurred");
+        return;
+      }
+  
+      const result = await response.json();
+      toast.success(`Event ${action === "Create" ? "created" : "updated"} successfully`);
+      fetchEvents(); // Refresh the events list
+      handleCloseCreatePanel();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error submitting event");
+    }
+  };
+
   const { steps, step, currentStepIndex, back, next, isFirstStep, isLastStep } = MultistepForm([
     <EventEditor 
           defaultValues={{
@@ -88,10 +125,7 @@ const Events = () => {
             contact: "",
             capacity: 0
           }}
-          onSubmit={(data) => {
-            console.log("Form submitted with data:", data);
-            // Change to hanlde POST to database through api calls
-          }}
+          onSubmit={handleSubmitEvent}
       />,
       <EventForm
             mode="creator"
@@ -110,16 +144,34 @@ const Events = () => {
   ]);
 
   const handleOpenCreatePanel = () => setShowEventEditor(true);
+
   const handleCloseCreatePanel = () => {
     setShowEventEditor(false);
     setData(INITIAL_DATA);
   };
 
-  const handleEventSelect = (event: Event) => {
-    setSelectedEvent(event);
-    setData(event);
-    setAction("Edit");
-    handleOpenCreatePanel();
+  const handleEventSelect = async (event: Event) => {
+    try {
+      // Fetch complete event data in case the list view doesn't have all fields
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event.id}`, {
+        method: "GET",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch event details");
+      }
+  
+      const eventDetails = await response.json();
+      setSelectedEvent(eventDetails);
+      setData(eventDetails);
+      setAction("Edit");
+      handleOpenCreatePanel();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error loading event details");
+    }
   };
 
   const handleCreateEvent = () => {
