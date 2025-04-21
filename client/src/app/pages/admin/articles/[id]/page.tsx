@@ -253,7 +253,7 @@ export default function Article() {
                                 
                                 <div className="flex flex-col my-4">
                                     <p className="font-semibold">Article Audience: </p>
-                                    <InputLabel htmlFor="grouped-native-select">Select Audience</InputLabel>
+                                    <InputLabel htmlFor="grouped-native-select">Selected Audience</InputLabel>
                                     <Select native id="grouped-native-select" 
                                         className="mt-2" style={{ width: "100%" }}
                                     >

@@ -182,7 +182,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
                     toast.error(imageUrl.error || 'Failed to upload image. creating article without image. Please contact support.');
                     return;  
                 }
-                toast.success('Image compressed and uploaded successfully');
+                // toast.success('Image compressed and uploaded successfully');
 
             } catch (error) {
                 console.log("Error uploading image: ", error);
