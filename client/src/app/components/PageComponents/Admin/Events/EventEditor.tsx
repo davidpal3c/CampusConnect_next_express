@@ -1,4 +1,4 @@
-import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 type EventData = {
   name: string;
@@ -12,34 +12,41 @@ type EventData = {
   capacity: number;
 };
 
-type EventProps = EventData & {
-  updateFields: any;
+type EventEditorProps = {
+  defaultValues?: Partial<EventData>;
+  onSubmit: (data: EventData) => void;
 };
 
-function EventEditor({
-  name,
-  date,
-  location,
-  audience,
-  description,
-  programs,
-  host,
-  capacity,
-  contact,
-  updateFields,
-}: EventProps) {
-  const dummyAud = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];
-  const dummyContact = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];
-  const dummyPrograms = ['Program A', 'Program B', 'Program C', 'Program D'];
+const EventEditor: React.FC<EventEditorProps> = ({ defaultValues, onSubmit }) => {
+  const departments = ['Software Dev', 'Human Resources', 'Business', 'Marketing'];
+  const programOptions = ['Program A', 'Program B', 'Program C', 'Program D'];
 
-  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value; // Already in the correct format for datetime-local
-    const isoDate = new Date(selectedDate).toISOString(); // Convert to ISO-8601 for the backend
-    updateFields({ date: isoDate });
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<EventData>({
+    defaultValues: {
+      name: '',
+      date: '',
+      location: '',
+      audience: '',
+      programs: '',
+      description: '',
+      host: '',
+      contact: '',
+      capacity: 0,
+      ...defaultValues,
+    },
+  });
+
+  const formData = watch();
+
+  const handleFormSubmit = (data: EventData) => {
+    onSubmit(data);
   };
-
-  // Format the date for the datetime-local input
-  const formattedDate = date ? new Date(date).toISOString().slice(0, 16) : '';
 
   return (
     <div className="flex p-4 gap-4 bg-gray-100 min-h-screen">
@@ -47,172 +54,289 @@ function EventEditor({
       <div className="w-1/4 bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-bold mb-4">Preview</h2>
         
-        <p className="font-medium mt-4">Name:</p>
-        <p className="text-gray-600 overflow-hidden text-ellipsis">{name || 'Name field is required.'}</p>
-        
-        <p className="font-medium mt-4">Date:</p>
-        <p className="text-gray-600 overflow-hidden text-ellipsis">{date || 'Date field is required.'}</p>
-        
-        <p className="font-medium mt-4">Location:</p>
-        <p className="text-gray-600 overflow-hidden text-ellipsis">{location || 'Location is required.'}</p>
-        
-        <p className="font-medium mt-4">Audience:</p>
-        <p className="text-gray-600 overflow-hidden text-ellipsis">{audience}</p>
-        
-        <p className="font-medium mt-4">Programs:</p>
-        <p className="text-gray-600 overflow-hidden text-ellipsis">{programs}</p>
-        
-        <p className="font-medium mt-4">Description:</p>
-        <p className="text-gray-600 overflow-hidden text-ellipsis">{description || 'Default description is empty.'}</p>
-        
-        <p className="font-medium mt-4">Host:</p>
-        <p className="text-gray-600 overflow-hidden text-ellipsis">{host}</p>
-        
-        <p className="font-medium mt-4">Capacity:</p>
-        <p className="text-gray-600 text-ellipsis">{capacity || 'Capacity is required.'}</p>
-        
-        <p className="font-medium mt-4">Image File:</p>
-        <p className="text-gray-600">Default Image File is empty.</p>
+        <PreviewField label="Name" value={formData.name} required />
+        <PreviewField label="Date" value={formData.date} required />
+        <PreviewField label="Location" value={formData.location} required />
+        <PreviewField label="Audience" value={formData.audience} />
+        <PreviewField label="Programs" value={formData.programs} />
+        <PreviewField label="Description" value={formData.description} />
+        <PreviewField label="Host" value={formData.host} />
+        <PreviewField label="Capacity" value={formData.capacity?.toString()} required />
+        <PreviewField label="Image File" value="Default Image File is empty." />
       </div>
       
-      {/* Stupid dumbie dumb Form */}
-      <div className="w-3/4 bg-white p-6 rounded-lg shadow">
+      {/* Form Section */}
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="w-3/4 bg-white p-6 rounded-lg shadow">
         <div className="grid grid-cols-2 gap-6">
           {/* Name and Image */}
           <div>
-            <label className="block mb-2">
-              Name <span className="text-red-500">*</span>
-            </label>
-            <input
+            <FormLabel htmlFor="name" required>Name</FormLabel>
+            <FormInput
+              id="name"
               type="text"
-              name="name"
               placeholder="Enter name"
-              value={name}
-              onChange={(e) => updateFields({ name: e.target.value })}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              {...register('name', { required: 'Name is required' })}
+              error={errors.name?.message}
             />
           </div>
+          
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block mb-2">Image</label>
-              <button className="bg-blue-400 text-white p-2 rounded w-full">Upload File</button>
+              <FormLabel htmlFor="image">Image</FormLabel>
+              <button 
+                type="button"
+                className="bg-blue-400 text-white p-2 rounded w-full hover:bg-blue-500 transition-colors"
+              >
+                Upload File
+              </button>
             </div>
+            
             <div>
-              <label className="block mb-2">
-                Date <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="datetime-local"
-                  name="date"
-                  value={formattedDate} // Use the formatted date
-                  onChange={handleDateTimeChange}
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-                />
-              </div>
+              <FormLabel htmlFor="date" required>Date</FormLabel>
+              <FormInput
+                id="date"
+                type="datetime-local"
+                {...register('date', { required: 'Date is required' })}
+                error={errors.date?.message}
+              />
             </div>
           </div>
           
           {/* Location and Target Department */}
           <div>
-            <label className="block mb-2">
-              Location <span className="text-red-500">*</span>
-            </label>
-            <input
+            <FormLabel htmlFor="location" required>Location</FormLabel>
+            <FormInput
+              id="location"
               type="text"
-              name="location"
               placeholder="Enter Location"
-              value={location}
-              onChange={(e) => updateFields({ location: e.target.value })}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              {...register('location', { required: 'Location is required' })}
+              error={errors.location?.message}
             />
           </div>
 
           <div>
-            <label className="block mb-2">Target Department(s)</label>
-            <select
-              value={audience}
-              onChange={(e) => updateFields({ audience: e.target.value })}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              <option value="">Select Department</option>
-              {dummyAud.map((aud, index) => (
-                <option key={index} value={aud}>{aud}</option>
-              ))}
-            </select>
+            <FormLabel htmlFor="audience">Target Department(s)</FormLabel>
+            <Controller
+              name="audience"
+              control={control}
+              render={({ field }) => (
+                <FormSelect
+                  id="audience"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={departments}
+                  placeholder="Select Department"
+                />
+              )}
+            />
           </div>
           
           {/* Target Program */}
           <div>
-            <label className="block mb-2">Target Program(s)</label>
-            <select
-              value={programs}
-              onChange={(e) => updateFields({ programs: e.target.value })}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              <option value="">Select Program</option>
-              {dummyPrograms.map((prog, index) => (
-                <option key={index} value={prog}>{prog}</option>
-              ))}
-            </select>
+            <FormLabel htmlFor="programs">Target Program(s)</FormLabel>
+            <Controller
+              name="programs"
+              control={control}
+              render={({ field }) => (
+                <FormSelect
+                  id="programs"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={programOptions}
+                  placeholder="Select Program"
+                />
+              )}
+            />
           </div>
 
           {/* Contact */}
           <div>
-            <label className="block mb-2">Contact(s)</label>
-            <select
-              value={contact}
-              onChange={(e) => updateFields({ contact: e.target.value })}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              <option value="">Select Department</option>
-              {dummyContact.map((aud, index) => (
-                <option key={index} value={aud}>{aud}</option>
-              ))}
-            </select>
+            <FormLabel htmlFor="contact">Contact(s)</FormLabel>
+            <Controller
+              name="contact"
+              control={control}
+              render={({ field }) => (
+                <FormSelect
+                  id="contact"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={departments}
+                  placeholder="Select Department"
+                />
+              )}
+            />
           </div>
           
           {/* Description */}
           <div className="col-span-2">
-            <label className="block mb-2">Description</label>
+            <FormLabel htmlFor="description">Description</FormLabel>
             <textarea
-              name="description"
+              id="description"
               placeholder="Enter Description"
-              value={description}
-              onChange={(e) => updateFields({ description: e.target.value })}
+              {...register('description')}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 h-40"
-            ></textarea>
-          </div>
-
-          {/* Host and Capacity in their own row */}
-          <div>
-            <label className="block mb-2">Host</label>
-            <input
-              type="text"
-              name="host"
-              placeholder="Enter Host Name"
-              value={host}
-              onChange={(e) => updateFields({ host: e.target.value })}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
+
+          {/* Host and Capacity */}
           <div>
-            <label className="block mb-2">
-              Capacity <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
+            <FormLabel htmlFor="host">Host</FormLabel>
+            <FormInput
+              id="host"
+              type="text"
+              placeholder="Enter Host Name"
+              {...register('host')}
+            />
+          </div>
+          
+          <div>
+            <FormLabel htmlFor="capacity" required>Capacity</FormLabel>
+            <Controller
               name="capacity"
-              placeholder="Enter Number"
-              value={capacity}
-              onChange={(e) => updateFields({ capacity: parseInt(e.target.value, 10) })}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              control={control}
+              rules={{ 
+                required: 'Capacity is required',
+                min: { value: 0, message: 'Capacity must be at least 0' }
+              }}
+              render={({ field }) => (
+                <FormInput
+                  id="capacity"
+                  type="number"
+                  placeholder="Enter Number"
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    field.onChange(isNaN(value) ? 0 : value);
+                  }}
+                  min="0"
+                  error={errors.capacity?.message}
+                />
+              )}
             />
           </div>
         </div>
-      </div>
+
+        <div className="mt-6">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
   );
+};
+
+// Updated Helper Components
+const PreviewField: React.FC<{ label: string; value?: string; required?: boolean }> = ({ 
+  label, 
+  value, 
+  required = false 
+}) => (
+  <div className="mt-4">
+    <p className="font-medium">
+      {label} {required && <span className="text-red-500">*</span>}
+    </p>
+    <p className="text-gray-600 overflow-hidden text-ellipsis">
+      {value || (required ? `${label} field is required.` : `Default ${label.toLowerCase()} is empty.`)}
+    </p>
+  </div>
+);
+
+const FormLabel: React.FC<{ htmlFor: string; required?: boolean; children: React.ReactNode }> = ({ 
+  htmlFor, 
+  required = false, 
+  children 
+}) => (
+  <label htmlFor={htmlFor} className="block mb-2">
+    {children} {required && <span className="text-red-500">*</span>}
+  </label>
+);
+
+interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  error?: string;
 }
 
+const FormInput: React.FC<FormInputProps> = ({ error, ...props }) => (
+  <div>
+    <input
+      {...props}
+      className={`w-full p-2 border rounded focus:outline-none focus:ring-2 ${
+        error ? 'border-red-500 focus:ring-red-300' : 'focus:ring-blue-300'
+      }`}
+    />
+    {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+  </div>
+);
+
+interface FormSelectProps {
+  id: string;
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
+  options: string[];
+  placeholder: string;
+  error?: string;
+}
+
+const FormSelect: React.FC<FormSelectProps> = ({ 
+  id, 
+  value, 
+  onChange, 
+  options, 
+  placeholder,
+  error 
+}) => (
+  <div>
+    <select
+      id={id}
+      value={value}
+      onChange={onChange}
+      className={`w-full p-2 border rounded focus:outline-none focus:ring-2 ${
+        error ? 'border-red-500 focus:ring-red-300' : 'focus:ring-blue-300'
+      }`}
+    >
+      <option value="">{placeholder}</option>
+      {options.map((option, index) => (
+        <option key={index} value={option}>{option}</option>
+      ))}
+    </select>
+    {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+  </div>
+);
+
 export default EventEditor;
+
+
+// Going to have the submit be handled in the component here like in the forms component
+// const handlePublishEvent = async () => {
+//   try {
+//     const url = action === "Create" 
+//       ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`
+//       : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${selectedEvent?.id}`;
+
+//     const method = action === "Create" ? "POST" : "PUT";
+
+//     const response = await fetch(url, {
+//       method,
+//       headers: { "content-type": "application/json" },
+//       credentials: "include",
+//       body: JSON.stringify(data),
+//     });
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       toast.error(result.message || `An error occurred ${action === "Create" ? "creating" : "updating"} the event.`);
+//       return;
+//     }
+
+//     toast.success(`Event ${action === "Create" ? "created" : "updated"} successfully!`);
+//     fetchEvents();
+//     handleCloseCreatePanel();
+//   } catch (error) {
+//     console.error(error);
+//     toast.error(`Error ${action === "Create" ? "creating" : "updating"} event`);
+//   }
+// };

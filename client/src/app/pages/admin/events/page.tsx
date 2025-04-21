@@ -1,36 +1,34 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import EventEditor from "@/app/components/PageComponents/Admin/Events/EventEditor";
 import EventListView from "@/app/components/PageComponents/Admin/Events/EventListView";
 import EventCardView from "@/app/components/PageComponents/Admin/Events/EventCardView";
-import EventForm from "@/app/components/PageComponents/Admin/Events/EventForm"
-// import EventCalendarView from "@/app/components/PageComponents/Admin/Events/EventCalendarView";
-import Loader from "@/app/components/Loader/Loader";
+import EventForm from "@/app/components/PageComponents/Admin/Events/EventForm";
 import { MultistepForm } from "@/app/components/PageComponents/Admin/Events/MultistepForm";
-
-// For the icons and Views
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import { DeleteIcon } from "lucide-react";
-import { Tooltip } from '@mui/material';
 import { ViewModuleRounded, ViewListRounded } from '@mui/icons-material';
 
-
 type EventData = {
-  name: string,
-  date: string,
-  location: string,
-  departments: string,
-  programs: string,
-  description: string,
-  host: string,
-  capacity: number
+  id?: string;
+  name: string;
+  date: string;
+  time: string;
+  location: string;
+  departments: string;
+  programs: string;
+  description: string;
+  host: string;
+  capacity: number;
 }
 
-const INITIAL_DATA = {
+type Event = EventData & {
+  id: string;
+}
+
+const INITIAL_DATA: EventData = {
   name: '',
   date: '',
   location: '',
@@ -39,17 +37,16 @@ const INITIAL_DATA = {
   time: '',
   description: '',
   host: 'SAIT',
-  capacity: 0, // Set capacity as a number
+  capacity: 0
 }
 
 const Events = () => {
-  const [data, setData] =useState(INITIAL_DATA)
-  const [events, setEvents] = useState([]);
-  const [originalEvents, setOriginalEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<EventData>(INITIAL_DATA);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [originalEvents, setOriginalEvents] = useState<Event[]>([]);
   const [showEventEditor, setShowEventEditor] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [action, setAction] = useState("Create");
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [action, setAction] = useState<"Create" | "Edit">("Create");
   const [viewMode, setViewMode] = useState<'list' | 'card'>('card');
 
   useEffect(() => {
@@ -72,290 +69,237 @@ const Events = () => {
 
       setEvents(data);
       setOriginalEvents(data);
-      setIsLoading(false);
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching events: " + error);
+      toast.error("Error fetching events");
     }
   };
 
-
-//Multi Step Form handling and shetttt
-const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = MultistepForm([
-  <EventEditor audience={""} contact={""} {...data} updateFields={updateFields}/>, 
-  <EventForm /> //Will have to change it for the form instead of using the Event data
-])
-
+  const { steps, step, currentStepIndex, back, next, isFirstStep, isLastStep } = MultistepForm([
+    <EventEditor 
+          defaultValues={{
+            name: "Event Name",
+            date: "2023-01-01T12:00",
+            location: "SAIT Stan Grad Centre",
+            audience: "",
+            programs: "Program A",
+            description: "",
+            host: "SAIT",
+            contact: "",
+            capacity: 0
+          }}
+          onSubmit={(data) => {
+            console.log("Form submitted with data:", data);
+            // Change to hanlde POST to database through api calls
+          }}
+      />,
+      <EventForm
+            mode="creator"
+            formId="123" // or null for new form
+            onSubmit={(data) => {
+              if (data.isDraft) {
+                console.log("Saving draft:", data);
+                // API call to save draft
+              } else {
+                console.log("Submitting form:", data);
+                // API call to submit form
+              }
+              localStorage.removeItem(`formDraft_${data.formId || "new"}`);
+            }}
+        />
+  ]);
 
   const handleOpenCreatePanel = () => setShowEventEditor(true);
-  const handleCloseCreatePanel = () => setShowEventEditor(false);
+  const handleCloseCreatePanel = () => {
+    setShowEventEditor(false);
+    setData(INITIAL_DATA);
+  };
 
-  const handleEventSelect = (event: any) => {
+  const handleEventSelect = (event: Event) => {
     setSelectedEvent(event);
+    setData(event);
     setAction("Edit");
     handleOpenCreatePanel();
   };
 
   const handleCreateEvent = () => {
     setSelectedEvent(null);
+    setData(INITIAL_DATA);
     setAction("Create");
     handleOpenCreatePanel();
   };
 
-  const handleDeleteEvent = () => {
-    console.log("event deleted");
-  }
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!window.confirm("Are you sure you want to delete this event?")) {
+      return;
+    }
 
-  function handleEventSubmission(){
-    console.log("This event was submitted");
-    next()
-    
-  }
-
-  const handlePublish = async () => {
-    console.log("Publish button clicked"); // Debugging
     try {
-      const eventData = {
-        ...data,
-        capacity: data.capacity
-        // capacity: parseInt(data.capacity, 10), // Convert capacity to an integer
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`, {
-        method: "POST",
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${eventId}`, {
+        method: "DELETE",
         headers: { "content-type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(data), // Send the form data
       });
-  
-      const result = await response.json();
-      console.log("API Response:", result); // Debugging
-  
+
       if (!response.ok) {
-        toast.error(result.message || "An error occurred creating the event.");
+        const errorData = await response.json();
+        toast.error(errorData.message || "An error occurred while deleting event.");
         return;
       }
-  
-      toast.success("Event created successfully!");
-      fetchEvents(); // Refresh the events list
-      handleCloseCreatePanel(); // Close the editor panel
+
+      toast.success("Event deleted successfully");
+      setEvents(events.filter(event => event.id !== eventId));
     } catch (error) {
       console.error(error);
-      toast.error("Error creating event: " + error);
+      toast.error("Error deleting event");
     }
-    handleCloseCreatePanel();
   };
 
-  function updateFields(fields: Partial<EventData>) {
-    setData(prev => {
-      return {...prev, ...fields}
-    })
-  }
+  const handleNext = () => {
+    console.log("This event was submitted");
+    next();
+  };
 
 
   return (
     <main>
       <div>
-        {/** Make the header look more like the Articles page */}
-      <header>
-        <h1 className="text-2xl font-semibold">Events</h1>
-        <div className="flex items-center space-x-4 p-4 bg-gray-100 rounded-lg">
-          <input
-            type="text"
-            placeholder="Search by name"
-            // value={searchTerm}
-            // onChange={(e) => searchByName(e.target.value)}
-            className="p-2 border rounded-lg"
-          />
-          <input
-            type="date"
-            // value={filterCriteria.date}
-            // onChange={(e) => filterByDate(e.target.value)}
-            className="p-2 border rounded-lg"
-          />
-          <input
-            type="text"
-            placeholder="Filter by location"
-            // value={filterCriteria.location}
-            // onChange={(e) => filterByLocation(e.target.value)}
-            className="p-2 border rounded-lg"
-          />
-          <div className="flex justify-between items-center p-4">
-
-          {/* Make button look the same as article */}
-            <ActionButton
-              title="Create Event" 
-              onClick={handleCreateEvent}
-              textColor="text-saitBlue"
-              borderColor="border-saitBlue"
-              hoverBgColor="bg-saitBlue"
-              hoverTextColor="text-saitWhite"
-              
+        <header>
+          <h1 className="text-2xl font-semibold">Events</h1>
+          <div className="flex items-center space-x-4 p-4 bg-gray-100 rounded-lg">
+            <input
+              type="text"
+              placeholder="Search by name"
+              className="p-2 border rounded-lg"
             />
+            <input
+              type="date"
+              className="p-2 border rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Filter by location"
+              className="p-2 border rounded-lg"
+            />
+            <div className="flex justify-between items-center p-4">
+              <ActionButton
+                title="Create Event"
+                onClick={handleCreateEvent}
+                textColor="text-saitBlue"
+                borderColor="border-saitBlue"
+                hoverBgColor="bg-saitBlue"
+                hoverTextColor="text-saitWhite"
+              />
+            </div>
           </div>
-        </div>
-      </header>
-          <div className="bg-saitWhite h-screen">
-            {isLoading ? (
-              <Loader isLoading={true} />
+        </header>
+
+        <div className="bg-saitWhite h-screen">
+          <div>
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 ${viewMode === 'list' ? 'text-blue-600' : 'text-gray-500'}`}
+              >
+                <ViewListRounded />
+              </button>
+              <button
+                onClick={() => setViewMode('card')}
+                className={`p-2 ${viewMode === 'card' ? 'text-blue-600' : 'text-gray-500'}`}
+              >
+                <ViewModuleRounded />
+              </button>
+            </div>
+
+            {viewMode === 'list' ? (
+              <EventListView
+                events={events}
+                onEventSelect={handleEventSelect}
+                onEventDelete={handleDeleteEvent}
+              />
             ) : (
-              <div>
-                  <div className="flex justify-end mb-4">
-                    <button 
-                      onClick={() => setViewMode('list')} 
-                      className={`p-2 ${viewMode === 'list' ? 'text-blue-600' : 'text-gray-500'}`}
-                    >
-                      <ViewListRounded />
-                    </button>
-                    <button 
-                      onClick={() => setViewMode('card')} 
-                      className={`p-2 ${viewMode === 'card' ? 'text-blue-600' : 'text-gray-500'}`}
-                    >
-                      <ViewModuleRounded />
-                    </button>
-                  </div>
-
-                  {/* Conditional Rendering of Views */}
-                  {viewMode === 'list' ? (
-                    <EventListView 
-                      events={events} 
-                      onEventSelect={handleEventSelect} 
-                      onEventDelete={handleDeleteEvent}
-                    />
-                  ) : (
-                    <EventCardView 
-                      events={events} 
-                      onEventSelect={handleEventSelect} 
-                      onEventDelete={handleDeleteEvent}
-                      isAdminView={true}
-                    />
-                  )}
-
-                {/* Event Editor Panel */}
-                <AnimatePresence>
-                  {showEventEditor && (
-                    <motion.div
-                      initial={{ x: "100vh" }}
-                      animate={{ x: 0 }}
-                      exit={{ x: "100vh" }}
-                      transition={{ duration: 0.7, ease: "easeInOut" }}
-                      className="fixed top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50 overflow-y-auto"
-                    >
-                      <div className="flex flex-col min-h-full">
-                        {/* Header with close button and step indicator */}
-                        <div className="flex justify-between items-center mb-6">
-                          <h2 className="text-xl font-semibold">
-                            {action} Event
-                          </h2>
-                          
-                          {/* Step progress indicator */}
-                          <div className="flex items-center gap-2">
-                            <div className="w-32 bg-gray-200 rounded-full h-2.5">
-                              <div 
-                                className="bg-blue-600 h-2.5 rounded-full" 
-                                style={{ width: `${((currentStepIndex + 1) / steps.length) * 100}%` }}
-                              ></div>
-                            </div>
-                            <span className="text-sm font-medium text-gray-700">
-                              Step {currentStepIndex + 1} of {steps.length}
-                            </span>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={handleCloseCreatePanel}
-                            className="text-gray-500 hover:text-gray-700 focus:outline-none"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-
-                        {/* Form content */}
-                        <div className="flex-grow">
-                          <form onSubmit={(e) => {
-                            e.preventDefault();
-                            if (isLastStep) {
-                              handlePublish();
-                            } else {
-                              handleEventSubmission();
-                            }
-                          }}>
-                            {step}
-                          </form>
-                        </div>
-
-                        {/* Navigation buttons - fixed at bottom */}
-                        <div className="sticky bottom-4 mx-auto w-64 max-w-lg bg-white py-3 px-6 rounded-lg shadow-md border border-gray-200 flex justify-center gap-4">
-                          {!isFirstStep && (
-                            <button type="button" onClick={back} className="px-4 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                              Back
-                            </button>
-                          )}
-                          
-<<<<<<< HEAD
-                          <button onClick={handlePublish} 
-                          className="w-32 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"> 
-                          Publish Event
-                          </button> 
-                          
-                          :  
-                          <button onClick={handleEventSubmission} 
-                          className="w-32 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"> 
-                          Next
-                          </button>}
-                         
-=======
-                          <button onClick={handleEventSubmission} className="w-28 px-4 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                            {isLastStep ? 'Publish' : 'Next'}
-                          </button>
->>>>>>> parent of c19efcd (Worked on the publish and submit function a bit and can edit now)
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              <EventCardView
+                events={events}
+                onEventSelect={handleEventSelect}
+                onEventDelete={handleDeleteEvent}
+                isAdminView={true}
+              />
             )}
+
+            <AnimatePresence>
+              {showEventEditor && (
+                <motion.div
+                  initial={{ x: "100vh" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100vh" }}
+                  transition={{ duration: 0.7, ease: "easeInOut" }}
+                  className="fixed top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50 overflow-y-auto"
+                >
+                  <div className="flex flex-col min-h-full">
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-semibold">
+                        {action} Event
+                      </h2>
+                      
+                      <div className="flex items-center gap-2">
+                        <div className="w-32 bg-gray-200 rounded-full h-2.5">
+                          <div 
+                            className="bg-blue-600 h-2.5 rounded-full" 
+                            style={{ width: `${((currentStepIndex + 1) / steps.length) * 100}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">
+                          Step {currentStepIndex + 1} of {steps.length}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleCloseCreatePanel}
+                        className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div className="flex-grow">
+                      <div onSubmit={(e) => {
+                        e.preventDefault();
+                        if (isLastStep) {
+                          handleCloseCreatePanel();
+                        } else {
+                          handleNext();
+                        }
+                      }}>
+                        {step}
+                      </div>
+                    </div>
+
+                    <div className="sticky bottom-4 mx-auto max-w-lg bg-white py-3 px-6 rounded-lg shadow-md border border-gray-200 flex justify-center gap-4">
+                      {!isFirstStep && (
+                        <button type="button" onClick={back} className="px-4 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                          Back
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="px-4 py-1.5 bg-blue-600 rounded-md text-sm font-medium text-white hover:bg-blue-700"
+                      >
+                        {isLastStep ? "Finish Event & Form creation" : "Next"}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
+      </div>
     </main>
   );
 };
 
 export default Events;
-
-const events = [
-  {
-    title: "Meeting",
-    start: new Date(2025, 0, 25, 10, 0),
-    end: new Date(2025, 0, 25, 11, 0),
-  },
-  {
-    title: "Lunch Break",
-    start: new Date(2025, 0, 25, 12, 0),
-    end: new Date(2025, 0, 25, 13, 0),
-  },
-];
-
-
-{/** Form and Calendar
-      <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
-        <EventForm/>
-      </div>
-      
-      
-
-    <div className={`bg-white p-4 shadow-md rounded-md "col-span-2" : ""`}>
-    <Calendar
-      localizer={localizer}
-      events={events}
-      startAccessor="start"
-      endAccessor="end"
-      style={{ height: 500 }}
-      onSelectEvent={handleEventSelect}
-    />
-  </div> 
-  
-  */}
