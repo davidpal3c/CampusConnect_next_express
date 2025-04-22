@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
 import ActionButton from "@/app/components/Buttons/ActionButton";
 import EventEditor from "@/app/components/PageComponents/Admin/Events/EventEditor";
 import EventListView from "@/app/components/PageComponents/Admin/Events/EventListView";
@@ -10,6 +9,18 @@ import EventCardView from "@/app/components/PageComponents/Admin/Events/EventCar
 import EventForm from "@/app/components/PageComponents/Admin/Events/EventForm";
 import { MultistepForm } from "@/app/components/PageComponents/Admin/Events/MultistepForm";
 import { ViewModuleRounded, ViewListRounded } from '@mui/icons-material';
+
+import { motion, AnimatePresence } from "framer-motion";
+import { Tooltip } from '@mui/material';
+
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
+import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import ArrowLeftRoundedIcon from '@mui/icons-material/ArrowLeftRounded';
+import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 
 type EventData = {
   id?: string;
@@ -45,7 +56,7 @@ const Events = () => {
   const [showEventEditor, setShowEventEditor] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [action, setAction] = useState<"Create" | "Edit">("Create");
-  const [viewMode, setViewMode] = useState<'list' | 'card'>('card');
+  const [eventView, setEventView] = useState("simple");
 
   useEffect(() => {
     fetchEvents();
@@ -212,13 +223,39 @@ const Events = () => {
     next();
   };
 
+  const handleCardView = () =>{
+    setEventView("Simple");
+  }
+
+  const handleListView = () => {
+    setEventView("Extended");
+  }
 
   return (
-    <main>
+    <main className="bg-saitWhite h-screen p-4 xl:pr-8">
       <div>
-        <header>
-          <h1 className="text-2xl font-semibold">Events</h1>
+      <header className="flex flex-col items-center justify-between border-b-2 border-saitBlack pb-3 lg:flex-row md:space-y-3 xs:space-y-3"> 
+        <h1 className="text-2xl font-bold">Events</h1>
+
           <div className="flex items-center space-x-4 p-4 bg-gray-100 rounded-lg">
+                <div className="flex flex-row w-[4.3rem] items-center justify-evenly bg-white border-2 rounded-lg p-1">
+                  <Tooltip title="Simple View" arrow>
+                    <button className="Simple View" onClick={handleCardView}>
+                      <ViewModuleRoundedIcon sx={
+                        eventView === "Simple" ? { color: '#2b64ae', fontSize: 26 } :
+                        { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}
+                        }/>
+                    </button>
+                  </Tooltip>
+                  <Tooltip title="Extended View" arrow>
+                    <button className="" onClick={handleListView}>
+                      <ViewListRoundedIcon sx={
+                        eventView === "Extended" ? { color: '#2b64ae', fontSize: 26 } :
+                        { color: '#bababa', fontSize: 26, ":hover": { color: '#2b64ae' }}
+                        }/>
+                    </button>
+                  </Tooltip>
+                </div>
             <input
               type="text"
               placeholder="Search by name"
@@ -235,35 +272,23 @@ const Events = () => {
             />
             <div className="flex justify-between items-center p-4">
               <ActionButton
-                title="Create Event"
+                title="Create" 
                 onClick={handleCreateEvent}
                 textColor="text-saitBlue"
                 borderColor="border-saitBlue"
                 hoverBgColor="bg-saitBlue"
                 hoverTextColor="text-saitWhite"
+                icon={<AddRoundedIcon />} 
               />
+              
             </div>
           </div>
         </header>
 
         <div className="bg-saitWhite h-screen">
           <div>
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 ${viewMode === 'list' ? 'text-blue-600' : 'text-gray-500'}`}
-              >
-                <ViewListRounded />
-              </button>
-              <button
-                onClick={() => setViewMode('card')}
-                className={`p-2 ${viewMode === 'card' ? 'text-blue-600' : 'text-gray-500'}`}
-              >
-                <ViewModuleRounded />
-              </button>
-            </div>
 
-            {viewMode === 'list' ? (
+            {eventView === 'Exetended' ? (
               <EventListView
                 events={events}
                 onEventSelect={handleEventSelect}
