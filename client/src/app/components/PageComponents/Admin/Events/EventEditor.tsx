@@ -313,36 +313,3 @@ const FormSelect: React.FC<FormSelectProps> = ({
 );
 
 export default EventEditor;
-
-
-// Going to have the submit be handled in the component here like in the forms component
-// const handlePublishEvent = async () => {
-//   try {
-//     const url = action === "Create" 
-//       ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`
-//       : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${selectedEvent?.id}`;
-
-//     const method = action === "Create" ? "POST" : "PUT";
-
-//     const response = await fetch(url, {
-//       method,
-//       headers: { "content-type": "application/json" },
-//       credentials: "include",
-//       body: JSON.stringify(data),
-//     });
-
-//     const result = await response.json();
-
-//     if (!response.ok) {
-//       toast.error(result.message || `An error occurred ${action === "Create" ? "creating" : "updating"} the event.`);
-//       return;
-//     }
-
-//     toast.success(`Event ${action === "Create" ? "created" : "updated"} successfully!`);
-//     fetchEvents();
-//     handleCloseCreatePanel();
-//   } catch (error) {
-//     console.error(error);
-//     toast.error(`Error ${action === "Create" ? "creating" : "updating"} event`);
-//   }
-// };
