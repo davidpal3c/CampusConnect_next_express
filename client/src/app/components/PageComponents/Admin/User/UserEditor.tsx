@@ -129,7 +129,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
             toast.error(`Unknown error occurred: ${error}`);
         }
     };
-
+    
 
     const handleIntakeChange = (intakeYear: number, intake: string, status: string) => {
         setIntakeYear(intakeYear);

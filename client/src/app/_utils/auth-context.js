@@ -106,8 +106,7 @@ export const AuthContextProvider = ({ children }) => {
     try {
       clearLocalStorage();
       await signOutFirebase();
-      updateUserData(null);
-
+    
       const logoutRoute = user.role === "Admin" ? "logout-admin" : "logout-user";
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/${logoutRoute}`, {
@@ -122,7 +121,7 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error(errorData.message || "An unknown error occurred");
       }
 
-      console.log("Logout successful");      
+      updateUserData(null); 
     } catch (error) {
       console.error("Sign Out Error:", error);
       throw error;
