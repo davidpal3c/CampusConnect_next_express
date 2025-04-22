@@ -44,6 +44,7 @@ const nextConfig: NextConfig = {
       { source: '/user/groups', destination: '/pages/user/groups'},
       { source: '/user/articles', destination: '/pages/user/articles'},
       { source: '/user/articles/:id', destination: '/pages/user/articles/:id'},
+      { source: '/user/profile', destination: '/pages/user/profile'}
     ];
   },
 
