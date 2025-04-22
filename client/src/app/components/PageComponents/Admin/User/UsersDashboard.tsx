@@ -28,6 +28,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // types
 import { UserRole } from "@/app/types/userTypes";
+import { set } from "react-hook-form";
 
 
 export default function UsersDashboard() {
@@ -45,6 +46,9 @@ export default function UsersDashboard() {
     const userEditorRef = useRef(null);
     const [fieldsByRole, setFieldsByRole] = useState([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
+
+    // panel state
+    const [panelTask, setPanelTask] = useState<string>("register");
 
     // Loader
     const [isLoading, setIsLoading] = useState(true);
@@ -147,10 +151,14 @@ export default function UsersDashboard() {
     }
 
     // Create User Panel
-    const handlePanel = () => {
+    const handlePanel = (action: string) => {
+        setPanelTask(action);
         setIsPanelVisible(!isPanelVisible);
     };
 
+    const handleCloseUserPanel = () => {
+        setIsPanelVisible(false);
+    };
 
 
     const filterByRole = async (role: any) => {
@@ -321,7 +329,7 @@ export default function UsersDashboard() {
                                     <Tooltip title="Add User" arrow>
                                         <div>
                                             <ActionButton title="Register User" icon={<AccountCircleRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} 
-                                                onClick={handlePanel} borderColor="border-saitBlue" textColor="text-saitGray" 
+                                                onClick={() => handlePanel("register")} borderColor="border-saitBlue" textColor="text-saitGray" 
                                                 hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                                             />
                                         </div>
@@ -353,10 +361,10 @@ export default function UsersDashboard() {
                             animate={{ x: 0 }}                                                        //final state of animation
                             exit={{ x: "100vh" }}                                                      // exit animation
                             transition={{ duration: 0.7, ease: "easeInOut" }}
-                            className="absolute top-0 right-0 h-full w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
+                            className="absolute top-0 right-0 h-auto w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                         >
                             <div className="">
-                                <UserEditor closeOnClick={handlePanel}/>
+                                <UserEditor closeOnClick={handleCloseUserPanel} task={panelTask}/>
                             </div>
                         </motion.div>
                         }

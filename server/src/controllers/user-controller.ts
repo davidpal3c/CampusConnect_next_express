@@ -161,6 +161,8 @@ export const getUserFieldsByRole = async (req: Request, res: Response) : Promise
             return;
         }
 
+        console.log("userFields", userFields);
+
         res.status(200).json(userFields);
         return
     } catch (error) {

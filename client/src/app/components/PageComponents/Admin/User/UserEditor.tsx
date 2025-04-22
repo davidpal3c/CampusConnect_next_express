@@ -16,13 +16,14 @@ import IntakePicker, {getCurrentSeason} from "./IntakePicker";
 
 type CreateUserProps = { 
     closeOnClick: () => void;
+    task: string;
+    userObject?: any;
+    reFetchUsersData?: any;
 };
 
-const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
+const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task, userObject, reFetchUsersData }) => {
 
-    // State Management
     const currentYear = new Date().getFullYear();
-
     const [intakeYear, setIntakeYear] = useState(currentYear);
     const [intake, setIntake] = useState(getCurrentSeason());
     const [status, setStatus] = useState("Active");
@@ -33,12 +34,28 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
     // Admin Permissions
     const permissions = ["Read-Only", "Read-Write", "Full Access"];
 
-    const { 
-        register, 
-        handleSubmit, 
-        formState: { errors }, 
-        watch 
-    } = useForm();
+    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({
+        defaultValues: {
+            user_id: "",
+            email: "",
+            first_name: "",
+            middle_name: "",
+            last_name: "",
+            role: "",
+            created_at: new Date().toISOString(),
+            password: "",
+            image_url: "",
+            permissions: "",
+            program_id: "",
+            intake_year: currentYear,
+            intake: getCurrentSeason(),
+            status: "Active",
+            graduation_year: "",
+            credentials: "",
+            current_position: "",
+            company: ""
+        }
+    });
 
     const watchedRole = watch("role");
 
@@ -87,27 +104,25 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
         console.log("Formatted User Data (Flat Structure):", JSON.stringify(userData));
 
         try {
+            // // If User is a Student, Check if program_id is valid, save department_id
+            // if (data.role === "Student") {
+            //     const programResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/programs/${data.program_id}`, {
+            //         method: "GET",
+            //         headers: { "content-type": "application/json" },
+            //         credentials: "include",
+            //     });
+            //     if (!programResponse.ok) {
+            //         toast.error("Invalid Program ID. Please enter a valid program.");
+            //         console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/programs/${data.program_id}`);
+            //         return;
+            //     }
+            //     console.log("Program ID is valid.");
+            //     const programData = await programResponse.json();
 
-            // If User is a Student, Check if program_id is valid, save department_id
-            if (data.role === "Student") {
-                const programResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/programs/${data.program_id}`, {
-                    method: "GET",
-                    headers: { "content-type": "application/json" },
-                    credentials: "include",
-                });
-                if (!programResponse.ok) {
-                    toast.error("Invalid Program ID. Please enter a valid program.");
-                    console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/programs/${data.program_id}`);
-                    return;
-                }
-                console.log("Program ID is valid.");
-                const programData = await programResponse.json();
-
-                Object.assign(userData, {
-                    department_id: programData.department_id,
-                });
-
-            }
+            //     Object.assign(userData, {
+            //         department_id: programData.department_id,
+            //     });
+            // }
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
                 method: "POST",
