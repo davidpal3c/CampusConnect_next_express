@@ -94,11 +94,17 @@ const EventEditor: React.FC<EventEditorProps> = ({ defaultValues, onSubmit }) =>
             <div>
               <FormLabel htmlFor="date" required>Date</FormLabel>
               <FormInput
-                id="date"
-                type="datetime-local"
-                {...register('date', { required: 'Date is required' })}
-                error={errors.date?.message}
-              />
+                  id="date"
+                  type="datetime-local"
+                  {...register('date', { 
+                    required: 'Date is required',
+                    validate: (value) => {
+                      if (!value) return true;
+                      return !isNaN(new Date(value).getTime()) || 'Invalid date';
+                    }
+                  })}
+                  error={errors.date?.message}
+                />
             </div>
           </div>
           

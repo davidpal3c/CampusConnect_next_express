@@ -84,44 +84,47 @@ const Events = () => {
     }
   };
 
-  const handleSubmitEvent = async (eventData: EventData) => {
-    try {
+  // In your Events page component
+const handleSubmitEvent = async (eventData: EventData) => {
+  try {
+    // Convert the date to proper ISO format
+    const formattedDate = eventData.date 
+      ? new Date(eventData.date).toISOString()  // Converts to full ISO format
+      : null;
 
-      //Very hardcoded very bad but I just want the event to submit holy molely
-      if (!eventData.date.includes(":00")) {
-        // Append ":00" for seconds and "-07:00" for Calgary (Mountain Time)
-        // Note: You may need to adjust -07:00 to -06:00 during Daylight Saving Time
-        eventData.date = `${eventData.date}:00-07:00`;
-      }
+    const formattedData = {
+      ...eventData,
+      date: formattedDate
+    };
 
-      const url = action === "Create" 
-        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`
-        : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${selectedEvent?.id}`;
-  
-      const method = action === "Create" ? "POST" : "PUT";
-  
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(eventData),
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message || "An error occurred");
-        return;
-      }
-  
-      const result = await response.json();
-      toast.success(`Event ${action === "Create" ? "created" : "updated"} successfully`);
-      fetchEvents(); // Refresh the events list
-      handleCloseCreatePanel();
-    } catch (error) {
-      console.error(error);
-      toast.error("Error submitting event");
+    const url = action === "Create" 
+    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`
+    : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${selectedEvent?.id}`;
+
+    const method = action === "Create" ? "POST" : "PUT";
+
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(formattedData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      toast.error(errorData.message || "An error occurred");
+      return;
     }
-  };
+
+    const result = await response.json();
+    toast.success(`Event ${action === "Create" ? "created" : "updated"} successfully`);
+    fetchEvents(); // Refresh the events list
+    handleCloseCreatePanel();
+  } catch (error) {
+    console.error(error);
+    toast.error("Error submitting event");
+  }
+};
 
   const { steps, step, currentStepIndex, back, next, isFirstStep, isLastStep } = MultistepForm([
     <EventEditor 
@@ -161,29 +164,32 @@ const Events = () => {
     setData(INITIAL_DATA);
   };
 
-  const handleEventSelect = async (event: Event) => {
-    try {
-      // Fetch complete event data in case the list view doesn't have all fields
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event.id}`, {
-        method: "GET",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to fetch event details");
-      }
-  
-      const eventDetails = await response.json();
-      setSelectedEvent(eventDetails);
-      setData(eventDetails);
-      setAction("Edit");
-      handleOpenCreatePanel();
-    } catch (error) {
-      console.error(error);
-      toast.error("Error loading event details");
-    }
-  };
+  // In your handleEventSelect function
+const handleEventSelect = async (event: Event) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event.id}`, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch event details");
+
+    const eventDetails = await response.json();
+    
+    // Convert the ISO date back to local datetime-local format
+    setSelectedEvent(eventDetails);
+    setData({
+      ...eventDetails,
+      date: eventDetails.date ? eventDetails.date.slice(0, 16) : '' // "YYYY-MM-DDTHH:MM"
+    });
+    setAction("Edit");
+    handleOpenCreatePanel();
+  } catch (error) {
+    console.error(error);
+    toast.error("Error loading event details");
+  }
+};
 
   const handleCreateEvent = () => {
     setSelectedEvent(null);
