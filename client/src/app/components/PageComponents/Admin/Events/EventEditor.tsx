@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 type EventData = {
+  event_id: string;
   name: string;
   date: string;
   location: string;
@@ -26,6 +28,7 @@ const EventEditor: React.FC<EventEditorProps> = ({ defaultValues, onSubmit }) =>
     handleSubmit,
     control,
     watch,
+    reset,
     formState: { errors },
   } = useForm<EventData>({
     defaultValues: {
@@ -42,11 +45,18 @@ const EventEditor: React.FC<EventEditorProps> = ({ defaultValues, onSubmit }) =>
     },
   });
 
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset]);
+
   const formData = watch();
 
   const handleFormSubmit = (data: EventData) => {
     onSubmit(data);
   };
+
 
   return (
     <div className="flex p-4 gap-4 bg-gray-100 min-h-screen">
@@ -223,11 +233,11 @@ const EventEditor: React.FC<EventEditorProps> = ({ defaultValues, onSubmit }) =>
         </div>
 
         <div className="mt-6">
-          <button
+        <button
             type="submit"
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Submit
+            {defaultValues?.event_id ? 'Update Event' : 'Create Event'}
           </button>
         </div>
       </form>

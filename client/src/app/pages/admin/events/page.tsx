@@ -7,6 +7,7 @@ import EventEditor from "@/app/components/PageComponents/Admin/Events/EventEdito
 import EventListView from "@/app/components/PageComponents/Admin/Events/EventListView";
 import EventCardView from "@/app/components/PageComponents/Admin/Events/EventCardView";
 import EventForm from "@/app/components/PageComponents/Admin/Events/EventForm";
+import EventCalendarView from "@/app/components/PageComponents/Admin/Events/EventCalendarView";
 import { MultistepForm } from "@/app/components/PageComponents/Admin/Events/MultistepForm";
 import { ViewModuleRounded, ViewListRounded } from '@mui/icons-material';
 
@@ -16,14 +17,11 @@ import { Tooltip } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
 import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import ArrowLeftRoundedIcon from '@mui/icons-material/ArrowLeftRounded';
-import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
+import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
+
 
 type EventData = {
-  id?: string;
+  event_id: string;
   name: string;
   date: string;
   location: string;
@@ -33,6 +31,35 @@ type EventData = {
   host: string;
   capacity: number;
 }
+
+type CalendarEvent = {
+  id: string;
+  title: string;  // React-Big-Calendar requires 'title' instead of 'name'
+  start: Date;    // Requires Date objects
+  end: Date;
+  location: string;
+  audience: string;
+  programs: string;
+  description: string;
+  host: string;
+  capacity: number;
+};
+
+// Conversion function
+const convertToCalendarEvent = (eventData: EventData): CalendarEvent => {
+  return {
+    id: eventData.id || Date.now().toString(),
+    title: eventData.name,
+    start: new Date(eventData.date),
+    end: new Date(new Date(eventData.date).getTime() + 2 * 60 * 60 * 1000), // 2 hour duration
+    location: eventData.location,
+    audience: eventData.audience,
+    programs: eventData.programs,
+    description: eventData.description,
+    host: eventData.host,
+    capacity: eventData.capacity
+  };
+};
 
 type Event = EventData & {
   id: string;
@@ -56,7 +83,7 @@ const Events = () => {
   const [showEventEditor, setShowEventEditor] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [action, setAction] = useState<"Create" | "Edit">("Create");
-  const [eventView, setEventView] = useState("simple");
+  const [eventView, setEventView] = useState("Simple");
 
   useEffect(() => {
     fetchEvents();
@@ -85,76 +112,75 @@ const Events = () => {
   };
 
   // In your Events page component
-const handleSubmitEvent = async (eventData: EventData) => {
-  try {
-    // Convert the date to proper ISO format
-    const formattedDate = eventData.date 
-      ? new Date(eventData.date).toISOString()  // Converts to full ISO format
-      : null;
-
-    const formattedData = {
-      ...eventData,
-      date: formattedDate
-    };
-
-    const url = action === "Create" 
-    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`
-    : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${selectedEvent?.id}`;
-
-    const method = action === "Create" ? "POST" : "PUT";
-
-    const response = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(formattedData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      toast.error(errorData.message || "An error occurred");
-      return;
+  const handleSubmitEvent = async (eventData: EventData) => {
+    try {
+      const formattedDate = eventData.date 
+        ? new Date(eventData.date).toISOString()
+        : null;
+  
+      const formattedData = {
+        ...eventData,
+        date: formattedDate
+      };
+  
+      const url = action === "Create" 
+        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/`
+        : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${selectedEvent?.event_id}`;
+  
+      const method = action === "Create" ? "POST" : "PUT";
+  
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(formattedData),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || "An error occurred");
+        return;
+      }
+  
+      const result = await response.json();
+      toast.success(`Event ${selectedEvent?.id ? "updated" : "created"} successfully`);
+      fetchEvents();
+      handleCloseCreatePanel();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error submitting event");
     }
-
-    const result = await response.json();
-    toast.success(`Event ${action === "Create" ? "created" : "updated"} successfully`);
-    fetchEvents(); // Refresh the events list
-    handleCloseCreatePanel();
-  } catch (error) {
-    console.error(error);
-    toast.error("Error submitting event");
-  }
-};
-
+  };
+  
   const { steps, step, currentStepIndex, back, next, isFirstStep, isLastStep } = MultistepForm([
     <EventEditor 
-          defaultValues={{
-            name: "Event Name",
-            date: "2023-01-01T12:00",
-            location: "SAIT Stan Grad Centre",
-            audience: "",
-            programs: "Program A",
-            description: "",
-            host: "SAIT",
-            contact: "",
-            capacity: 0
-          }}
+        key="event-editor"
+        defaultValues={action === "Edit" ? data : {  // Pass actual data for editing
+          name: "",
+          date: "",
+          location: "",
+          audience: "",
+          programs: "",
+          description: "",
+          host: "SAIT",
+          capacity: 0
+        }}
           onSubmit={handleSubmitEvent}
       />,
-      <EventForm
-            mode="creator"
-            formId="123" // or null for new form
-            onSubmit={(data) => {
-              if (data.isDraft) {
-                console.log("Saving draft:", data);
-                // API call to save draft
-              } else {
-                console.log("Submitting form:", data);
-                // API call to submit form
-              }
-              localStorage.removeItem(`formDraft_${data.formId || "new"}`);
-            }}
-        />
+      // <EventForm
+      //       mode="creator"
+      //       formId="123" // or null for new form
+      //       onSubmit={(data) => {
+      //         if (data.isDraft) {
+      //           console.log("Saving draft:", data);
+      //           // API call to save draft
+      //         } else {
+      //           console.log("Submitting form:", data);
+      //           // API call to submit form
+      //         }
+      //         localStorage.removeItem(`formDraft_${data.formId || "new"}`);
+      //       }}
+      //   />
   ]);
 
   const handleOpenCreatePanel = () => setShowEventEditor(true);
@@ -164,32 +190,35 @@ const handleSubmitEvent = async (eventData: EventData) => {
     setData(INITIAL_DATA);
   };
 
-  // In your handleEventSelect function
-const handleEventSelect = async (event: Event) => {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event.id}`, {
-      method: "GET",
-      headers: { "content-type": "application/json" },
-      credentials: "include",
-    });
+  const handleEventSelect = async (event: Event) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/${event.event_id}`, {
+        method: "GET",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+      });
+  
+      if (!response.ok) throw new Error("Failed to fetch event details");
+      
+      const eventDetails = await response.json();
+      
+      // Convert date for datetime-local input
+      const formData = {
+        ...eventDetails,
+        date: eventDetails.date ? eventDetails.date.slice(0, 16) : ''
+      };
+      
+      setSelectedEvent(eventDetails);
+      setData(formData);
+      setAction("Edit");
+      handleOpenCreatePanel();
+      
+    } catch (error) {
+      console.error("Error selecting event:", error);
+      toast.error("Failed to load event details");
+    }
+  };
 
-    if (!response.ok) throw new Error("Failed to fetch event details");
-
-    const eventDetails = await response.json();
-    
-    // Convert the ISO date back to local datetime-local format
-    setSelectedEvent(eventDetails);
-    setData({
-      ...eventDetails,
-      date: eventDetails.date ? eventDetails.date.slice(0, 16) : '' // "YYYY-MM-DDTHH:MM"
-    });
-    setAction("Edit");
-    handleOpenCreatePanel();
-  } catch (error) {
-    console.error(error);
-    toast.error("Error loading event details");
-  }
-};
 
   const handleCreateEvent = () => {
     setSelectedEvent(null);
@@ -225,7 +254,6 @@ const handleEventSelect = async (event: Event) => {
   };
 
   const handleNext = () => {
-    console.log("This event was submitted");
     next();
   };
 
@@ -237,6 +265,10 @@ const handleEventSelect = async (event: Event) => {
     setEventView("Extended");
   }
 
+  const handleCalendarView = () => {
+    setEventView("Calendar")
+  }
+
   return (
     <main className="bg-saitWhite h-screen p-4 xl:pr-8">
       <div>
@@ -244,7 +276,7 @@ const handleEventSelect = async (event: Event) => {
         <h1 className="text-2xl font-bold">Events</h1>
 
           <div className="flex items-center space-x-4 p-4 bg-gray-100 rounded-lg">
-                <div className="flex flex-row w-[4.3rem] items-center justify-evenly bg-white border-2 rounded-lg p-1">
+                <div className="flex flex-row w-[6.0 rem] items-center justify-evenly bg-white border-2 rounded-lg p-1">
                   <Tooltip title="Simple View" arrow>
                     <button className="Simple View" onClick={handleCardView}>
                       <ViewModuleRoundedIcon sx={
@@ -261,6 +293,14 @@ const handleEventSelect = async (event: Event) => {
                         }/>
                     </button>
                   </Tooltip>
+                  <Tooltip title="Calendar View" arrow>
+                    <button className="" onClick={handleCalendarView}>
+                      <CalendarTodayRoundedIcon sx={
+                        eventView === "Calendar" ? { color: '#2b64ae', fontSize: 26 } :
+                        { color: '#bababa', fontSize: 24, ":hover": { color: '#2b64ae' }}
+                      }/>
+                    </button>
+                </Tooltip>
                 </div>
             <input
               type="text"
@@ -294,20 +334,27 @@ const handleEventSelect = async (event: Event) => {
         <div className="bg-saitWhite h-screen">
           <div>
 
-            {eventView === 'Exetended' ? (
+            {eventView === 'Extended' && (
               <EventListView
                 events={events}
                 onEventSelect={handleEventSelect}
                 onEventDelete={handleDeleteEvent}
               />
-            ) : (
+            )}
+             {eventView === 'Simple' && (
               <EventCardView
                 events={events}
                 onEventSelect={handleEventSelect}
                 onEventDelete={handleDeleteEvent}
                 isAdminView={true}
               />
+              )}
+              {eventView === 'Calendar' && (
+              <EventCalendarView
+              events={events.map(convertToCalendarEvent)}
+              />
             )}
+            
 
             <AnimatePresence>
               {showEventEditor && (
