@@ -2,26 +2,52 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import UserCard from "@/app/components/PageComponents/Admin/User/UserCard";
-import { getCurrentSeason } from "../../components/PageComponents/Admin/User/IntakePicker";
 import Image from "next/image";
 
 import { useUserData } from "@/app/_utils/userData-context";
 import { useUserAuth } from "@/app/_utils/auth-context";
+
 import UserPageMenu from "@/app/components/PageComponents/User/UserPageMenu";
 import OverViewCard from "@/app/components/PageComponents/User/Dashboard/OverviewCard";
-import EventCard from "@/app/components/PageComponents/User/Dashboard/EventCard";
+import EventCard from "@/app/components/PageComponents/User/Events/EventCard";
 import { ArticleCard } from "@/app/components/PageComponents/User/Articles/ArticleCards";
+import Loader from "@/app/components/Loader/Loader"; 
 
-// Student/Alumni Dashboard (Home)
+import { fetchRecentArticles, fetchRecentEvents } from "./dashboardFetch";
+import { EventInterface, ArticleInterface } from "@/app/api/users/props";
+
+import { toast } from "react-toastify";
+
 export default function UserPage() {
-  const { userData } = useUserData();
-  const { authUserLoading } = useUserAuth();
-  const [isClient, setIsClient] = useState(false); // dummy state to track code is running client-side
   const router = useRouter();
+  const { userData } = useUserData();
+  const { authUserLoading, user } = useUserAuth();
 
-  const currentYear = new Date().getFullYear();
-  const currentSeason = getCurrentSeason();
+  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [articles, setArticles] = useState<ArticleInterface[]>([]);
+  const [events, setEvents] = useState<EventInterface[]>([]);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const articlesData = await fetchRecentArticles();
+        const eventsData = await fetchRecentEvents();
+        setArticles(articlesData);
+        setEvents(eventsData);
+      } catch (error) {
+        toast.error("Error fetching dashboard data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const handleLoginRedirectButton = () => {
     router.push("/user/login");
@@ -31,273 +57,89 @@ export default function UserPage() {
     router.push("/");
   };
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {});
-
-  function onClickOverview() {
-    // TODO
-  }
-
-  function onClickUpcoming() {
-    // TODO
-  }
-
-  function onClickAnnouncements() {
-    // TODO
-  }
-
-  if (authUserLoading || !isClient) {
-    return null; // prevent rendering until the component is mounted on the client side
-  }
+  const onClickOverview = () => {};
+  const onClickUpcoming = () => {};
+  const onClickAnnouncements = () => {};
 
   const testOverviewItems = [
     { title: "Upcoming Events", icon: "/event.png", number: 4, text: "-" },
     { title: "New Articles", icon: "/article.png", number: 5, text: "-" },
-    {
-      title: "Unread Messages",
-      icon: "/unreadmessage.png",
-      number: 6,
-      text: "-",
-    },
-  ];
-
-  const testEvents = [
-    {
-      title: "Applied Technology Seminar",
-      date: "March 18, 2025",
-      time: "10:00 AM - 12:00 PM",
-      image: "/seminar.jpg",
-      text: "Join us for an exclusive Technology Seminar where industry experts will unveil the latest trends, breakthroughs, and insights shaping the tech world.",
-    },
-    {
-      title: "Zen Den | Origami workshop",
-      date: "March 19, 2025",
-      time: "11:00 AM - 1:00 PM",
-      image: "/origami.jpg",
-      text: "Relax and recharge by crating beautiful paper designs in this meditative workshop.",
-    },
-    {
-      title: "Drop in and Learn - Exam Writing Skills",
-      date: "March 18, 2025",
-      time: "10:00 AM - 12:00 PM",
-      image: "/exam.jpg",
-      text: "Tests and exams can be a source of stress, but having solid strategies can help!",
-    },
-  ];
-  const testArticles = [
-    {
-      article_id: "",
-      title: "First article",
-      content: " ",
-      type_id: "",
-      imageUrl: "/seminar.jpg",
-      datePublished: "2002",
-      created_at: "2001",
-      updated_at: "2002",
-      author: "John",
-      author_id: "",
-      audience: "Hungry people",
-      status: "great",
-      type: {
-        type_id: "",
-        name: "d",
-        created_at: "2001",
-        updated_at: "2002",
-        isDefault: true,
-      },
-    },
-    {
-      article_id: "",
-      title: "Second article",
-      content: " ",
-      type_id: "",
-      imageUrl: "/seminar.jpg",
-      datePublished: "2002",
-      created_at: "2001",
-      updated_at: "2002",
-      author: "John",
-      author_id: "",
-      audience: "Hungry people",
-      status: "great",
-      type: {
-        type_id: "",
-        name: "d",
-        created_at: "2001",
-        updated_at: "2002",
-        isDefault: true,
-      },
-    },
-    {
-      article_id: "",
-      title: "Third article",
-      content: " ",
-      type_id: "",
-      imageUrl: "/seminar.jpg",
-      datePublished: "2002",
-      created_at: "2001",
-      updated_at: "2002",
-      author: "John",
-      author_id: "",
-      audience: "Hungry people",
-      status: "great",
-      type: {
-        type_id: "",
-        name: "d",
-        created_at: "2001",
-        updated_at: "2002",
-        isDefault: true,
-      },
-    },
-    {
-      article_id: "",
-      title: "Fourth article",
-      content: " ",
-      type_id: "",
-      imageUrl: "/seminar.jpg",
-      datePublished: "2002",
-      created_at: "2001",
-      updated_at: "2002",
-      author: "John",
-      author_id: "",
-      audience: "Hungry people",
-      status: "great",
-      type: {
-        type_id: "",
-        name: "d",
-        created_at: "2001",
-        updated_at: "2002",
-        isDefault: true,
-      },
-    },
+    { title: "Unread Messages", icon: "/unreadmessage.png", number: 6, text: "-" },
   ];
 
   const unauthorized = (
-    <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
-      <div>
-        <Image
-          src="/sait-logo.png"
-          alt="Campus Connect"
-          className="rounded-lg mb-6 mx-auto w-40 md:w-60"
-          width={100}
-          height={100}
-          unoptimized
-          loading="lazy"
-        />
-        {/* <img
-          src="/sait-logo-trans.png"
-          alt="Campus Connect"
-          className="rounded-lg mb-6 mx-auto w-40 md:w-60"
-        /> */}
-        <div>
-          <h1 className="text-4xl text-white font-bold">403</h1>
-          <h2 className="text-2xl text-white font-semibold">
-            Forbidden Access
-          </h2>
-          <p className="text-white">You must Log In to view this page.</p>
-        </div>
-
-        <div className="flex flex-row justify-center items-center space-x-4 mt-6">
-          <button
-            onClick={handleLoginRedirectButton}
-            className="w-32 flex flex-row justify-center items-center hover:bg-saitBlue border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl"
-          >
-            <p className="text-saitWhite">Login</p>
-          </button>
-          <button
-            onClick={handleHomeRedirectButton}
-            className="w-32 flex flex-row justify-center items-center  hover:bg-saitBlue border-white border-2 rounded-2xl p-3 cursor-pointer shadow-xl"
-          >
-            <p className="text-saitWhite">Home</p>
-          </button>
-        </div>
+    <main className="bg-slate-800 flex flex-col justify-center items-center w-full h-screen fixed top-0 left-0 z-50">
+      <Image
+        src="/sait-logo.png"
+        alt="Campus Connect"
+        className="rounded-lg mb-6"
+        width={160}
+        height={160}
+        unoptimized
+      />
+      <div className="text-center text-white space-y-2">
+        <h1 className="text-4xl font-bold">403</h1>
+        <h2 className="text-2xl font-semibold">Forbidden Access</h2>
+        <p>You must Log In to view this page.</p>
+      </div>
+      <div className="flex flex-row justify-center space-x-4 mt-6">
+        <button
+          onClick={handleLoginRedirectButton}
+          className="w-32 border-white border-2 rounded-2xl p-3 hover:bg-saitBlue text-saitWhite shadow-xl"
+        >
+          Login
+        </button>
+        <button
+          onClick={handleHomeRedirectButton}
+          className="w-32 border-white border-2 rounded-2xl p-3 hover:bg-saitBlue text-saitWhite shadow-xl"
+        >
+          Home
+        </button>
       </div>
     </main>
   );
+
+  const first_name = userData?.user.first_name ?? "User";
 
   const authorizedPage = (
     <main className="m-8 flex-col text-saitBlack">
-      <div className="flex justify-between items-center h-full">
-        <div className="flex-col">
-          <h1 className="text-4xl font-bold">
-            Welcome back, {userData?.first_name}!
-          </h1>
-          <p className="text-saitGray mt-4">
-            Here's what's happening at SAIT today.{" "}
-          </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-4xl font-bold">Welcome back, {first_name}!</h1>
+          <p className="text-saitGray mt-4">Here's what's happening at SAIT today.</p>
         </div>
-        <div className="flex items-center">
-          <button className="bg-saitRed text-white px-4 py-2 rounded-md flex items-center gap-2">
-            <img src="/calendar.png" alt="Calendar Icon" className="w-5 h-5" />
-            Add to Calendar
-          </button>
-        </div>
-      </div>
-      <div>
-        <UserPageMenu
-          menuItems={[
-            { title: "Overview", onClick: onClickOverview },
-            { title: "Upcoming", onClick: onClickUpcoming },
-            { title: "Announcements", onClick: onClickAnnouncements },
-          ]}
-        />
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testOverviewItems.slice(0, 4).map((item, index) => (
-          <OverViewCard
-            key={index}
-            title={item.title}
-            icon={item.icon}
-            number={item.number}
-            text={item.text}
-          />
+      <div className="grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 my-4">
+        {testOverviewItems.map((item, index) => (
+          <OverViewCard key={index} {...item} />
         ))}
       </div>
 
-      <h1 className="flextext-2xl text-xl font-semibold mt-4">Events</h1>
-
-      <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testEvents.slice(0, 3).map((event, index) => (
-          <EventCard
-            key={index}
-            title={event.title}
-            date={event.date}
-            time={event.time}
-            image={event.image}
-            text={event.text}
-          />
+      <h1 className="text-2xl font-bold mt-8">Recent Events</h1>
+      <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-y-12 gap-x-6 mt-4">
+        {events.map((event) => (
+          <EventCard key={event.event_id} {...event} />
         ))}
       </div>
 
-      <h1 className="flextext-2xl text-xl font-semibold mt-4">
-        Latest Articles
-      </h1>
-
-      <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
-        {testArticles.slice(0, 3).map((article, index) => (
-          <ArticleCard
-            key={index}
-            article_id={article.article_id}
-            title={article.title}
-            content={article.content}
-            type_id={article.type_id}
-            imageUrl={article.imageUrl}
-            datePublished={article.datePublished}
-            created_at={article.created_at}
-            updated_at={article.updated_at}
-            author={article.author}
-            author_id={article.author_id}
-            audience={article.audience}
-            status={article.status}
-            type={article.type}
-          />
+      <h1 className="text-2xl font-bold mt-8">Latest Articles</h1>
+      <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 mt-4">
+        {articles.map((article) => (
+          <ArticleCard key={article.article_id} {...article} />
         ))}
       </div>
     </main>
   );
 
-  return !userData ? unauthorized : authorizedPage;
+  if (authUserLoading || !isClient) return null;
+
+  return (
+    <>
+      <Loader isLoading={isLoading} />
+      {user?.role === "Student" || user?.role === "Alumni"
+        ? authorizedPage
+        : unauthorized}
+    </>
+  );
 }

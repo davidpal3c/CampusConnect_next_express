@@ -1,3 +1,5 @@
+
+// ARTICLES
 export interface ArticleTypeInterface {
     type_id: string;
     name: string;
@@ -17,7 +19,21 @@ export interface ArticleInterface {
     updated_at: string;
     author: string;
     author_id: string;
-    audience: string;
+    audience: Record<string, any>;
     status: string;
     type: ArticleTypeInterface;
-  }
+}
+
+
+// EVENTS
+export interface EventInterface {
+    event_id: string;
+    name: string;
+    date: string; 
+    location: string;
+    audience: string;
+    host: string;
+    contact: string;
+    capacity: number;
+    current_attendees: number;
+}
