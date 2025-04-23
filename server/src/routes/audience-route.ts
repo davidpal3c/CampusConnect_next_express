@@ -9,4 +9,5 @@ const router = express.Router();
 router.get('/', verifySession, adminRoute, getAllAudience);
 
 
+
 export default router;

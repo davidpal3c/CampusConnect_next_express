@@ -6,7 +6,7 @@ import userAuthRoute from './routes/userAuth-route';
 import articleRoute from './routes/article-route';
 import eventRoute from './routes/events-route';
 import audienceRoute from './routes/audience-route';
-import programRoute from './routes/programs-route';
+import academicRoute from './routes/academic-route';
 import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -40,7 +40,7 @@ app.use('/api/auth', userAuthRoute);
 app.use('/api/users', userRoute);
 app.use('/api/articles', articleRoute);
 app.use('/api/audience', audienceRoute);
-// app.use('/api/programs', programRoute);
+app.use('/api/academic', academicRoute);
 app.use('/api/events', eventRoute);
 
 app.get('/', (req, res) => {

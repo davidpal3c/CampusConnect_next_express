@@ -54,9 +54,6 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
         }
     }, [user, userData]);
 
-    useEffect(() => {
-        console.log("User: ", user);
-    }, [user]);
 
     return (
         <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-2 -mt-2 w-full">

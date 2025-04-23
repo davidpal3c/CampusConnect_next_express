@@ -139,6 +139,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                     intake: roleData.intake,
                     intake_year: roleData.intake_year,
                     status: roleData.status,
+                    student_type: roleData.student_type,
                 };
             }
 
@@ -178,7 +179,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
     
         setCombinedUsers(combined);
 
-        console.log('Combined Users:', combined);
+        // console.log('Combined Users:', combined);
     }, [users, fieldsByRole, filteredRole]);
     
 
@@ -187,6 +188,16 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
         switch (filteredRole) {
             case 'Student':
                 return [
+                    { field: "student_type", headerName: "StudentType", width: 140, renderCell: (params: GridRenderCellParams) => {
+                        const studentType = params.row.student_type as string;
+                        const className = studentType === 'Domestic' ? "bg-saitBlue" : "bg-saitPurple";
+
+                        return (
+                            <div className={`flex items-center justify-center ${className} w-32 rounded-2xl px-2 mt-3 h-8 border border-saitPurple`}>
+                                <span className="font-normal text-saitWhite">{studentType}</span>
+                            </div>
+                        );
+                    }},
                     { field: "program_id", headerName: "Program ID", width: 108 },
                     { field: "program_name", headerName: "Program", width: 240 },
                     { field: "department_name", headerName: "Department", width: 280 },
@@ -197,6 +208,16 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
 
             case 'Prospective Student':
                 return [
+                    { field: "student_type", headerName: "StudentType", width: 140, renderCell: (params: GridRenderCellParams) => {
+                        const studentType = params.row.student_type as string;
+                        const className = studentType === 'Domestic' ? "bg-saitLightBlue" : "bg-saitLightPurple";
+
+                        return (
+                            <div className={`flex items-center justify-center ${className} w-32 rounded-2xl px-2 mt-3 h-8 border border-saitPurple`}>
+                                <span className="font-normal text-saitWhite">{studentType}</span>
+                            </div>
+                        );
+                    }},
                     { field: "program_id", headerName: "Program ID", width: 150 },
                     { field: "program_name", headerName: "Program", width: 150 },
                     { field: "department_name", headerName: "Department", width: 150 },
@@ -270,11 +291,11 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
 
     // Base columns for the table (All users)
     const baseColumns: GridColDef[] = [
-        { field: "actions", headerName: "Actions", type: "actions", minWidth: 120, flex: 1, renderCell: (params: GridRenderCellParams) => {
+        { field: "actions", headerName: "Actions", type: "actions", minWidth: 125, renderCell: (params: GridRenderCellParams) => {
             const userId = params.row.user_id;
             return (
-                <div className="flex items-center justify-center w-full h-full space-x-1">
-                    <Tooltip title="Delete Article" arrow>
+                <div className="flex items-center justify-center w-full h-full space-x-0">
+                    <Tooltip title="Remove User" arrow>
                         <IconButton onClick={() => handleOnDelete(userId)}
                             sx={{
                                 color: '#666666',
@@ -289,7 +310,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                             <DeleteRoundedIcon sx={{ fontSize: 23, color: '#666666' }}/>
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Edit Article" arrow>
+                    <Tooltip title="Update User" arrow>
                         <IconButton onClick={() => console.log(`Edit User ${userId}`)}
                             sx={{
                                 color: '#666666',
@@ -304,7 +325,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                             <EditRoundedIcon sx={{ fontSize: 23, color: '#666666' }} />   
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="View Article" arrow>
+                    <Tooltip title="View User" arrow>
                         <IconButton onClick={() => handleViewUser(userId)}
                             sx={{
                                 color: '#666666',
@@ -322,7 +343,7 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                 </div>
             );
         }},
-        { field: "imageUrl", headerName: "Photo", minWidth: 80, renderCell: (params: GridRenderCellParams) => {
+        { field: "imageUrl", headerName: "Photo", minWidth: 60, renderCell: (params: GridRenderCellParams) => {
             const imageUrl = params.row.image_url;
             return (
                 <div className="flex items-center justify-center w-full h-full">
@@ -335,20 +356,26 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                 </div>
             );
         } },
-        { field: "user_id", headerName: "SAIT ID", minWidth: 100 },
-        { field: "first_name", headerName: "First Name", minWidth: 150 },
-        { field: "last_name", headerName: "Last Name", minWidth: 150 },
-        { field: "email", headerName: "Email", minWidth: 200 },
-        { field: "role", headerName: "Role", minWidth: 90, renderCell: (params: GridRenderCellParams) => {
+        { field: "user_id", headerName: "SAIT ID", minWidth: 60 },
+        { field: "first_name", headerName: "First Name", minWidth: 140 },
+        { field: "last_name", headerName: "Last Name", minWidth: 140 },
+        { field: "role", headerName: "Role", minWidth: 120, renderCell: (params: GridRenderCellParams) => {
             const role = params.row.role;
             let className = "bg-saitBlack"; 
       
             if (role === "Admin") className = "bg-saitRed";
             else if (role === "Student") className = "bg-saitBlue";
-            else if (role === "Alumni") className = "bg-saitPurple";
+            else if (role === "Alumni") className = "bg-saitDarkPurple";
       
-            return <span className={`${className} font-bold text-saitWhite p-1 rounded-md`}>{role}</span>;
+            return (
+                <div>
+                    <div className={`flex items-center justify-center ${className} w-26 rounded-2xl px-2 mt-3 h-8 border border-saitPurple`}>
+                        <span className="font-normal text-saitWhite">{role}</span>
+                    </div>
+                </div>
+            );
         }},
+        { field: "email", headerName: "Email", minWidth: 200 },
         { field: "created_at", headerName: "Created At", minWidth: 100, renderCell: (params: GridRenderCellParams) => 
             new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(new Date(params.row.created_at))
         },

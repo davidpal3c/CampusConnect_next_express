@@ -99,6 +99,7 @@ export const getUserFieldsByRole = async (req: Request, res: Response) : Promise
                 }
             });
             userFields = students; 
+            // console.log("students", students);
 
         } else if (role === 'Prospective Student') {
             const prospectiveStudents = await prisma.student.findMany({
@@ -159,6 +160,8 @@ export const getUserFieldsByRole = async (req: Request, res: Response) : Promise
             res.status(404).json({ error: 'No users found for this role' });
             return;
         }
+
+        console.log("userFields", userFields);
 
         res.status(200).json(userFields);
         return

@@ -44,6 +44,7 @@ model Student {
   status        Status
   intake        String?
   intake_year   Int?
+  student_type  StudentType?
   Department    Department @relation(fields: [department_id], references: [department_id])
   Program       Program?   @relation(fields: [program_id], references: [program_id])
   User          User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
@@ -262,6 +263,11 @@ enum Status {
   Prospective
 }
 
+enum StudentType {
+  Domestic
+  International
+}
+
 enum NotificationType {
   Article
   Event
@@ -272,3 +278,4 @@ enum ArticleStatus {
   Draft
   Published
 }
+

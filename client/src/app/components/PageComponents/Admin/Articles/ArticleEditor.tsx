@@ -313,8 +313,9 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
     }, [articleObject]);
 
     useEffect(() => {
-        console.log("Article Object: ", articleObject);
-    }, []);
+        // console.log("Article Object: ", articleObject);
+        console.log("Audience Criteria: ", audienceCriteria);   
+    }, [audienceCriteria]);
 
     return(
         <main className="h-full w-full">

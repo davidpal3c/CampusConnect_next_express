@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 const seasons = ["Winter", "Spring/Summer", "Fall"];
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth();
-const years = Array.from({ length: 16 }, (_, i) => currentYear - 10 + i);
+const years = Array.from({ length: 7 }, (_, i) => currentYear - 4 + i);
 
 // Determine current season based on scholar system
 export const getCurrentSeason = () => {
@@ -82,15 +82,16 @@ export default function IntakePicker({ onIntakeChange }: { onIntakeChange: (year
         <label className="text-sm font-light text-saitBlack" htmlFor="status">
           Status
         </label>
-        <input
+        <select
           id="status"
-          type="text"
+          className="font-light w-full p-2 mb-3 border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent"
           value={intake.status}
-          readOnly
-          className={`font-light w-full p-2 mb-3 border border-gray-300 mt-1 rounded-md focus:outline-none ${
-            intake.status === "Prospective" ? "text-blue-600" : "text-green-600"
-          }`}
-        />
+          onChange={(e) => setIntake({ ...intake, status: e.target.value })} 
+        >
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="Prospective">Prospective</option>
+        </select>
       </div>
     </div>
   );
