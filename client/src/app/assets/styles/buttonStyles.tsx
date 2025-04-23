@@ -17,7 +17,7 @@ const deleteButton = {
 };
 
 // Helper function to get full class string
-const getButtonClasses = (buttonType) => {
+const getButtonClasses = (buttonType: any) => {
     return `${buttonType.base} ${buttonType.hover} ${buttonType.active}`;
 };
 

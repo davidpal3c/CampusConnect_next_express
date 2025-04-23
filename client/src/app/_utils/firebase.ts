@@ -1,16 +1,8 @@
 
 // Firebase product SDKs 
-import { initializeApp } from "firebase/app";
-import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth } from "firebase/auth";
  
-// interface FirebaseConfig {
-//   apiKey: string;
-//   authDomain: string;
-//   projectId: string;
-//   storageBucket: string;
-//   messagingSenderId: string;
-//   appId: string;
-// }
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -22,18 +14,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
  
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// ensuring firebase is not initialized during SSR or static export
+let app;
+if (typeof window !== "undefined" && getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+}
 
-export const auth = getAuth(app);
-
-
-// Enable local persistence
-// setPersistence(auth, browserLocalPersistence)
-//   .then(() => {
-//     console.log("Session persistence set to local");
-//   })
-//   .catch((error) => {
-//     console.error("Error setting local persistence:", error);
-//   });
+export const auth = typeof window !== "undefined" ? getAuth(app!) : null;
 

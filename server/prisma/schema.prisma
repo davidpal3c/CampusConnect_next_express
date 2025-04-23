@@ -27,7 +27,6 @@ model User {
   UserEvents    UserEvent[]
   UserGroups    UserGroup[]
   Notifications UserNotification[]
-  Forms         Form[]
 
   @@index([email, user_id])
 }
@@ -45,6 +44,7 @@ model Student {
   status        Status
   intake        String?
   intake_year   Int?
+  student_type  StudentType?
   Department    Department @relation(fields: [department_id], references: [department_id])
   Program       Program?   @relation(fields: [program_id], references: [program_id])
   User          User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
@@ -144,9 +144,9 @@ model Event {
   form_id           String?  @unique
 
   //Relation
-  Categories EventCategory[]
-  UserEvents UserEvent[]
-  Form       Form?           @relation(fields: [form_id], references: [form_id])
+  Categories        EventCategory[]
+  UserEvents        UserEvent[]
+  form              Form?    @relation("EventForm", fields: [form_id], references: [id])
 
   //User            User  @relation(fields: [owner], references: [user_id])
   //@@index([owner])
@@ -162,6 +162,9 @@ model Form {
   isDraft     Boolean @default(true)
   createdAt   DateTime @default(now())
   submissions FormSubmission[]
+
+  //inverse relation
+  event       Event?   @relation("EventForm")
 }
 
 //User Side for them to see the form... Hopefully
@@ -260,6 +263,11 @@ enum Status {
   Prospective
 }
 
+enum StudentType {
+  Domestic
+  International
+}
+
 enum NotificationType {
   Article
   Event
@@ -270,3 +278,4 @@ enum ArticleStatus {
   Draft
   Published
 }
+

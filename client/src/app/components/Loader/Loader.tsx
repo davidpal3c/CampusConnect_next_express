@@ -1,5 +1,6 @@
-import CircularProgress from "@mui/material/CircularProgress";
-import { motion } from "framer-motion";
+import React, { use, useEffect, useState } from 'react';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface LoaderProps {
   isLoading: boolean;

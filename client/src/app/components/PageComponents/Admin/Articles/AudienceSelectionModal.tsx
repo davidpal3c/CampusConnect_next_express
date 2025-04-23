@@ -11,7 +11,6 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { IconButton } from "@mui/material";
 import { Tooltip } from '@mui/material';
-import { set } from 'react-hook-form';
 
 type AudienceSelectionModalProps = {
     openAudienceSelectionModal: boolean;

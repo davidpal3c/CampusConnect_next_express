@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { uploadImage } from "@/app/api/upload-image"; 
 import { toast } from "react-toastify";
-
+import DOMpurify from "dompurify";
 
 type RichTextEditorProps = {
     article?: any,
@@ -17,8 +17,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ article, setContent }) 
     const [editorValue, setEditorValue] = useState(article?.content || "");
   
     const handleContentChange = (newValue: string) => {
-      setEditorValue(newValue);
-      setContent(newValue);
+
+      const purifiedValue = DOMpurify.sanitize(newValue)
+
+      setEditorValue(purifiedValue);
+      setContent(purifiedValue);
       // if (editorRef.current) {
       //   console.log(newValue);
       //   setContent(newValue);
@@ -80,7 +83,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ article, setContent }) 
             images_reuse_filename: true,
           }}
           value={editorValue}
-          onEditorChange={(newValue) => handleContentChange(newValue)}
+          onEditorChange={(newValue: any) => handleContentChange(newValue)}
           ref={editorRef}
         />
         {/* <button onClick={handleSubmit}>Submit Article</button> */}

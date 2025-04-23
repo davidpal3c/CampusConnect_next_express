@@ -19,8 +19,7 @@ import { toast } from "react-toastify";
 // Student/Alumni Dashboard (Home)
 export default function UserPage() {
   const { userData } = useUserData();
-  const { user, authUserLoading } = useUserAuth();  
-  const { user_id, first_name, last_name, role, status } = userData?.user || {};
+  const { authUserLoading } = useUserAuth();
   const [isClient, setIsClient] = useState(false); // dummy state to track code is running client-side
   const router = useRouter();
 
@@ -60,6 +59,7 @@ export default function UserPage() {
     setIsClient(true);
   }, []);
 
+  useEffect(() => {});
 
   function onClickOverview() {
     // TODO
@@ -74,7 +74,7 @@ export default function UserPage() {
   }
 
   if (authUserLoading || !isClient) {
-    return null;                                                // prevent rendering until the component is mounted on the client side
+    return null; // prevent rendering until the component is mounted on the client side
   }
 
   const testOverviewItems = [
@@ -93,11 +93,20 @@ export default function UserPage() {
   const unauthorized = (
     <main className="bg-slate-800 flex flex-row justify-center items-center w-full h-full md:flex-row md:items-center z-50 top-0 left-0 fixed">
       <div>
-        <img
+        <Image
+          src="/sait-logo.png"
+          alt="Campus Connect"
+          className="rounded-lg mb-6 mx-auto w-40 md:w-60"
+          width={100}
+          height={100}
+          unoptimized
+          loading="lazy"
+        />
+        {/* <img
           src="/sait-logo-trans.png"
           alt="Campus Connect"
           className="rounded-lg mb-6 mx-auto w-40 md:w-60"
-        />
+        /> */}
         <div>
           <h1 className="text-4xl text-white font-bold">403</h1>
           <h2 className="text-2xl text-white font-semibold">

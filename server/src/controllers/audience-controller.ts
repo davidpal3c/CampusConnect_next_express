@@ -22,7 +22,7 @@ export const getAllAudience = async (req: Request, res: Response) => {
             }
         });
 
-        const intakeSeasons = ["Fall", "Winter", "Spring", "Summer"];
+        const intakeSeasons = ["Winter", "Spring/Summer", "Fall"];
 
         // get all intake years from registered students
         const intakeYearsObj = await prisma.student.findMany({
@@ -53,3 +53,4 @@ export const getAllAudience = async (req: Request, res: Response) => {
         await prisma.$disconnect();
     }
 };
+

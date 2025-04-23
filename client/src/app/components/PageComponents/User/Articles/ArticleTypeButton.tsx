@@ -5,8 +5,6 @@ import SchoolIcon from '@mui/icons-material/School';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
-import { ArticleType } from "@/app/pages/user/props";
-
 const ICON_MAP: Record<ArticleType["name"], React.ComponentType<{ className?: string }>> = {
   "All Articles": LibraryBooksIcon,
   "Pre-Arrival": FlightLandIcon,
@@ -14,6 +12,15 @@ const ICON_MAP: Record<ArticleType["name"], React.ComponentType<{ className?: st
   "General": HomeIcon,
   "Campus": SchoolIcon
 };
+
+type ArticleType = {
+  type_id: string; 
+  name: string; 
+  created_at: string; 
+  updated_at: string; 
+  isDefault: boolean; 
+};
+
 
 type ArticleTypeButtonProps = {
     articleType: ArticleType;
