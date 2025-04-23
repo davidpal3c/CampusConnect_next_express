@@ -20,10 +20,10 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 type CreateUserProps = { 
     closeOnClick: () => void;
-    // task?: string;
+    task?: string;
 };
 
-const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
+const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create User' }) => {
     // State Management
     const currentYear = new Date().getFullYear();
 

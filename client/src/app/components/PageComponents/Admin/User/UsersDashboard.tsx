@@ -363,7 +363,7 @@ export default function UsersDashboard() {
                             className="absolute top-0 right-0 h-auto w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                         >
                             <div className="">
-                                <UserEditor closeOnClick={handleCloseUserPanel}/>
+                                <UserEditor closeOnClick={handleCloseUserPanel} task={panelTask}/>
                             </div>
                         </motion.div>
                         }
