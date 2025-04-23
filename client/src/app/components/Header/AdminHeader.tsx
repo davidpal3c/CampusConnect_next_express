@@ -18,10 +18,14 @@ type HeaderProps = {
     shouldShowButton: boolean;
 }
 
+type UserData = {
+    image_url?: string;
+}
+
 export default function Header({ handleSidebarToggle, shouldShowButton }: HeaderProps) {
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
-    const { userData } = useUserData();
+    const { userData }: { userData: UserData } = useUserData();
     const [avatarImg, setAvatarImg] = useState<string | null>(null);
     const router = useRouter();
 
