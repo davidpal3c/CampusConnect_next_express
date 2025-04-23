@@ -11,16 +11,13 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Image from 'next/image';
 import { Tooltip } from "@mui/material";
-
+import { UserData } from "@/app/types/userTypes";
 
 type HeaderProps = {
     handleSidebarToggle: () => void;
     shouldShowButton: boolean;
 }
 
-type UserData = {
-    image_url?: string;
-}
 
 export default function Header({ handleSidebarToggle, shouldShowButton }: HeaderProps) {
 
