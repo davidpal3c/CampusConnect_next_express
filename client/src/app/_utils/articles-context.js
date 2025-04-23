@@ -55,7 +55,7 @@ export const useArticlesContext = () => {
 
 // Fetch
 
-const fetchAllArticles = async () => {
+export const fetchAllArticles = async () => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles`, {
             method: "GET",
@@ -72,7 +72,7 @@ const fetchAllArticles = async () => {
     }
   };
   
-const fetchArticleTypes = async () => {
+export const fetchArticleTypes = async () => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/articles/types`, {
             method: "GET",
@@ -91,31 +91,32 @@ const fetchArticleTypes = async () => {
     }
   };
 
-  export const handleApiResponse = async (response) => {
-      const data = await response.json();
-  
-      if (!response.ok) {
-          toast.error(`Error: ${data.message || "Failed to fetch data"}`, {
-              position: "top-center",
-              autoClose: 3000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-          });
-          return null;
-      }
-  
-      // If the response contains articles, filter out unpublished ones
-      if (Array.isArray(data)) {
-          return data.filter(article => article.status === "Published");
-      }
-  
-      // If it's a single article, check its status
-      if (data.status !== "Published") {
-          return null;
-      }
-  
-      return data;
-  };
+
+export const handleApiResponse = async (response) => {
+    const data = await response.json();
+
+    if (!response.ok) {
+        toast.error(`Error: ${data.message || "Failed to fetch data"}`, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+        return null;
+    }
+
+    // If the response contains articles, filter out unpublished ones
+    if (Array.isArray(data)) {
+        return data.filter(article => article.status === "Published");
+    }
+
+    // If it's a single article, check its status
+    if (data.status !== "Published") {
+        return null;
+    }
+
+    return data;
+};
 

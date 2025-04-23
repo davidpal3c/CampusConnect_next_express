@@ -3,10 +3,12 @@
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useMemo } from "react";
 import ArticleList from "@/app/components/PageComponents/User/Articles/ArticleList";
-import { fetchArticleTypes, fetchAllArticles } from "@/app/api/users/articles";
+// import { fetchArticleTypes, fetchAllArticles } from "@/app/api/users/articles";
 import { ArticleTypeInterface} from "@/app/api/users/props";
 import ArticleTypeButton from "@/app/components/PageComponents/User/Articles/ArticleTypeButton";
 import Loader from '@/app/components/Loader/Loader';
+import { fetchAllArticles } from "@/app/_utils/articles-context";
+import { useArticleTypes } from "@/app/_utils/articleTypes-context";
 
 type TypesCount = {
   [key: string]: number;
@@ -19,6 +21,8 @@ export default function ArticlesContent() {
   const [typeName, setTypeName] = useState(paramsType || "All");
   const [articleTypes, setArticleTypes] = useState([]);
   const [allArticles, setAllArticles] = useState([]); 
+
+  const { fetchArticleTypes } = useArticleTypes();
 
   const [articleCounts, setArticleCounts] = useState<TypesCount>({});
 
