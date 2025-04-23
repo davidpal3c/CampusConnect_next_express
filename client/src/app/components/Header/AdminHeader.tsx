@@ -45,7 +45,6 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
 
         try {
             await signOutAll();
-            // await signOutFirebase();
             router.push("/admin/login");
         } catch (err) {
             console.log("Sign Out error:", err);
