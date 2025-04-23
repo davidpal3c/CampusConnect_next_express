@@ -30,22 +30,11 @@ export const AuthContextProvider = ({ children }) => {
 
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
-    provider.addScope("https://www.googleapis.com/auth/calendar"); 
-    provider.addScope("https://www.googleapis.com/auth/calendar.events"); 
 
     let result;
 
     try {
       result = await signInWithPopup(auth, provider);
-
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential?.accessToken;
-
-      if (token) {
-        localStorage.setItem("googleAccessToken", token);
-      } else {
-        console.warn("No token received");
-      }
 
       const normalizedUser = await normalizeUser(result.user);
       setUser(normalizedUser);
@@ -61,7 +50,6 @@ export const AuthContextProvider = ({ children }) => {
       setIsProcessingAuth(false);
     }
   };
-
 
   const microsoftSignIn = async () => {
     if (isProcessingAuth) return;
@@ -91,10 +79,6 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-
-
-
-
   const clearLocalStorage = () => {
     localStorage.removeItem("user");
     sessionStorage.clear();
@@ -122,8 +106,7 @@ export const AuthContextProvider = ({ children }) => {
     try {
       clearLocalStorage();
       await signOutFirebase();
-      updateUserData(null);
-
+    
       const logoutRoute = user.role === "Admin" ? "logout-admin" : "logout-user";
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/${logoutRoute}`, {
@@ -138,7 +121,7 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error(errorData.message || "An unknown error occurred");
       }
 
-      console.log("Logout successful");      
+      updateUserData(null); 
     } catch (error) {
       console.error("Sign Out Error:", error);
       throw error;
@@ -177,7 +160,7 @@ export const AuthContextProvider = ({ children }) => {
       let token = user.currentToken;
 
       if (!token) {
-        console.log("No token in user object, attempting to fetch new token...");
+        console.log("No token in user object. Attempting to fetch new token...");
         token = await getIdToken(true);
       }
 
@@ -193,11 +176,14 @@ export const AuthContextProvider = ({ children }) => {
         },
         credentials: "include",
       });
+      
 
+      // console.log("BACKEND_URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
+      
       if (!response.ok) {
         const errorData = await response.json();
         console.log("Login failed:", errorData);
-        toast.error(errorData.message || "Login failed: unknown error occurred");
+        toast.error(errorData.message || "Login failed: Unknown error occurred");
 
         await signOutFirebase();
         closeLoaderBackdrop();

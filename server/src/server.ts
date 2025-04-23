@@ -45,7 +45,7 @@ app.use('/api/auth', userAuthRoute);
 app.use('/api/users', userRoute);
 app.use('/api/articles', articleRoute);
 app.use('/api/audience', audienceRoute);
-// app.use('/api/programs', programRoute);
+app.use('/api/programs', programRoute);
 app.use('/api/events', eventRoute);
 
 

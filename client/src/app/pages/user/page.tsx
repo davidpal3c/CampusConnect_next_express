@@ -7,7 +7,7 @@ import { UserDataProvider, useUserData } from "@/app/_utils/userData-context";
 import { useUserAuth } from "@/app/_utils/auth-context";
 import UserPageMenu from "@/app/components/PageComponents/User/UserPageMenu";
 import OverViewCard from "@/app/components/PageComponents/User/Dashboard/OverviewCard";
-import EventCard from "@/app/components/PageComponents/User/Dashboard/EventCard";
+import EventCard from "@/app/components/PageComponents/User/Events/EventCard";
 import { ArticleCard } from "@/app/components/PageComponents/User/Articles/ArticleCards";
 import { fetchRecentArticles, fetchRecentEvents } from "./dashboardFetch";
 
@@ -150,7 +150,7 @@ export default function UserPage() {
           />
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 mt-4">
+        <div className="grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 my-4">
           {testOverviewItems.slice(0, 4).map((item, index) => (
               <OverViewCard
                 key={index}
@@ -162,21 +162,19 @@ export default function UserPage() {
           ))}
         </div>
 
-        <h1 className="flex text-2xl font-bold mt-4">Events</h1>
+        <h1 className="flex text-2xl font-bold mt-8">Recent Events</h1>
 
-        <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
+        <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-y-12 gap-x-6 mt-4">
           {events.map((event) => (
             <EventCard key={event.event_id} {...event}/>
           ))}
         </div>
 
-        <h1 className="flex text-2xl font-bold mt-4">
-          Latest Articles
-        </h1>
+        <h1 className="flex text-2xl font-bold mt-8">Latest Articles</h1>
 
-        <div className="grid gap-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
           {articles.map((article, index) => (
-            <ArticleCard key={index} {...article}/>
+            <ArticleCard key={article.article_id} {...article} />
           ))}
         </div>
       </main>

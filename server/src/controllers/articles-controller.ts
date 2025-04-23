@@ -50,7 +50,7 @@ export const getRecentArticles = async (req: Request, res: Response) => {
             orderBy: {
                 updated_at: "desc",
             },
-            take:3,
+            take:4,
         });
 
         res.status(200).json(articles);

@@ -55,7 +55,7 @@ const Articles = () => {
 
   return (
     <div className="m-8">
-      <div className="flex flex-row space-x-4">
+      <div className="flex flex-wrap gap-2 mb-8">
         <ArticleTypeButton articleType={{ type_id: 0, name: "All Articles" }} type={typeName} setType={setTypeName} />
         {articleTypes.map((articleType: ArticleTypeInterface) => (
           articleCounts[articleType.type_id] > 0 && (
@@ -69,7 +69,6 @@ const Articles = () => {
         ))}
       </div>
       
-      <h1 className="text-4xl font-bold mt-8">{typeName}</h1>
       <ArticleList articles={filteredArticles} />
     </div>
   );

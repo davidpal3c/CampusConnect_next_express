@@ -37,3 +37,17 @@ export const formatToDateTime = (isoString: string) => {
 
     return `${month} ${day}, ${year} - ${time}`; 
 }   
+
+export const formatToLongDate = (isoString: string) => {
+    const date = new Date(isoString);
+    return new Intl.DateTimeFormat("en-US", {
+        dateStyle: "long", 
+    }).format(date)};
+
+export const getTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true, 
+  }).format(date)};
