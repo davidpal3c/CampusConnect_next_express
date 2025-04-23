@@ -21,7 +21,7 @@ const ArticleContent = () => {
 
     // Context
     const { allArticles, articleTypes } = useArticlesContext();
-    const { userData } = useUserData();
+    const { userData }: { userData: any} = useUserData();
     const { Program: { Department: { department_id: departmentId, name: departmentName } = {} } = {} } = userData?.user || {};
     
 
