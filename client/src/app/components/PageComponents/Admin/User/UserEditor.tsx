@@ -16,16 +16,14 @@ import IntakePicker, {getCurrentSeason} from "./IntakePicker";
 
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import Stack from '@mui/material/Stack';
-import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 
 
 type CreateUserProps = { 
     closeOnClick: () => void;
+    task?: string;
 };
 
-const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick }) => {
-
+const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create User' }) => {
     // State Management
     const currentYear = new Date().getFullYear();
 
