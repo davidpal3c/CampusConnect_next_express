@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useUserAuth } from "@/app/_utils/auth-context";
 import { useUserData } from "@/app/_utils/userData-context";
+import { UserData } from "@/app/types/userTypes";
 import { useRouter } from "next/navigation";
 
 import { TopBarButton } from "./TopBarButtons";
@@ -13,7 +14,7 @@ import { Menu, MenuItem } from "@mui/material";
 
 export default function TopNavBar() {
     const router = useRouter();
-    const { userData, loadingUser } = useUserData();
+    const { userData, loadingUser }: { userData: any, loadingUser: any } = useUserData();
     const { authUserLoading, signOutAll } = useUserAuth();
     const image_url = userData?.user.image_url || "/avatar-generic.jpg";
     const user_id = userData?.user.user_id;    
