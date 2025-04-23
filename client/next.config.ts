@@ -41,6 +41,7 @@ const nextConfig: NextConfig = {
 
       // User pages
       { source: '/user/events', destination: '/pages/user/events'},
+      { source: '/user/events/:id', destination: '/pages/user/events/:id'},
       { source: '/user/groups', destination: '/pages/user/groups'},
       { source: '/user/articles', destination: '/pages/user/articles'},
       { source: '/user/articles/:id', destination: '/pages/user/articles/:id'},

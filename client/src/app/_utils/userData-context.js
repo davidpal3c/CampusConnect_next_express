@@ -31,11 +31,11 @@ export const UserDataProvider = ({ children }) => {
 
             const user = await response.json();
             
-            if (!response.ok) {
-                console.error("Error fetching user: ", userData);
-                // setUser(null); 
-                return;
-            }
+            // if (!response.ok) {
+            //     console.error("Error fetching user: ", userData);
+            //     // setUser(null); 
+            //     return;
+            // }
 
             setUserData(user);
         } catch (error) {

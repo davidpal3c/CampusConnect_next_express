@@ -51,3 +51,18 @@ export const getTime = (isoString: string) => {
         minute: "numeric",
         hour12: true, 
   }).format(date)};
+
+
+export const formatDateForCalendar = (isoString: string) => {
+    const start = new Date(isoString);
+    const end = new Date(start.getTime() + 60 * 60 * 1000); 
+
+    const toCalFormat = (date: Date) => {
+        return date.toISOString().replace(/[-:]|\.\d{3}/g, "").slice(0, 15);
+    };
+
+    return {
+        start: toCalFormat(start),
+        end: toCalFormat(end),
+    };
+};

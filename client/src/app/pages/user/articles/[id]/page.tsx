@@ -4,15 +4,14 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
-import { fetchArticleById } from "../articles";
+import { fetchArticleById } from "../../../../api/users/articles";
 import ArticlesLayout from "../ArticlesLayout";
-import { ArticleInterface } from "../../props";
+import { ArticleInterface } from "../../../../api/users/props";
 import { useArticlesContext} from "@/app/_utils/articles-context";
 import { useUserData } from "@/app/_utils/userData-context";
 import { toast } from "react-toastify";
 
 import Loader from "@/app/components/Loader/Loader";
-import PrintIcon from '@mui/icons-material/Print';
 import DOMPurify from "dompurify";
 
 
@@ -32,7 +31,7 @@ const ArticleContent = () => {
 
     useEffect(() => {
         if (id) {
-            fetchArticleData(id);
+            fetchArticleData(id as string);
         }
     }, [id]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArticleInterface } from "@/app/pages/user/props";
+import { ArticleInterface } from "@/app/api/users/props";
 import Link from "next/link";
 
 export function ArticleCard(props: ArticleInterface) {

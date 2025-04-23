@@ -3,8 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useMemo } from "react";
 import ArticleList from "@/app/components/PageComponents/User/Articles/ArticleList";
-import { fetchArticleTypes, fetchAllArticles } from "@/app/pages/user/articles/articles";
-import { ArticleTypeInterface} from "@/app/pages/user/props";
+import { fetchArticleTypes, fetchAllArticles } from "@/app/api/users/articles";
+import { ArticleTypeInterface} from "@/app/api/users/props";
 import ArticleTypeButton from "@/app/components/PageComponents/User/Articles/ArticleTypeButton";
 import Loader from '@/app/components/Loader/Loader';
 

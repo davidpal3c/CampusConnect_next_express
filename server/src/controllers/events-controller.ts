@@ -65,11 +65,12 @@ export const getRecentEvents = async (req: Request, res: Response) => {
 }   
 
 // GET /api/events/:id - Get event by ID
-export const getEventById = async (req: Request, res: Response) : Promise<void> => {
+export const getEventById = async (req: Request, res: Response) => {
     try {
-        const { event_id } = req.params;
+        const { id } = req.params;
+
         const event = await prisma.event.findUnique({
-            where: { event_id: event_id }
+            where: { event_id: id }
         });
 
         if (!event) {
