@@ -12,7 +12,7 @@ type TypesCount = {
 };
 
 const Articles = () => {
-  const [typeName, setTypeName] = useState("All Articles");
+  const [typeName, setTypeName] = useState<any>("All Articles");
   const { allArticles, articleTypes } = useArticlesContext();
 
   const [articleCounts, setArticleCounts] = useState<TypesCount>({});
@@ -45,8 +45,8 @@ const Articles = () => {
 
   const filteredArticles = useMemo(() => {
     if (typeName === "All Articles") return allArticles;
-    const selectedType = articleTypes.find((t) => t.name === typeName);
-    return selectedType ? allArticles.filter(article => article.type_id === selectedType.type_id) : [];
+    const selectedType = articleTypes.find((t: any) => t.name === typeName);
+    return selectedType ? allArticles.filter((article: any) => article.type_id === selectedType.type_id) : [];
   }, [typeName, allArticles, articleTypes]);
 
   const skeletonArray = Array(4).fill(null);
@@ -72,7 +72,7 @@ const Articles = () => {
       ) : (
         <>
           <div className="flex flex-wrap gap-2 mb-8">
-            <ArticleTypeButton articleType={{ type_id: 0, name: "All Articles" }} type={typeName} setType={setTypeName} />
+            <ArticleTypeButton articleType={{ type_id: '0', name: "All Articles" }} type={typeName} setType={setTypeName} />
             {articleTypes.map((articleType: ArticleTypeInterface) => (
               articleCounts[articleType.type_id] > 0 && (
                 <ArticleTypeButton

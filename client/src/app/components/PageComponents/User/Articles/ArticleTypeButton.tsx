@@ -5,7 +5,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
-const ICON_MAP: Record<ArticleType["name"], React.ComponentType<{ className?: string }>> = {
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   "All Articles": LibraryBooksIcon,
   "Pre-Arrival": FlightLandIcon,
   "News": NewspaperIcon,
@@ -14,11 +14,11 @@ const ICON_MAP: Record<ArticleType["name"], React.ComponentType<{ className?: st
 };
 
 type ArticleType = {
-  type_id: string; 
-  name: string; 
-  created_at: string; 
-  updated_at: string; 
-  isDefault: boolean; 
+  type_id?: string; 
+  name?: string; 
+  created_at?: string; 
+  updated_at?: string; 
+  isDefault?: boolean; 
 };
 
 
@@ -29,11 +29,11 @@ type ArticleTypeButtonProps = {
   };
 
 export default function ArticleTypeButton({ articleType, type, setType }: ArticleTypeButtonProps) {
-  const Icon = ICON_MAP[articleType.name] || InfoIcon;
+  const Icon = ICON_MAP[articleType.name ?? ""] || InfoIcon;
   
   return (
     <button
-      onClick={() => setType(articleType.name)}
+      onClick={() => setType(articleType.name ? articleType.name : "")}
       className={`flex items-center gap-2
         ${articleType.name === type ? "bg-saitLightBlue text-saitWhite" : "bg-white text-saitLightBlue"}
       border-saitLightBlue border px-3 py-2 rounded-md shadow-md
