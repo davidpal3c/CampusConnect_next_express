@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 
 export default function UserPage() {
   const router = useRouter();
-  const { userData } = useUserData();
+  const { userData }: { userData: any} = useUserData();
   const { authUserLoading, user } = useUserAuth();
 
   const [isClient, setIsClient] = useState(false);
