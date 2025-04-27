@@ -70,10 +70,29 @@ export default function TopNavBar() {
                                 </button>
 
                                 {/* Profile Menu (Works on Both Mobile & Desktop) */}
-                                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                                    <MenuItem>Profile</MenuItem>
-                                    <MenuItem>Account</MenuItem>
-                                    <MenuItem onClick={handleSignOut}>Logout</MenuItem>
+                                <Menu 
+                                    anchorEl={anchorEl} 
+                                    open={Boolean(anchorEl)} 
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                    // sx={{ '& .MuiMenuItem-root': { fontFamily: 'Sans-serif', fontSize: '1rem' } }}
+                                    PaperProps={{
+                                        sx: {
+                                            backgroundColor: "#f7f7f7",
+                                            borderRadius: "10px",
+                                            border: "1px solid #005795",
+                                            boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
+                                            marginTop: "0.4rem",
+                                            marginRight: "1.3rem",
+                                            width: "10rem",
+                                        }
+                                    }}
+                                >
+                                    <MenuItem sx={menuStyles.menuItem}>Profile</MenuItem>
+                                    <MenuItem sx={menuStyles.menuItem}>Account</MenuItem>
+                                    <MenuItem sx={menuStyles.menuItem} onClick={handleSignOut}>Logout</MenuItem>
                                 </Menu>
                             </div>
                         </div>
@@ -83,4 +102,18 @@ export default function TopNavBar() {
             )}
         </div>
     );
+}
+
+
+const menuStyles = {
+    menuItem: {
+        ":hover": {
+            // backgroundColor: "#feba74",
+            backgroundColor: "#999999",
+            color: "#f7f7f7",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease-out, color 0.3s ease-out",
+        },
+        color: "#06222b"
+    }
 }
