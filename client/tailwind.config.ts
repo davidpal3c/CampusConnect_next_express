@@ -43,7 +43,7 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
         saitBlack: "#06222b",
-        saitWhite: "#f7f7f7",
+        saitWhite: "#efefef",
         saitRed: "#ca3929",
         saitLightRed: "#ff8b7e",
         saitDarkRed: "#932728",
@@ -56,7 +56,8 @@ export default {
         saitDarkPurple: "#502267",
         saitLighterPurple: "#722a7a",
         saitLightPurple: "#8d4990",
-        saitGray: "#666666",
+        saitGray: "#60605f",
+        // saitGray: "#666666",
       },
       backgroundImage: {
         "blue-gradient": `linear-gradient(to top, #2b64ae, #449dde)`,

@@ -154,7 +154,7 @@ const {steps, step, currentStepIndex, back, next, isFirstStep, isLastStep} = Mul
 
 
   return (
-    <main>
+    <main className="flex flex-col items-center justify-center p-4">
       <div>
         {/** Make the header look more like the Articles page */}
       <header>
