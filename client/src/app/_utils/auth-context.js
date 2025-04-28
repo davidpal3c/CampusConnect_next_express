@@ -241,6 +241,8 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error("Unable to retrieve authentication token. Cannot proceed.");  
       }
 
+      console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login-user`);
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login-user`, {
         method: "POST",
         headers: {
