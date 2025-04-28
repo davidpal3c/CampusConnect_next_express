@@ -33,7 +33,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-
 // Routes
 app.use('/api/auth', adminAuthRoute);
 app.use('/api/auth', userAuthRoute);
