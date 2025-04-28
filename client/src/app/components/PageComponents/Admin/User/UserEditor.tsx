@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import ActionButton from "@/app/components/Buttons/ActionButton";
+import { getProgramsAndDepartmentsData } from "@/app/api/admin/academics";
 
 // Libraries
 import { toast } from "react-toastify";
@@ -16,6 +17,7 @@ import IntakePicker, {getCurrentSeason} from "./IntakePicker";
 
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 type CreateUserProps = { 
@@ -38,12 +40,16 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
     // Admin Permissions
     const permissions = ["Read-Only", "Read-Write", "Full Access"];
 
+    // loader
+    const [loadingPrograms, setLoadingPrograms] = useState(true);
+
     const { 
         register, 
         handleSubmit, 
         formState: { errors }, 
         watch,
-        control 
+        control,
+        setValue 
     } = useForm({
         defaultValues: {
             user_id: "",
@@ -57,6 +63,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
             image_url: "",
             permissions: "",
             program_id: "",
+            department_id: "",
             intake_year: currentYear,
             intake: getCurrentSeason(),
             status: "Active",
@@ -94,6 +101,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
             case "Student":
                 Object.assign(userData, {
                     program_id: data.program_id,
+                    department_id: data.department_id,
                     intake_year: intakeYear,
                     intake: intake,
                     status: status,
@@ -102,7 +110,8 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
             case "Alumni":
                 Object.assign(userData, {
                     graduation_year: data.graduation_year,
-                    credentials: data.credentials,
+                    program_id: data.program_id,
+                    department_id: data.department_id,
                     current_position: data.current_position,
                     company: data.company,
                 });
@@ -113,48 +122,26 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
     
         console.log("Formatted User Data (Flat Structure):", userData);
 
-        // try {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(userData),
+            });
 
-        //     // // If User is a Student, Check if program_id is valid, save department_id
-        //     // if (data.role === "Student") {
-        //     //     const programResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/programs/${data.program_id}`, {
-        //     //         method: "GET",
-        //     //         headers: { "content-type": "application/json" },
-        //     //         credentials: "include",
-        //     //     });
-        //     //     if (!programResponse.ok) {
-        //     //         toast.error("Invalid Program ID. Please enter a valid program.");
-        //     //         console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/programs/${data.program_id}`);
-        //     //         return;
-        //     //     }
-        //     //     console.log("Program ID is valid.");
-        //     //     const programData = await programResponse.json();
+            const responseData = await response.json();
+            if (!response.ok) {
+                toast.error(responseData.message || "An error occurred creating the user.");
+                return;
+            }
 
-        //     //     Object.assign(userData, {
-        //     //         department_id: programData.department_id,
-        //     //     });
-
-        //     // }
-
-        //     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
-        //         method: "POST",
-        //         headers: { "content-type": "application/json" },
-        //         credentials: "include",
-        //         body: JSON.stringify(userData),
-        //     });
-
-        //     const responseData = await response.json();
-        //     if (!response.ok) {
-        //         toast.error(responseData.message || "An error occurred creating the user.");
-        //         return;
-        //     }
-
-        //     toast.success(responseData.message);
-        //     closeOnClick();
-        // } catch (error) {
-        //     console.log("Error: ", error);  
-        //     toast.error(`Unknown error occurred: ${error}`);
-        // }
+            toast.success(responseData.message);
+            closeOnClick();
+        } catch (error) {
+            console.log("Error: ", error);  
+            toast.error(`Unknown error occurred: ${error}`);
+        }
     };
 
     const handleIntakeChange = (intakeYear: number, intake: string, status: string) => {
@@ -164,21 +151,17 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
     };
 
 
-    const fetchProgramsData = async () => {
+    const fetchProgramsAndDepartmentsData = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/academic/options`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-            });
+            const programsAndDepartmentsData = await getProgramsAndDepartmentsData();
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch programs data");
+            if (programsAndDepartmentsData.error) {
+                toast.error(programsAndDepartmentsData.error || 'An error occurred fetching users. from call');
+                console.log('Error fetching users: ', programsAndDepartmentsData.error);
+                return;
             }
-            const programsData = await response.json();
-            console.log("Study register Data: ", programsData);
 
-            setProgramsOptions(programsData.map((program: any) => {
+            setProgramsOptions(programsAndDepartmentsData.map((program: any) => {
                 return {
                     id: program.program_id,
                     label: program.name,
@@ -190,12 +173,14 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
         } catch (error) {
             console.error("Error fetching programs data:", error);
             toast.error("Failed to fetch programs data.");
+        } finally {
+            setLoadingPrograms(false);
         }
     }
 
     useEffect(() => {
-        if (watchedRole === "Student" || programsOptions.length > 0 || !programsOptions) {
-            fetchProgramsData();
+        if (watchedRole === "Student" || watchedRole === "Alumni" || programsOptions.length > 0 || !programsOptions) {
+            fetchProgramsAndDepartmentsData();
         }
     }, [watchedRole]);
 
@@ -218,9 +203,9 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
             <section className="relative flex flex-col items-start bg-white p-4 rounded-lg mb-6 shadow-md">
                 <form onSubmit={handleSubmit(submitForm)} className="flex flex-wrap w-full gap-6">
                     {/* First Name */}
-                    <InputField label="First Name *" id="first_name" register={register} errors={errors} required maxLength={50} pattern={/^[A-Za-z ]+$/} />
-                    <InputField label="Middle Name" id="middle_name" register={register} errors={errors} maxLength={50} pattern={/^[A-Za-z ]+$/}/>
-                    <InputField label="Last Name *" id="last_name" register={register} errors={errors} required maxLength={50} pattern={/^[A-Za-z ]+$/}/>
+                    <InputField label="First Name *" id="first_name" register={register} errors={errors} required maxLength={50} pattern={{ value: /^[A-Za-z ]+$/ , message: `Invalid First Name`}} />
+                    <InputField label="Middle Name" id="middle_name" register={register} errors={errors} maxLength={50} pattern={{ value: /^[A-Za-z ]+$/ , message: `Invalid First Name`}}/>
+                    <InputField label="Last Name *" id="last_name" register={register} errors={errors} required maxLength={50} pattern={{ value: /^[A-Za-z ]+$/ , message: `Invalid First Name`}}/>
 
                     {/* Role, Email & SAIT ID */}
                     <div className="flex flex-wrap gap-6 w-full">
@@ -242,7 +227,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
                         </div>
 
                         <InputField label="Email Address *" id="email" register={register} inputType="email" errors={errors} required maxLength={100} />
-                        <InputField label="SAIT ID *" id="user_id" register={register} errors={errors} required maxLength={9} minLength={9} pattern={/^[0-9]*$/} />
+                        <InputField label="SAIT ID *" id="user_id" register={register} errors={errors} required maxLength={9} minLength={9} pattern={{ value: /^[0-9]*$/ , message: `Enter a valid 9 digit user ID`}} />
 
                     </div>
 
@@ -267,11 +252,18 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
                         )}
 
                     {watchedRole === "Student" && (
-                        <div>
+                        <div className="flex flex-wrap gap-6 w-full">
                             <div className="flex-1 w-full mb-6">  
                                 <label className="text-sm font-light text-saitBlack">
                                     Select Program *
-                                </label>     
+                                </label>
+                                <div>
+                                    {loadingPrograms && (
+                                        <div className="flex justify-center items-center">
+                                            <CircularProgress size={24} />
+                                        </div>
+                                    )}
+                                </div>     
                                 {programsOptions.length > 0 && (
                                     <Controller
                                         name="program_id"
@@ -314,7 +306,13 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
                                                         },
                                                     },
                                                 }}
-                                                onChange={(_, data) => field.onChange(data?.id)}
+                                                onChange={(_, data) => {
+                                                    field.onChange(data?.id);
+
+                                                    if (data) {
+                                                        setValue('department_id', data.department_id);
+                                                    }
+                                                }}
                                                 renderInput={(params) => (
                                                     <TextField 
                                                         {...params} 
@@ -354,7 +352,6 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
                                         )}
                                     />
                                 )}
-                                {errors.program_id && <p className="text-red-500 text-sm">{String(errors.program_id.message)}</p>}
                             </div>
                         
                             <div className="flex flex-col sm:flex-row gap-4">
@@ -364,15 +361,120 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
                     )}
 
                     {watchedRole === "Alumni" && (
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <InputField label="Graduation Year *" id="graduation_year" register={register} errors={errors} required />        
-                            <InputField label="Credentials *" id="credentials" register={register} errors={errors} required />       
-                            <InputField label="Current Position" id="current_position" register={register} errors={errors}/>    
-                            <InputField label="Company" id="company" register={register} errors={errors}/>             
- 
+                        <div className="flex flex-wrap gap-6 w-full">
+                            <div className="flex-1 w-full">  
+                                <label className="text-sm font-light text-saitBlack">
+                                    Select Program *
+                                </label>
+                                <div>
+                                    {loadingPrograms && (
+                                        <div className="flex justify-center items-center">
+                                            <CircularProgress size={24} />
+                                        </div>
+                                    )}
+                                </div>     
+                                {programsOptions.length > 0 && (
+                                    <Controller
+                                        name="program_id"
+                                        control={control}                                           // Add control to your useForm() destructuring
+                                        rules={{ required: 'Program selection is required' }}
+                                        render={({ field }) => (
+                                            <Autocomplete
+                                                {...field}
+                                                disablePortal
+                                                id="program-search"
+                                                options={programsOptions}
+                                                getOptionLabel={(option) => 
+                                                    option && option.label && option.id && option.department_name
+                                                        ? `${option.label} - ${option.id}, Dept: ${option.department_name}`
+                                                        : ''
+                                                }
+                                                isOptionEqualToValue={(option, value) =>                
+                                                    option?.id === value?.id || option?.id === value
+                                                }
+                                                sx={{ 
+                                                    width: '100%',
+                                                    '& .MuiOutlinedInput-root': {
+                                                    borderRadius: '5px',                                        // Custom border radius
+                                                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                            borderColor: '#3f51b5',                             // Hover border color
+                                                        },
+                                                    height: '42px',
+                                                    marginTop: '3px',                                     
+                                                    },
+                                                    '& + .MuiAutocomplete-popper': {
+                                                        minWidth: '100% !important',
+                                                        width: 'auto !important',
+                                                        '& .MuiAutocomplete-option': {
+                                                            '&:hover': {
+                                                            backgroundColor: 'rgba(63, 81, 181, 0.08)',         // Custom hover color
+                                                            },
+                                                            '&[aria-selected="true"]': {
+                                                            backgroundColor: 'rgba(63, 81, 181, 0.12)',         // Selected option color
+                                                            },
+                                                        },
+                                                    },
+                                                }}
+                                                onChange={(_, data) => {
+                                                    field.onChange(data?.id);
+
+                                                    if (data) {
+                                                        setValue('department_id', data.department_id);
+                                                    }
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField 
+                                                        {...params} 
+                                                        placeholder="Type to search programs..."
+                                                        error={!!errors.program_id}
+                                                        helperText={errors.program_id?.message}
+                                                        InputProps={{
+                                                            ...params.InputProps,
+                                                            sx: {
+                                                            borderRadius: '8px',                                                  // to match the outer border radius
+                                                            },
+                                                        }}
+                                                    />
+                                                )}
+                                                renderOption={(props, option) => (
+                                                    <li {...props} key={option.id}>
+                                                        <div style={{ width: '100%' }}>
+                                                            <div><strong>{option.label}</strong></div>
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                                                                <span>ID: {option.id}</span>
+                                                                <span>Department: {option.department_name}</span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                )}
+                                                filterOptions={(options, state) => {
+                                                    const searchTerm = state.inputValue.toLowerCase();
+                                                    return options.filter(option =>
+                                                        option.label.toLowerCase().includes(searchTerm) ||
+                                                        option.id.toLowerCase().includes(searchTerm) ||
+                                                        option.department_name.toLowerCase().includes(searchTerm) || 
+                                                        option.department_id.toLowerCase().includes(searchTerm) 
+                                                    );
+                                                }}
+                                                value={programsOptions.find(option => option.id === field.value) || null}
+                                            />
+                                        )}
+                                    />
+                                )}
+                            </div>
+                        
+                            <div className="flex flex-col sm:flex-row gap-4 w-full">
+                                <InputField label="Graduation Year *" id="graduation_year" register={register} errors={errors} required 
+                                    maxLength={4} minLength={4}  pattern={{ value: /^(19[7-9][1-9]|20[0-9][0-9])$/, message: `Year must be between 1971 and ${currentYear}`}}/>        
+                                <InputField label="Current Position" id="current_position" register={register} errors={errors}
+                                    pattern={{ value:/^[A-Za-z ]+$/ , message: `Invalid Position. Only letters and spaces are allowed`}} maxLength={80} minLength={3} 
+                                />    
+                                <InputField label="Company" id="company" register={register} errors={errors}
+                                    pattern={{ value:/^[A-Za-z ]+$/ , message: `Invalid Position. Only letters and spaces are allowed`}} maxLength={100} minLength={3}
+                                />             
+                            </div>
                         </div>
                     )}
-
 
                     <Button className="block w-full" variant="contained" color="success" type="submit">
                         Submit
@@ -397,7 +499,7 @@ const InputField = ({ label, id, inputType = "text", register, errors, required 
             {...register(id, { 
                 required: required ? `${label} is required` : false, 
                 maxLength: { value: maxLength, message: `${label} should not exceed ${maxLength} characters` },
-                pattern: pattern ? { value: pattern, message: `Invalid ${label}` } : undefined
+                pattern: pattern ? { value: pattern.value, message: pattern.message } : undefined
             })}
             maxLength={maxLength}
             onInput={(e: any) => {

@@ -3,7 +3,7 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { toast } from "react-toastify";
-import { deleteUsersByIds } from "@/app/api/admin/users/user";
+import { deleteUsersByIds } from "@/app/api/admin/users";
 
 
 type UserDeleteMultipleModalProps = {
