@@ -101,21 +101,35 @@ export default function UserHeader({handleSidebarToggle, shouldShowButton}: {han
           }}
           PaperProps={{
             sx: {
-              backgroundColor: "#f7f7f7",
-              borderRadius: "10px",
-              border: "1px solid #005795",
-              boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
-              marginTop: "0.6rem",
-              marginRight: "0.7rem",
-              width: "10rem",
-            },
+                backgroundColor: "#f7f7f7",
+                borderRadius: "10px",
+                border: "1px solid #005795",
+                boxShadow: "3px 3px 6px rgba(0, 0, 0, 0.4)",
+                marginTop: "0.4rem",
+                marginRight: "1.3rem",
+                width: "10rem",
+            }
           }}
         >
-          <MenuItem onClick={handleClose}>Profile</MenuItem>
-          <MenuItem onClick={handleClose}>My account</MenuItem>
-          <MenuItem onClick={handleSignOut}>Logout</MenuItem>
+          <MenuItem sx={menuStyles.menuItem} onClick={handleClose}>Profile</MenuItem>
+          <MenuItem sx={menuStyles.menuItem} onClick={handleClose}>My account</MenuItem>
+          <MenuItem sx={menuStyles.menuItem} onClick={handleSignOut}>Logout</MenuItem>
         </Menu>
       </div>
     </header>
   );
+}
+
+
+const menuStyles = {
+  menuItem: {
+      ":hover": {
+          // backgroundColor: "#feba74",
+          backgroundColor: "#999999",
+          color: "#f7f7f7",
+          cursor: "pointer",
+          transition: "background-color 0.3s ease-out, color 0.3s ease-out",
+      },
+      color: "#06222b"
+  }
 }

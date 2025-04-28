@@ -382,8 +382,7 @@ export default function ArticlesDashboard() {
               />
             </header>
 
-
-                    
+           
             {articlesView === "Simple" ? (
               //* Simplified Article View */
               <div>
