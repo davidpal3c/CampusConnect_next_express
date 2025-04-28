@@ -65,6 +65,7 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
         }
 
         const userId = user.user_id;
+        console.log("User ID: ", userId);
 
         // retrieve user fields based on role (Student/Alumni) from db
         if (user?.role === "Student") {
