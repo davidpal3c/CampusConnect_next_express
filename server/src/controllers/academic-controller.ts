@@ -38,7 +38,7 @@ export const getAllStudyOptions = async (req: Request, res: Response) => {
             }
         });
 
-        console.log("programsAndDepartments: ", programsAndDepartments);
+        // console.log("programsAndDepartments: ", programsAndDepartments);
 
         if (programsAndDepartments.length === 0 || !programsAndDepartments) {
             res.status(404).json({ error: 'No programs or departments found in the database' });

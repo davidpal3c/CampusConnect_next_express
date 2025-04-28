@@ -293,15 +293,17 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
 export const createUser = async (req: Request, res: Response) : Promise<void> => {
     try {
         // console.log(req.body);
-        const { user_id, first_name, last_name, email, role, image_url } = req.body;
+        const { user_id, first_name, middle_name, last_name, email, role, image_url } = req.body;
+
+        console.log(req.body)
 
         const user = await prisma.user.create({
             data: {
                 user_id: user_id,
                 first_name: first_name,
+                middle_name: middle_name || null,
                 last_name: last_name,
                 email: email,
-                password: 'password',        // TODO: hash password
                 role: role,
                 image_url: image_url || null, 
             }
@@ -329,8 +331,18 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
                     user_id: user_id,
                     current_position: current_position || null,
                     company: company || null,
-                } as any
+                }
             });
+
+            await prisma.alumniStudy.create({
+                data: {
+                    user_id: user_id,
+                    graduation_year: graduation_year,
+                    program_id: program_id,
+                    department_id: department_id,
+                }
+            })
+
         } else if (role === 'Admin') {
             const { permissions } = req.body;
 
