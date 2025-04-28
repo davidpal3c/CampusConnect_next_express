@@ -83,6 +83,8 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
                 }
             });
 
+            console.log("Student Fields: ", studentFields);
+
             if (!studentFields) {
                 console.error("Student fields not found for user", email);
                 res.status(404).json({ status: 'error', message: 'Student profile incomplete. Contact support.' });
@@ -134,6 +136,8 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
         }
    
         next();
+
+
 
     } catch (error: any) {
         console.log("User route error:", error);
