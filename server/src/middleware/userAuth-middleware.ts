@@ -22,9 +22,9 @@ declare module 'express-serve-static-core' {
 }
 
 export const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    
+    console.log("Protect Route Middleware");
     try {
-
-        console.log("Protect Route Middleware");
         // firebase initialization
         initializeFirebaseAdmin();
 
@@ -51,9 +51,8 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
 
 export const userRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 
-        try {
-
         console.log("User Route Middleware");
+        try {
         // checks if email is pre-registered in db
         const email = req.user.decodedToken.email;
         const user = await prisma.user.findUnique({ 
@@ -134,9 +133,9 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
 }
 
 export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    
+    console.log("Set Custom Claims Middleware");
     try {
-
-        console.log("Set Custom Claims Middleware");
         const { decodedToken, dbUser } = req.user;
 
         const userRecord = await admin.auth().getUser(decodedToken.uid);
