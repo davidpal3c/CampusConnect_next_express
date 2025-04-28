@@ -131,10 +131,12 @@ export const AuthContextProvider = ({ children }) => {
   const getIdToken = async (forceRefresh = true) => {
     try {
       if (!auth.currentUser) {
-        console.log("No current user in Firebase");
+        console.log("No Firebase user available for ID token fetch");
         return null;
       }
       const token = await auth.currentUser.getIdToken(forceRefresh);
+
+      if(!token) console.log("No token received from Firebase. Failed to fetch valid ID token.");
 
       setUser((prevUser) => ({
         ...prevUser,
@@ -229,12 +231,12 @@ export const AuthContextProvider = ({ children }) => {
       let token = user.currentToken;
 
       if (!token) {
-        console.log("No token in user object, attempting to fetch new token...");
+        console.log("No token in user object, attempting to fetch new token... (refreshing token)");
         token = await getIdToken(true);
       }
 
       if (!token) {
-        throw new Error("Unable to retrieve authentication token. Please try again.");
+        throw new Error("Unable to retrieve authentication token. Cannot proceed.");  
       }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login-user`, {
