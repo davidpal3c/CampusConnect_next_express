@@ -46,6 +46,7 @@ app.get('/', (req, res) => {
   res.json('Hello from the server!');
 })
 
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -74,6 +75,7 @@ app.get('/api/routes', (req, res) => {
 
   res.json({ routes });
 });
+
 
 // global error handling middleware 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
