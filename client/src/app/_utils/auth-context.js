@@ -36,7 +36,7 @@ export const AuthContextProvider = ({ children }) => {
     try {
       result = await signInWithPopup(auth, provider);
       
-      console.log("Authenticated firebase user:", result.user);
+      // console.log("Authenticated firebase user:", result.user);
 
       const normalizedUser = await normalizeUser(result.user);
       setUser(normalizedUser);
