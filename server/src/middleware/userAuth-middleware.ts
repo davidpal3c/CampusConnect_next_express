@@ -82,6 +82,12 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
                     }
                 }
             });
+
+            if (!studentFields) {
+                console.error("Student fields not found for user", email);
+                res.status(404).json({ status: 'error', message: 'Student profile incomplete. Contact support.' });
+                return;
+            }
             
             req.user = { ...req.user, dbUser: user, studentFields: studentFields };
 
@@ -111,7 +117,11 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
                 } 
             });
         
-            // console.log("Alumni Fields: ", alumniFields);
+            if (!alumniFields) {
+                console.error("Alumni fields not found for user", email);
+                res.status(404).json({ status: 'error', message: 'Alumni profile incomplete. Contact support.' });
+                return;
+            }
         
             req.user = { ...req.user, dbUser: user, alumniFields: alumniFields };
 

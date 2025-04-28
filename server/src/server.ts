@@ -55,26 +55,26 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.get('/api/routes', (req, res) => {
-  const routes: string[] = [];
+// app.get('/api/routes', (req, res) => {
+//   const routes: string[] = [];
 
-  app._router.stack.forEach((middleware: any) => {
-    if (middleware.route) {
-      // routes registered directly on the app
-      routes.push(middleware.route.path);
-    } else if (middleware.name === 'router') {
-      // router middleware 
-      middleware.handle.stack.forEach((handler: any ) => {
-        const routePath = handler.route?.path;
-        if (routePath) {
-          routes.push(routePath);
-        }
-      });
-    }
-  });
+//   app._router.stack.forEach((middleware: any) => {
+//     if (middleware.route) {
+//       // routes registered directly on the app
+//       routes.push(middleware.route.path);
+//     } else if (middleware.name === 'router') {
+//       // router middleware 
+//       middleware.handle.stack.forEach((handler: any ) => {
+//         const routePath = handler.route?.path;
+//         if (routePath) {
+//           routes.push(routePath);
+//         }
+//       });
+//     }
+//   });
 
-  res.json({ routes });
-});
+//   res.json({ routes });
+// });
 
 
 // global error handling middleware 

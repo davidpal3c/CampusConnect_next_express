@@ -225,8 +225,6 @@ export const AuthContextProvider = ({ children }) => {
     if (isProcessingAuth) return;
     setIsProcessingAuth(true);
 
-    console.log("Processing user sign-in...");
-
     try {
       if (!user) {
         throw new Error("No user available, unable to retrieve token.");
@@ -242,8 +240,6 @@ export const AuthContextProvider = ({ children }) => {
       if (!token) {
         throw new Error("Unable to retrieve authentication token. Cannot proceed.");  
       }
-
-      console.log("Token retrieved:", token);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login-user`, {
         method: "POST",
