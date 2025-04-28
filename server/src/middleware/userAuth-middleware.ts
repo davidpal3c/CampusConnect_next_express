@@ -23,7 +23,7 @@ declare module 'express-serve-static-core' {
 
 export const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     
-    console.log("Protect Route Middleware");
+    console.log("Protect Route (Auth Middleware)");
     try {
         // firebase initialization
         initializeFirebaseAdmin();
