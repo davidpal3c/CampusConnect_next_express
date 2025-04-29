@@ -17,7 +17,9 @@ export default function EventCard(props: EventInterface) {
   const isAlmostFull = current_attendees / capacity >= 0.8 && !isFull;
 
   return (
-    <div className="relative border-gray-100 rounded-2xl shadow-lg border-2 transition-transform transform hover:scale-[1.03] hover:shadow-xl overflow-hidden">
+    <div className="relative border-gray-100 bg-white rounded-2xl shadow-md border border-transparent 
+    hover:border-saitLighterBlueOg transition-transform transition-shadow transform 
+    hover:scale-[1.03] p-4 hover:shadow-blue-200 hover:shadow-lg overflow-hidden duration-300 ease-in-out">
       <Link href={`events/${event_id}`} passHref>
 
         {/* TAGS */}

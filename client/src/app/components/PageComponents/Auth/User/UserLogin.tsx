@@ -58,11 +58,9 @@ export default function UserLogin() {
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
     async function handleSignIn(provider: string) {
-        console.log("handle sign in clicked");
         handleLoaderOpen(provider);
         await delay(500);
-
-        console.log("Sign in with: ", provider);
+        // console.log("Sign in with: ", provider);
 
         const currentUser = auth?.currentUser;
         if (currentUser) {

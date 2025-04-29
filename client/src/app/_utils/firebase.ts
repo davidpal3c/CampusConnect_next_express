@@ -20,5 +20,19 @@ if (typeof window !== "undefined" && getApps().length === 0) {
   app = initializeApp(firebaseConfig);
 }
 
+// Check if the Firebase configuration is complete. Force crash at build time if any field is missing.
+if (
+  !firebaseConfig.apiKey ||
+  !firebaseConfig.authDomain ||
+  !firebaseConfig.projectId ||
+  !firebaseConfig.storageBucket ||
+  !firebaseConfig.messagingSenderId ||
+  !firebaseConfig.appId
+) {
+  console.error("Firebase configuration is missing or incomplete!", firebaseConfig);
+  throw new Error("Invalid Firebase configuration — please check your environment variables!");
+}
+
+
 export const auth = typeof window !== "undefined" ? getAuth(app!) : null;
 

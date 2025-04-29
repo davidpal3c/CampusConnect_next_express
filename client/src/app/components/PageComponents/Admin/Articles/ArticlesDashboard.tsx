@@ -389,7 +389,10 @@ export default function ArticlesDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
                   {currentArticles.length > 0 ? (
                     currentArticles.map((article) => (
-                      <div key={article.article_id} className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
+                      <div key={article.article_id} 
+                        className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent
+                         hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 
+                         transition-transform transition-shadow duration-300 ease-in-out">
                         <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitBlue p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
                           <Tooltip title="Edit Article" arrow>    
                             <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#f7f7f7] transition-colors duration-300" />

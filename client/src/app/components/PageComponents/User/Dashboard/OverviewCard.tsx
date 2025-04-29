@@ -16,7 +16,7 @@ export default function OverViewCard({
   return (
     <div
       onClick={onClick}
-      className="flex-col text-saitBlack border-gray-100 rounded-2xl shadow-lg border-2 p-4 cursor-pointer hover:border-saitRed hover:shadow-saitRed-100 hover:shadow-lg hover:scale-105 duration-300 ease-in-out"
+      className="flex-col text-saitBlack bg-white border-gray-100 rounded-2xl shadow-lg border-2 p-4 cursor-pointer hover:border-saitRed hover:shadow-red-200 hover:shadow-lg hover:scale-105 duration-300 ease-in-out"
     >
       <div className="flex justify-between items-center">
         <div className="text-lg mb-2">{title}</div>

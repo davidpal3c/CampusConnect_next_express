@@ -35,7 +35,7 @@ export const AuthContextProvider = ({ children }) => {
 
     try {
       result = await signInWithPopup(auth, provider);
-
+      
       const normalizedUser = await normalizeUser(result.user);
       setUser(normalizedUser);
       return result;
@@ -131,10 +131,12 @@ export const AuthContextProvider = ({ children }) => {
   const getIdToken = async (forceRefresh = true) => {
     try {
       if (!auth.currentUser) {
-        console.log("No current user in Firebase");
+        console.log("No Firebase user available for ID token fetch");
         return null;
       }
       const token = await auth.currentUser.getIdToken(forceRefresh);
+
+      if(!token) console.log("No token received from Firebase. Failed to fetch valid ID token.");
 
       setUser((prevUser) => ({
         ...prevUser,
@@ -176,8 +178,6 @@ export const AuthContextProvider = ({ children }) => {
         },
         credentials: "include",
       });
-      
-      // console.log("BACKEND_URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -226,17 +226,18 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error("No user available, unable to retrieve token.");
       }
 
-      const token = await getIdToken(true);
-      // let token = user.currentToken;
+      let token = user.currentToken;
 
       if (!token) {
-        console.log("No token in user object, attempting to fetch new token...");
+        console.log("No token in user object, attempting to fetch new token... (refreshing token)");
         token = await getIdToken(true);
       }
 
       if (!token) {
-        throw new Error("Unable to retrieve authentication token. Please try again.");
+        throw new Error("Unable to retrieve authentication token. Cannot proceed.");  
       }
+
+      console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login-user`);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login-user`, {
         method: "POST",
@@ -280,6 +281,8 @@ export const AuthContextProvider = ({ children }) => {
       });
       await signOutFirebase();
       closeLoaderBackdrop();
+      //debugger;
+      throw new Error("Unexpected server response (not JSON)");
     } finally {
       setIsProcessingAuth(false);
     }
