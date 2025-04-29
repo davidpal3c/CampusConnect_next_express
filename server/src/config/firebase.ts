@@ -17,10 +17,15 @@ const serviceAccount: any = {
   
 
 export const initializeFirebaseAdmin = () => {
-    if (!admin.apps.length) {
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
-        });
+    try {
+        if (!admin.apps.length) {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        }
+    } catch (error) {
+        console.error('Firebase initialization error', error);
+        throw error;
     }
 }
 

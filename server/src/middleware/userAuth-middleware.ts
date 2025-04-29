@@ -44,6 +44,7 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
         req.user = { decodedToken: decodedToken };                             
         next();
     } catch (error: any) {
+        console.error('Protect Route error: ', error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
         return;
         // return res.redirect(`${process.env.CLIENT_ORIGIN}/admin/login`);
@@ -143,8 +144,6 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
    
         next();
 
-
-
     } catch (error: any) {
         console.log("User route error:", error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
@@ -186,7 +185,7 @@ export const setUserImage = async (req: AuthenticatedRequest, res: Response, nex
 
         if (storedPicture?.image_url === picture) {
             // console.log("User image already set:", storedPicture?.image_url);
-            next();
+            return next();
         }
         
         await prisma.user.update({
