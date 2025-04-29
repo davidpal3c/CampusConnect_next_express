@@ -54,6 +54,7 @@ export default function EventCard(props: EventInterface) {
           </div>
 
           <div className="flex flex-col gap-2 text-sm text-gray-600">
+
             <div className="flex flex-row items-center gap-2">
               <CalendarMonthIcon fontSize="small" />
               <p>{readableDate}</p>
@@ -70,6 +71,7 @@ export default function EventCard(props: EventInterface) {
               <PermIdentityIcon fontSize="small" />
               <p>{current_attendees}/{capacity}</p>
             </div>
+            
           </div>
         </div>
       </Link>
