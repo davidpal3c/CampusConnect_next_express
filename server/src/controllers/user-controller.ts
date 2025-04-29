@@ -293,56 +293,68 @@ export const getMyUser = async (req: AuthenticatedRequest, res: Response) => {
 export const createUser = async (req: Request, res: Response) : Promise<void> => {
     try {
         // console.log(req.body);
-        const { user_id, first_name, last_name, email, role, image_url } = req.body;
+        const { user_id, first_name, middle_name, last_name, email, role, image_url } = req.body;
 
-        const user = await prisma.user.create({
-            data: {
-                user_id: user_id,
-                first_name: first_name,
-                last_name: last_name,
-                email: email,
-                password: 'password',        // TODO: hash password
-                role: role,
-                image_url: image_url || null, 
-            }
-        });
+        console.log(req.body)
 
-        if (role === 'Student') {
-            const { program_id, department_id, intake_year, intake, status } = req.body;
+        // const user = await prisma.user.create({
+        //     data: {
+        //         user_id: user_id,
+        //         first_name: first_name,
+        //         middle_name: middle_name || null,
+        //         last_name: last_name,
+        //         email: email,
+        //         role: role,
+        //         image_url: image_url || null, 
+        //     }
+        // });
 
-            await prisma.student.create({
-                data: {
-                    user_id: user_id,
-                    program_id: program_id,
-                    department_id: department_id,
-                    intake_year: intake_year,
-                    intake: intake,
-                    status: status,
+        // if (role === 'Student') {
+        //     const { program_id, department_id, intake_year, intake, status } = req.body;
+
+        //     await prisma.student.create({
+        //         data: {
+        //             user_id: user_id,
+        //             program_id: program_id,
+        //             department_id: department_id,
+        //             intake_year: intake_year,
+        //             intake: intake,
+        //             status: status,
                     
-                }
-            });
-        } else if (role === 'Alumni') {
-            const { graduation_year, credentials, current_position, company } = req.body;
+        //         }
+        //     });
+        // } else if (role === 'Alumni') {
+        //     const { graduation_year, credentials, current_position, company } = req.body;
 
-            await prisma.alumni.create({
-                data: {
-                    user_id: user_id,
-                    current_position: current_position || null,
-                    company: company || null,
-                } as any
-            });
-        } else if (role === 'Admin') {
-            const { permissions } = req.body;
+        //     await prisma.alumni.create({
+        //         data: {
+        //             user_id: user_id,
+        //             current_position: current_position || null,
+        //             company: company || null,
+        //         }
+        //     });
 
-            await prisma.admin.create({
-                data: {
-                    user_id: user_id,
-                    permissions: permissions,
-                }
-            });
-        }
+        //     await prisma.alumniStudy.create({
+        //         data: {
+        //             user_id: user_id,
+        //             graduation_year: graduation_year,
+        //             program_id: program_id,
+        //             department_id: department_id,
+        //         }
+        //     })
 
-        res.status(201).json(user);
+        // } else if (role === 'Admin') {
+        //     const { permissions } = req.body;
+
+        //     await prisma.admin.create({
+        //         data: {
+        //             user_id: user_id,
+        //             permissions: permissions,
+        //         }
+        //     });
+        // }
+
+        // res.status(201).json(user);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
