@@ -178,7 +178,6 @@ export const AuthContextProvider = ({ children }) => {
         },
         credentials: "include",
       });
-
       
       if (!response.ok) {
         const errorData = await response.json();

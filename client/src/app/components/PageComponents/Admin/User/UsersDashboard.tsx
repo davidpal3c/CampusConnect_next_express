@@ -11,7 +11,7 @@ import Loader from "@/app/components/Loader/Loader";
 import TableView from "@/app/components/PageComponents/Admin/User/TableView";
 import UserEditor from "@/app/components/PageComponents/Admin/User/UserEditor";
 import ActionButton from "@/app/components/Buttons/ActionButton";
-import { getUsersData, getStudentsByStatus } from "@/app/api/admin/users/user";
+import { getUsersData, getStudentsByStatus } from "@/app/api/admin/users";
 
 // Icons 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
