@@ -47,7 +47,7 @@ export default function StudentLayout({
     <UserDataProvider>
       {!isLoading ? (
         <main className="flex min-h-screen bg-white">
-          <div className="flex flex-col bg-gray-200 w-full h-screen">
+          <div className="flex flex-col bg-saitWhite w-full h-screen">
             <header>
               <TopBar />
             </header>

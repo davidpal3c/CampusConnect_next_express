@@ -11,7 +11,9 @@ export function ArticleCard(props: ArticleInterface) {
   );
 
     return (  
-        <div className="border-gray-100 rounded-2xl shadow-lg border-2 transition-transform transform hover:scale-[1.03] hover:shadow-xl overflow-hidden">
+        <div className="border-gray-100 rounded-2xl shadow-md border border-transparent 
+    hover:border-saitLighterBlueOg transition-transform transition-shadow transform 
+    hover:scale-[1.03] hover:shadow-blue-200 hover:shadow-lg overflow-hidden duration-300 ease-in-out overflow-hidden">
             <Link href={`/user/articles/${article_id}`} passHref>
                 <img 
                     src={imageUrl || "/img_placeholder.png"}
@@ -33,13 +35,23 @@ export function ArticleCard(props: ArticleInterface) {
 export function ArticleFeaturedCard(props: ArticleInterface) {
     let { article_id, title, author, type, datePublished, imageUrl, content } = props;
 
-    const wordCount = content.split(" ").length;
-    const readingTime = Math.ceil(wordCount / 200);
+    const getPlainText = (html: string) => {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+        return tempDiv.textContent || tempDiv.innerText || "";
+    }
+
+    
     const formattedDate = new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(new Date(datePublished));
-    const shortContent = wordCount > 50 ? content.split(" ").slice(0, 50).join(" ") + "..." : content;
+    const plainContent = getPlainText(content);
+    const wordCount = plainContent.split(" ").length;
+    const readingTime = Math.ceil(wordCount / 200);
+    const shortContent = wordCount > 50 ? plainContent.split(" ").slice(0, 50).join(" ") + "..." : plainContent;
 
     return (
-        <div className="w-full h-[500px] border-gray-100 hover:border-saitLighterBlue rounded-2xl shadow-lg border-2 overflow-hidden mb-8 transition-transform transform hover:scale-[1.02] hover:shadow-2xl">
+        <div className="w-full h-[500px] border-gray-100 hover:border-saitLighterBlue rounded-2xl
+         shadow-lg border-2 overflow-hidden mb-8 transition-transform transform hover:scale-[1.02] 
+         hover:shadow-2xl">
             <Link className="flex flex-col lg:flex-row h-full" href={`articles/${article_id}`} passHref>
                 
                 {/* Image with optional overlay */}

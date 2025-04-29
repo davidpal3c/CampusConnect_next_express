@@ -44,7 +44,6 @@ export const loginUser = async (req: AuthenticatedRequest, res: Response): Promi
             console.error("Invalid request: token is missing");
             res.status(400).json({ status: 'error', message: 'Invalid request: token is missing' });
             return;
-            // throw new Error("Invalid request: token is missing");
         }
 
         const sessionCookie = await admin.auth().createSessionCookie(token, { 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArticleCard, ArticleFeaturedCard } from "./ArticleCards";
+import { ArticleCard, ArticleFeaturedCard } from "./ArticleCard";
 import { ArticleInterface } from "@/app/api/users/props";
 
 export default function ArticleList({ articles }: { articles: ArticleInterface[] }) {
