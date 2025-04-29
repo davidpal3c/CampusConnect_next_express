@@ -39,6 +39,8 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
         // verify ID token
         const decodedToken = await admin.auth().verifyIdToken(token);
 
+        console.log("Decoded Token:", decodedToken);
+
         req.user = { decodedToken: decodedToken };                             
         next();
     } catch (error: any) {
@@ -66,6 +68,8 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
 
         const userId = user.user_id;
         console.log("User ID: ", userId);
+
+        console.log("DB User Role:", user?.role);
 
         // retrieve user fields based on role (Student/Alumni) from db
         if (user?.role === "Student") {
@@ -129,6 +133,7 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
             req.user = { ...req.user, dbUser: user, alumniFields: alumniFields };
 
         } else {
+            console.error(`User role not matched. Role received: ${user?.role}`);
             res.status(403).json({
                 status: 'error',
                 message: 'Forbidden Access: User role not found. Please contact support.' 

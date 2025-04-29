@@ -36,8 +36,6 @@ export const AuthContextProvider = ({ children }) => {
     try {
       result = await signInWithPopup(auth, provider);
       
-      // console.log("Authenticated firebase user:", result.user);
-
       const normalizedUser = await normalizeUser(result.user);
       setUser(normalizedUser);
       return result;
@@ -285,6 +283,8 @@ export const AuthContextProvider = ({ children }) => {
       });
       await signOutFirebase();
       closeLoaderBackdrop();
+      //debugger;
+      throw new Error("Unexpected server response (not JSON)");
     } finally {
       setIsProcessingAuth(false);
     }
