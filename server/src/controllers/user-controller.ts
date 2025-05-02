@@ -389,7 +389,7 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
     }
 }
 
-// PUT: /api/users/:id - Update a user by ID. This is a full update
+// PATCH: /api/users/:id - Update a user by ID. Updates only fields provided
 export const updateUser = async (req: Request, res: Response) : Promise<void> => {
     try {
         const { id } = req.params;
@@ -399,44 +399,48 @@ export const updateUser = async (req: Request, res: Response) : Promise<void> =>
             return;
         }
 
-        const { firstName, lastName, email, role, } = req.body;
+        console.log('user id: ', id);   
+        console.log("updateUser: ", req.body);
 
-        const user = await prisma.user.create({
-            data: {
-                user_id: id,
-                first_name: firstName,
-                last_name: lastName,
-                email: email,
-                password: 'password',        // TODO: hash password
-                role: role,
-            }
-        });
 
-        if (role === 'Student') {
-            const { program_id, department_id, intake_year, status } = req.body;
+        // const { firstName, lastName, email, role, } = req.body;
 
-            await prisma.student.create({
-                data: {
-                    user_id: id,
-                    program_id: program_id,
-                    department_id: department_id,
-                    intake_year: intake_year,
-                    status: status,
-                }
-            });
-        } else if (role === 'Alumni') {
-            const { current_position, company } = req.body;
+        // const user = await prisma.user.create({
+        //     data: {
+        //         user_id: id,
+        //         first_name: firstName,
+        //         last_name: lastName,
+        //         email: email,
+        //         password: 'password',        // TODO: hash password
+        //         role: role,
+        //     }
+        // });
 
-            await prisma.alumni.create({
-                data: {
-                    user_id: id,
-                    current_position: current_position || null,
-                    company: company || null,   
-                } as any
-            });
-        }
+        // if (role === 'Student') {
+        //     const { program_id, department_id, intake_year, status } = req.body;
 
-        res.status(201).json({ message: 'User updated successfully', user });
+        //     await prisma.student.create({
+        //         data: {
+        //             user_id: id,
+        //             program_id: program_id,
+        //             department_id: department_id,
+        //             intake_year: intake_year,
+        //             status: status,
+        //         }
+        //     });
+        // } else if (role === 'Alumni') {
+        //     const { current_position, company } = req.body;
+
+        //     await prisma.alumni.create({
+        //         data: {
+        //             user_id: id,
+        //             current_position: current_position || null,
+        //             company: company || null,   
+        //         } as any
+        //     });
+        // }
+
+        // res.status(201).json({ message: 'User updated successfully', user });
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     } finally {

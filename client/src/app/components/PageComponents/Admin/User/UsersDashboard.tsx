@@ -160,8 +160,6 @@ export default function UsersDashboard() {
         setPanelTask('Edit');
         setSelectedUser(user);
         setIsPanelVisible(!isPanelVisible);
-
-        console.log(JSON.stringify(user, null, 2));
     };
 
     const handleCloseUserPanel = () => {
@@ -213,8 +211,6 @@ export default function UsersDashboard() {
         }
 
     }
-
-
 
     // fetch fields by role
     const fetchFieldsByRole = async (role: UserRole) => {
@@ -371,7 +367,12 @@ export default function UsersDashboard() {
                             className="absolute top-0 right-0 h-auto w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                         >
                             <div className="">
-                                <UserEditor closeUserEditorPanel={handleCloseUserPanel} task={panelTask} reFetchUsers={fetchUserData}/>
+                                <UserEditor 
+                                    closeUserEditorPanel={handleCloseUserPanel} 
+                                    task={panelTask} 
+                                    reFetchUsers={fetchUserData}
+                                    userObject={selectedUser}
+                                />
                             </div>
                         </motion.div>
                         }

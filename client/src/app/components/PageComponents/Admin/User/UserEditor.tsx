@@ -17,16 +17,19 @@ import IntakePicker, {getCurrentSeason} from "./IntakePicker";
 
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { actionAsyncStorage } from "next/dist/server/app-render/action-async-storage.external";
 
 
 type CreateUserProps = { 
     closeUserEditorPanel: () => void;
     task?: string;
     reFetchUsers: () => void;
+    userObject?: any;
 };
 
-const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reFetchUsers }) => {
+const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reFetchUsers, userObject }) => {
     // State Management
     const currentYear = new Date().getFullYear();
 
@@ -41,8 +44,23 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
     // Admin Permissions
     const permissions = ["Read-Only", "Read-Write", "Full Access"];
 
-    // loader
+    // loaders
     const [loadingPrograms, setLoadingPrograms] = useState(true);
+    const [processingTask, setProcessingTask] = useState(false);
+    const [backdrop, setBackdrop] = useState(false);
+
+    const handleProcessingTaskOpen = () => {
+        setProcessingTask(true);
+        setBackdrop(true);
+    }
+
+    const handleProcessingTaskClose = () => {
+        setProcessingTask(false);
+        setBackdrop(false);
+
+        reFetchUsers();
+        closeUserEditorPanel();
+    }
 
     const { 
         register, 
@@ -123,26 +141,60 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
     
         console.log("Formatted User Data (Flat Structure):", userData);
 
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify(userData),
-            });
+        handleProcessingTaskOpen();
 
-            const responseData = await response.json();
-            if (!response.ok) {
-                toast.error(responseData.message || "An error occurred creating the user.");
-                return;
+        if (task === "Create") {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/`, {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify(userData),
+                });
+
+                const responseData = await response.json();
+                if (!response.ok) {
+                    toast.error(responseData.message || "An error occurred creating the user.");
+                    return;
+                }
+
+                toast.success(responseData.message);
+
+            } catch (error) {
+                console.log("Error: ", error);  
+                toast.error(`Unknown error occurred: ${error}`);
+                
+            } finally { 
+                handleProcessingTaskClose();
             }
 
-            toast.success(responseData.message);
-            reFetchUsers();
-            closeUserEditorPanel();
-        } catch (error) {
-            console.log("Error: ", error);  
-            toast.error(`Unknown error occurred: ${error}`);
+        } else if (task === "Edit") {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userObject.user_id}`, {
+                    method: "PUT",
+                    headers: { "content-type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify(userData),
+                });
+
+                const responseData = await response.json();
+                if (!response.ok) {
+                    toast.error(responseData.message || "An error occurred updating the user.");
+                    return;
+                }
+
+                toast.success(responseData.message);
+
+            } catch (error) {
+                console.log("Error: ", error);  
+                toast.error(`Unknown error occurred: ${error}`);
+
+            } finally {
+                handleProcessingTaskClose();
+            }
+
+        } else {
+            console.error("Invalid task type. Expected 'Create' or 'Edit'.");
         }
     };
 
@@ -186,15 +238,41 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
         }
     }, [watchedRole]);
 
+
     useEffect(() => {
-        console.log("Programs Options: ", programsOptions);
-    }
-    , [programsOptions]);
+        // console.log(JSON.stringify(userObject, null, 2));
+        if (userObject && task === "Edit") {
+            setValue("user_id", userObject.user_id);
+            setValue("email", userObject.email);
+            setValue("first_name", userObject.first_name);
+            setValue("middle_name", userObject.middle_name);
+            setValue("last_name", userObject.last_name);
+            setValue("role", userObject.role);
+            setValue("created_at", userObject.created_at);
+            setValue("password", userObject.password);
+            setValue("image_url", userObject.image_url);
+            setValue("permissions", userObject.permissions);
+            setValue("program_id", userObject.program_id);
+            setValue("department_id", userObject.department_id);
+            setValue("intake_year", userObject.intake_year);
+            setValue("intake", userObject.intake);
+            setValue("status", userObject.status);
+            setValue("graduation_year", userObject.graduation_year);
+            setValue("credentials", userObject.credentials);
+            setValue("current_position", userObject.current_position);
+            setValue("company", userObject.company);
+
+        }
+    }, [actionAsyncStorage, userObject]);
+
+    // useEffect(() => {
+    //     console.log("Programs Options: ", programsOptions);
+    // }, [programsOptions]);
 
     return (
         <main className="h-full w-full">
             <header className="flex justify-between items-center bg-white p-5 rounded-lg mb-6 shadow-md">
-                <h1 className="font-semibold">Create User</h1> 
+                <h1 className="font-semibold">{task === 'Create' ? 'Register User' : 'Update User'}</h1> 
                 <Tooltip title="Close Editor" arrow>
                     <button onClick={closeUserEditorPanel}>
                         <CloseIcon />
@@ -477,13 +555,10 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
                             </div>
                         </div>
                     )}
-{/* 
-                    <Button className="block w-full" variant="contained" color="success" type="submit">
-                        Submit
-                    </Button> */}
+
                     <div className="flex flex-row items-center justify-between w-full space-x-5">
                         {/* <div className="flex flex-row items-center justify-between w-1/3 space-x-5"> */}
-                            <Tooltip title="Create User" arrow>
+                            <Tooltip title={task === 'Create' ? 'Create User' : 'Update User'} arrow>
                                 <div>
                                     <ActionButton title="Submit" onClick={handleSubmit((data: any) => submitForm(data))}    
                                         textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
@@ -493,10 +568,15 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
                                 <ActionButton title="Cancel" onClick={() => closeUserEditorPanel()}
                                     textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
                             </div>
-                        {/* </div> */}
                     </div>
                 </form>
             </section>
+            <Backdrop
+                sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                open={backdrop}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>  
         </main>
     );
 };
