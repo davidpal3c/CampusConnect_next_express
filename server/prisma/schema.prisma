@@ -176,6 +176,7 @@ model FormSubmission {
   createdAt DateTime @default(now())
 }
 
+
 model EventCategory {
   id          String   @id @unique @default(uuid())
   event_id    String

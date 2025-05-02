@@ -21,11 +21,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 
 type CreateUserProps = { 
-    closeOnClick: () => void;
+    closeUserEditorPanel: () => void;
     task?: string;
+    reFetchUsers: () => void;
 };
 
-const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create User' }) => {
+const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reFetchUsers }) => {
     // State Management
     const currentYear = new Date().getFullYear();
 
@@ -137,7 +138,8 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
             }
 
             toast.success(responseData.message);
-            closeOnClick();
+            reFetchUsers();
+            closeUserEditorPanel();
         } catch (error) {
             console.log("Error: ", error);  
             toast.error(`Unknown error occurred: ${error}`);
@@ -194,7 +196,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
             <header className="flex justify-between items-center bg-white p-5 rounded-lg mb-6 shadow-md">
                 <h1 className="font-semibold">Create User</h1> 
                 <Tooltip title="Close Editor" arrow>
-                    <button onClick={closeOnClick}>
+                    <button onClick={closeUserEditorPanel}>
                         <CloseIcon />
                     </button>
                 </Tooltip>
@@ -475,10 +477,24 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeOnClick, task = 'Create Us
                             </div>
                         </div>
                     )}
-
+{/* 
                     <Button className="block w-full" variant="contained" color="success" type="submit">
                         Submit
-                    </Button>
+                    </Button> */}
+                    <div className="flex flex-row items-center justify-between w-full space-x-5">
+                        {/* <div className="flex flex-row items-center justify-between w-1/3 space-x-5"> */}
+                            <Tooltip title="Create User" arrow>
+                                <div>
+                                    <ActionButton title="Submit" onClick={handleSubmit((data: any) => submitForm(data))}    
+                                        textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
+                                </div>
+                            </Tooltip>
+                            <div>
+                                <ActionButton title="Cancel" onClick={() => closeUserEditorPanel()}
+                                    textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
+                            </div>
+                        {/* </div> */}
+                    </div>
                 </form>
             </section>
         </main>

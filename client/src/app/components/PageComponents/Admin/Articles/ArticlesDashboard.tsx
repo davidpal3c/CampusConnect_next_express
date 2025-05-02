@@ -23,8 +23,8 @@ import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import ArrowLeftRoundedIcon from '@mui/icons-material/ArrowLeftRounded';
-import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
+import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
+import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
 
 import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
@@ -393,7 +393,12 @@ export default function ArticlesDashboard() {
                         className="relative flex flex-col bg-white rounded-xl shadow-md border border-transparent
                          hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-lg hover:scale-105 
                          transition-transform transition-shadow duration-300 ease-in-out">
-                        <button className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitBlue p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" onClick={() => handleEditArticle(article)}>
+                        <button 
+                          className="group absolute top-2 border right-2 z-10 shadow-md bg-saitWhite text-saitBlue 
+                          p-1 rounded-full hover:scale-125 hover:bg-saitBlue hover:border-saitLighterBlueOg 
+                          hover:shadow-2xl active:scale-90 transition-transform transition-shadow duration-300 ease-in-out" 
+                          onClick={() => handleEditArticle(article)}
+                        >
                           <Tooltip title="Edit Article" arrow>    
                             <EditRoundedIcon sx={{ fontSize: 21, color: 'inherit' }} className="group-hover:text-[#f7f7f7] transition-colors duration-300" />
                           </Tooltip>
@@ -422,13 +427,21 @@ export default function ArticlesDashboard() {
                 
                 {/* pagination */}
                 <div className="flex justify-between items-center mt-4 border-t-saitBlack pt-4">
-                  <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<ArrowLeftRoundedIcon />} iconFirst={true}
+                  <ActionButton title="Previous" onClick={handlePrevious} disabled={currentPage === 1} icon={<KeyboardArrowLeftRoundedIcon />} iconFirst={true}
                     borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                   />
-                  <span className='text-sm'>
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<ArrowRightRoundedIcon />} 
+                  <div className="flex space-x-2">
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                            key={i + 1}
+                            onClick={() => setCurrentPage(i + 1)}
+                            className={`w-8 h-8 rounded-full ${currentPage === i + 1 ? 'bg-saitBlue text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
+                  </div>
+                  <ActionButton title="Next" onClick={handleNext} disabled={currentPage === totalPages} icon={<KeyboardArrowRightRoundedIcon />} 
                     borderColor="border-saitBlue" textColor="text-saitGray" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                   />
                 </div>
@@ -458,9 +471,15 @@ export default function ArticlesDashboard() {
                 }
               </AnimatePresence>
 
-            <div className="mt-6">
-              <p className="text-black">Total Articles: {articles.length}</p>
-            </div>
+            {currentArticles.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No articles found</p>
+              </div>
+            ): (
+              <div className="mt-6">
+                <p className="text-black">Total Articles: {articles.length}</p>
+              </div>
+            )}
           </div>
         </main>
       )}; 
