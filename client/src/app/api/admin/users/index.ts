@@ -71,7 +71,6 @@ export const deleteUsersByIds = async (userIds: string[]) => {
         });
     
         const data = await response.json();
-        console.log('>>>Deleting students by IDs: ', data);  
 
         if (!response.ok) {
             const errorData = data.error

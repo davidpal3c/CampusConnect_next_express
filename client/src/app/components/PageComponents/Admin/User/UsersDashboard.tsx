@@ -48,6 +48,7 @@ export default function UsersDashboard() {
 
     // panel state
     const [panelTask, setPanelTask] = useState<string>("register");
+    const [selectedUser, setSelectedUser] = useState<any>(null);
 
     // Loader
     const [isLoading, setIsLoading] = useState(true);
@@ -150,9 +151,17 @@ export default function UsersDashboard() {
     }
 
     // Create User Panel
-    const handlePanel = (action: string) => {
-        setPanelTask(action);
+    const handleCreateUser = () => {
+        setPanelTask('Create');
         setIsPanelVisible(!isPanelVisible);
+    };
+
+    const handleEditUser = (user: any) => {
+        setPanelTask('Edit');
+        setSelectedUser(user);
+        setIsPanelVisible(!isPanelVisible);
+
+        console.log(JSON.stringify(user, null, 2));
     };
 
     const handleCloseUserPanel = () => {
@@ -328,7 +337,7 @@ export default function UsersDashboard() {
                                     <Tooltip title="Add User" arrow>
                                         <div>
                                             <ActionButton title="Register User" icon={<AccountCircleRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} 
-                                                onClick={() => handlePanel("register")} borderColor="border-saitBlue" textColor="text-saitGray" 
+                                                onClick={() => handleCreateUser()} borderColor="border-saitBlue" textColor="text-saitGray" 
                                                 hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" textSize="text-sm"
                                             />
                                         </div>
@@ -339,9 +348,8 @@ export default function UsersDashboard() {
                      />
 
                     {/* Display Users */}
- 
                     {usersView === "List" ? (
-                            <UserListView users={users}/>
+                            <UserListView users={users} handleEditUser={handleEditUser}/>
                         ) : (
                             <TableView 
                                 users={users} 
@@ -363,7 +371,7 @@ export default function UsersDashboard() {
                             className="absolute top-0 right-0 h-auto w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                         >
                             <div className="">
-                                <UserEditor closeOnClick={handleCloseUserPanel} task={panelTask}/>
+                                <UserEditor closeUserEditorPanel={handleCloseUserPanel} task={panelTask} reFetchUsers={fetchUserData}/>
                             </div>
                         </motion.div>
                         }

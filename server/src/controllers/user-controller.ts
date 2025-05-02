@@ -296,65 +296,91 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
         const { user_id, first_name, middle_name, last_name, email, role, image_url } = req.body;
 
         console.log(req.body)
+        let userType = 'User';
 
-        // const user = await prisma.user.create({
-        //     data: {
-        //         user_id: user_id,
-        //         first_name: first_name,
-        //         middle_name: middle_name || null,
-        //         last_name: last_name,
-        //         email: email,
-        //         role: role,
-        //         image_url: image_url || null, 
-        //     }
-        // });
+        await prisma.$transaction(async (tx) => {
 
-        // if (role === 'Student') {
-        //     const { program_id, department_id, intake_year, intake, status } = req.body;
+            const existingUser: any = await tx.user.findUnique({
+                where: { email: email },
+            });
 
-        //     await prisma.student.create({
-        //         data: {
-        //             user_id: user_id,
-        //             program_id: program_id,
-        //             department_id: department_id,
-        //             intake_year: intake_year,
-        //             intake: intake,
-        //             status: status,
-                    
-        //         }
-        //     });
-        // } else if (role === 'Alumni') {
-        //     const { graduation_year, credentials, current_position, company } = req.body;
+            if (existingUser) {
+                res.status(409).json({ error: 'User with same email already exists' });
+                return;
+            }
 
-        //     await prisma.alumni.create({
-        //         data: {
-        //             user_id: user_id,
-        //             current_position: current_position || null,
-        //             company: company || null,
-        //         }
-        //     });
+            if (existingUser?.user_id === user_id) {
+                res.status(409).json({ error: 'User ID already exists' });
+                return;
+            }
 
-        //     await prisma.alumniStudy.create({
-        //         data: {
-        //             user_id: user_id,
-        //             graduation_year: graduation_year,
-        //             program_id: program_id,
-        //             department_id: department_id,
-        //         }
-        //     })
+            await tx.user.create({
+                data: {
+                    user_id: user_id,
+                    first_name: first_name,
+                    middle_name: middle_name || null,
+                    last_name: last_name,
+                    email: email,
+                    // password: password || null, // TODO: hash password
+                    role: role,
+                    image_url: image_url || null, 
+                }
+            });
 
-        // } else if (role === 'Admin') {
-        //     const { permissions } = req.body;
+            if (role === 'Student') {
+                const { program_id, department_id, intake_year, intake, status } = req.body;
 
-        //     await prisma.admin.create({
-        //         data: {
-        //             user_id: user_id,
-        //             permissions: permissions,
-        //         }
-        //     });
-        // }
+                userType = 'Student';
 
-        // res.status(201).json(user);
+                await tx.student.create({
+                    data: {
+                        user_id: user_id,
+                        program_id: program_id,
+                        department_id: department_id,
+                        intake_year: intake_year,
+                        intake: intake,
+                        status: status,
+                        
+                    }
+                });
+            } else if (role === 'Alumni') {
+                const { graduation_year, program_id, department_id, current_position, company } = req.body;
+
+                userType = 'Alumni';
+
+                await tx.alumni.create({
+                    data: {
+                        user_id: user_id,
+                        current_position: current_position || null,
+                        company: company || null,
+                    }
+                });
+
+                await tx.alumniStudy.create({
+                    data: {
+                        alumni_id: user_id,
+                        program_id: program_id,
+                        department_id: department_id,
+                        graduation_year: parseInt(graduation_year)
+                    }
+                })
+
+            } else if (role === 'Admin') {
+                const { permissions } = req.body;
+
+                userType = 'Admin';
+
+                await tx.admin.create({
+                    data: {
+                        user_id: user_id,
+                        permissions: permissions,
+                    }
+                });
+            }
+
+        })
+            
+        res.status(201).json({ message: `User (${userType}) created successfully`, user_id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
