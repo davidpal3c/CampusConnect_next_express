@@ -12,6 +12,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import helmetMiddleware from './utils/helmet';
+import helmet from 'helmet';
 import { rateLimiter } from './utils/rateLimiter';
 
 dotenv.config();
@@ -30,7 +31,15 @@ app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
 // Helmet middleware for security headers
-helmetMiddleware(app);
+if (process.env.NODE_ENV === 'production') {
+  helmetMiddleware(app);
+} else {
+  app.use(helmet({
+    crossOriginResourcePolicy: false, 
+    contentSecurityPolicy: false, 
+  }));
+}
+
 
 // Rate limiting middleware
 app.use(rateLimiter);
