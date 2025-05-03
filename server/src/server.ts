@@ -11,6 +11,8 @@ import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import helmetMiddleware from './utils/helmet';
+import { rateLimiter } from './utils/rateLimiter';
 
 dotenv.config();
 
@@ -26,6 +28,12 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
+
+// Helmet middleware for security headers
+helmetMiddleware(app);
+
+// Rate limiting middleware
+app.use(rateLimiter);
 
 
 // Health check route
