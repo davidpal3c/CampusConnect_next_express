@@ -23,7 +23,7 @@ const helmetMiddleware = (app: any) => {
                 "font-src": [
                     "'self'",
                     "https://fonts.gstatic.com",
-                    "data:"                                                                                                     // For MUI icons
+                    // "data:"                                                                                                     // For MUI icons
                 ],
                 "img-src": [
                     "'self'",
@@ -36,7 +36,7 @@ const helmetMiddleware = (app: any) => {
                 "connect-src": [
                     "'self'",
                     process.env.CLIENT_ORIGIN || "",
-                    process.env.NEXT_PUBLIC_BACKEND_URL || "",                                                                  // Your API endpoint
+                    // process.env.NEXT_PUBLIC_BACKEND_URL || "",                                                                  // self, API endpoint
                     "https://*.googleapis.com"                                                                                  // For Firebase/Google services
                 ],
                 "frame-src": [
