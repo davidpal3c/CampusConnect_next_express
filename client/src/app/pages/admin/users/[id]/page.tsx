@@ -169,19 +169,19 @@ export default function UserDetails() {
             <div className="bg-gradient-to-r from-slate-700 via-saitDarkPurple to-saitBlue p-6 text-white">
             <div className="flex items-center justify-between">
                 <div>
-                <h1 className="text-3xl font-bold">{first_name} {last_name}</h1>
-                <div className="mt-2">
-                    <Chip 
-                        label={role} 
-                        className={`
-                            ${role === 'Admin' ? 'bg-red-100 text-red-800' : ''}
-                            ${role === 'Student' ? 'bg-blue-100 text-blue-800' : ''}
-                            ${role === 'Alumni' ? 'bg-green-100 text-green-800' : ''}
-                            font-semibold
-                        `}
-                        size="small"
-                    />
-                </div>
+                    <h1 className="text-3xl font-bold">{first_name} {last_name}</h1>
+                    <div className="mt-2 flex items-center justify-start space-x-2">
+                        <Chip 
+                            label={role} 
+                            className={`
+                                ${role === 'Admin' ? 'bg-red-100 text-saitDarkRed' : ''}
+                                ${role === 'Student' ? 'bg-blue-100 text-saitBlue' : ''}
+                                ${role === 'Alumni' ? 'bg-purple-100 text-saitPurple' : ''}
+                                font-semibold text-sm px-1 py-1 rounded-full
+                            `}
+                            size="small"
+                        />
+                    </div>
                 </div>
                 <div className="w-24 h-24 rounded-full border-4 border-white bg-white overflow-hidden">
                 <Image 
@@ -189,7 +189,9 @@ export default function UserDetails() {
                     alt={`${first_name} ${last_name}`} 
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/avatar-generic.jpg";
+                        const target = e.target as HTMLImageElement;
+                        target.onerror = null;                                                          // Prevent infinite loop
+                        target.src = "/avatar-generic.jpg";
                     }}
                     width={96}
                     height={96}
