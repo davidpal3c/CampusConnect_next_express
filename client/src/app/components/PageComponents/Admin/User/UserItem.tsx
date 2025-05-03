@@ -35,10 +35,9 @@ export default function UserItem({ userObject, handleEditUser }: UserItemProps) 
     const createdAtDate = new Date(created_at);
 
     // Color condition for user's role
-    const roleClass =
-        role.toLowerCase() === "admin"
-            ? "text-saitRed font-semibold" // Red for Admin
-            : "text-saitLightBlue font-semibold"; // Blue for Student (alumni, prospective student, current student)
+    const roleClass = role.toLowerCase() === "admin" ? "text-saitRed font-semibold" 
+        : role.toLowerCase() === "alumni" ? "text-saitPurple font-semibold" 
+        : "text-saitLightBlue font-semibold"; 
 
     return (
         <Link href={`users/${user_id}`} passHref>
@@ -50,7 +49,7 @@ export default function UserItem({ userObject, handleEditUser }: UserItemProps) 
                     </div>
                     <div>
                         <div className="flex items-center space-x-2">
-                            <h2 className="text-lg font-semibold group-hover:text-saitBlue">{`${userObject.first_name} ${initialMiddleName} ${userObject.last_name}`}</h2>
+                            <h2 className="text-lg text-saitBlack font-semibold group-hover:text-saitBlue">{`${userObject.first_name} ${initialMiddleName} ${userObject.last_name}`}</h2>
                             <span className={roleClass}>
                                 {userObject.role}
                             </span>

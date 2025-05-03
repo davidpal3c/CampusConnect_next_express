@@ -85,3 +85,26 @@ body {
 /* .MuiDataGrid-scrollbar {
   pointer-events: none;
 } */
+
+@layer components {
+  /* Force include critical gradient classes */
+  .profile-header-gradient {
+    @apply bg-gradient-to-r from-slate-700 via-saitDarkPurple to-saitBlue;
+  }
+  
+  /* Force include image container styles */
+  .profile-image-container {
+    @apply w-24 h-24 rounded-full border-4 border-white bg-white overflow-hidden;
+  }
+  
+  /* Force include role chip styles */
+  .role-chip-admin {
+    @apply bg-red-100 text-saitDarkRed font-semibold text-sm px-1 py-1 rounded-full;
+  }
+  .role-chip-student {
+    @apply bg-blue-100 text-saitBlue font-semibold text-sm px-1 py-1 rounded-full;
+  }
+  .role-chip-alumni {
+    @apply bg-purple-100 text-saitPurple font-semibold text-sm px-1 py-1 rounded-full;
+  }
+}

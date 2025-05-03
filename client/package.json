@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:prod": "npm run build && npm run start",
+    "analyze": "NODE_ENV=production ANALYZE=true next build"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",
