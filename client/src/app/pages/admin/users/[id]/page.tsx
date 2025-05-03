@@ -118,14 +118,14 @@ export default function UserDetails() {
         Alumni
     } = user;
 
-    const getRoleColor = () => {
-        switch(role?.toLowerCase()) {
-            case 'admin': return 'bg-red-100 text-red-800';
-            case 'student': return 'bg-blue-100 text-blue-800';
-            case 'alumni': return 'bg-green-100 text-green-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    };
+    // const getRoleColor = () => {
+    //     switch(role?.toLowerCase()) {
+    //         case 'admin': return 'bg-red-100 text-red-800';
+    //         case 'student': return 'bg-blue-100 text-blue-800';
+    //         case 'alumni': return 'bg-green-100 text-green-800';
+    //         default: return 'bg-gray-100 text-gray-800';
+    //     }
+    // };
 
     // imageHandler
     const getProfileImageUrl = () => {
@@ -173,7 +173,12 @@ export default function UserDetails() {
                 <div className="mt-2">
                     <Chip 
                         label={role} 
-                        className={`${getRoleColor()} font-semibold`}
+                        className={`
+                            ${role === 'Admin' ? 'bg-red-100 text-red-800' : ''}
+                            ${role === 'Student' ? 'bg-blue-100 text-blue-800' : ''}
+                            ${role === 'Alumni' ? 'bg-green-100 text-green-800' : ''}
+                            font-semibold
+                        `}
                         size="small"
                     />
                 </div>
