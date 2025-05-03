@@ -322,14 +322,6 @@ export default function UsersDashboard() {
                                 </div>
 
                                 <div className="flex items-center justify-evenly gap-4 md:w-full">
-                                    <Tooltip title="Import Users from Excel" arrow>
-                                        <div>
-                                            <ActionButton title="Import" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
-                                                onClick={() => console.log("import from excel button")} borderColor="border-saitPurple" textColor="text-saitGray" 
-                                                hoverBgColor="bg-saitPurple" hoverTextColor="text-saitWhite" textSize="text-sm"
-                                            />
-                                        </div>
-                                    </Tooltip>
                                     <Tooltip title="Add User" arrow>
                                         <div>
                                             <ActionButton title="Register User" icon={<AccountCircleRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} 
@@ -338,6 +330,15 @@ export default function UsersDashboard() {
                                             />
                                         </div>
                                     </Tooltip>
+                                    <Tooltip title="Import Users from Excel" arrow>
+                                        <div>
+                                            <ActionButton title="Import" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
+                                                onClick={() => console.log("import from excel button")} borderColor="border-saitPurple" textColor="text-saitGray" 
+                                                hoverBgColor="bg-saitPurple" hoverTextColor="text-saitWhite" textSize="text-sm"
+                                            />
+                                        </div>
+                                    </Tooltip>
+  
                                 </div>
                             </div>
                         }                                            
@@ -352,6 +353,7 @@ export default function UsersDashboard() {
                                 filteredRole={roleToFilter} 
                                 fieldsByRole={fieldsByRole}
                                 reFetchUsers={fetchUserData}
+                                handleEditUser={handleEditUser}
                             />
                         )}
 

@@ -19,6 +19,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { actionAsyncStorage } from "next/dist/server/app-render/action-async-storage.external";
 
 
@@ -169,9 +170,10 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
             }
 
         } else if (task === "Edit") {
+            console.log('user role: ', userObject.role);
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userObject.user_id}`, {
-                    method: "PUT",
+                    method: "PATCH",
                     headers: { "content-type": "application/json" },
                     credentials: "include",
                     body: JSON.stringify(userData),
@@ -215,6 +217,11 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
                 return;
             }
 
+            if (!programsAndDepartmentsData || programsAndDepartmentsData.error) {
+                toast.error(programsAndDepartmentsData?.error || 'Failed to load programs data');
+                return;
+            }
+
             setProgramsOptions(programsAndDepartmentsData.map((program: any) => {
                 return {
                     id: program.program_id,
@@ -233,37 +240,103 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
     }
 
     useEffect(() => {
-        if (watchedRole === "Student" || watchedRole === "Alumni" || programsOptions.length > 0 || !programsOptions) {
+        // console.log(JSON.stringify(userObject, null, 2));
+
+        if (userObject && task === "Edit") {
+            // Set basic fields
+            const basicFields = {
+                user_id: userObject.user_id,
+                email: userObject.email,
+                first_name: userObject.first_name,
+                middle_name: userObject.middle_name,
+                last_name: userObject.last_name,
+                role: userObject.role,
+                created_at: userObject.created_at,
+                image_url: userObject.image_url,
+            };
+    
+            // Set role-specific fields
+            const roleSpecificFields: any = {};
+            if (userObject.role === "Admin") {
+                roleSpecificFields.permissions = userObject.permissions;
+
+            } else if (userObject.role === "Student") {
+                Object.assign(roleSpecificFields, {
+                    program_id: userObject.program_id,
+                    department_id: userObject.department_id,
+                    intake_year: userObject.intake_year,
+                    intake: userObject.intake,
+                    status: userObject.status
+                });
+                setIntakeYear(userObject.intake_year);
+                setIntake(userObject.intake);
+                setStatus(userObject.status);
+
+            } else if (userObject.role === "Alumni") {
+                Object.assign(roleSpecificFields, {
+                    program_id: userObject.program_id,
+                    department_id: userObject.department_id,
+                    graduation_year: userObject.graduation_year,
+                    current_position: userObject.current_position,
+                    company: userObject.company
+                });
+            }
+    
+            // Batch update form values
+            
+            setValue("role", userObject.role); // Set role first
+            setTimeout(() => { // Small delay to ensure role is set
+                Object.entries({ ...basicFields, ...roleSpecificFields }).forEach(([key, value]) => {
+                    setValue(key as any, value as any);
+                });
+            }, 100);
+        }
+
+        // if (userObject && task === "Edit") {
+
+        //     setValue("user_id", userObject.user_id);
+        //     setValue("email", userObject.email);
+        //     setValue("first_name", userObject.first_name);
+        //     setValue("middle_name", userObject.middle_name);
+        //     setValue("last_name", userObject.last_name);
+        //     setValue("role", userObject.role);
+        //     setValue("created_at", userObject.created_at);
+        //     setValue("password", userObject.password);
+        //     setValue("image_url", userObject.image_url);
+
+        //     if (userObject.role === "Admin") {
+        //         setValue("permissions", userObject.permissions);
+
+        //     } else if (userObject.role === "Student") {
+        //         setValue("program_id", userObject.program_id);
+        //         setValue("department_id", userObject.department_id);
+        //         setValue("intake_year", userObject.intake_year);
+        //         setValue("intake", userObject.intake);
+        //         setValue("status", userObject.status);
+
+        //     } else if (userObject.role === "Alumni") {
+        //         setValue("current_position", userObject.current_position);
+        //         setValue("company", userObject.company);
+
+        //         setValue("program_id", userObject.program_id);
+        //         setValue("department_id", userObject.department_id);
+        //         setValue("graduation_year", userObject.graduation_year);
+        //     }
+
+        // }
+    }, [task, userObject, programsOptions]);
+
+    useEffect(() => {
+        if (task === "Edit" && (userObject?.role === "Student" || userObject?.role === "Alumni")) {
+            fetchProgramsAndDepartmentsData();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (programsOptions.length === 0 || !programsOptions || watchedRole === "Student" || watchedRole === "Alumni") {
             fetchProgramsAndDepartmentsData();
         }
     }, [watchedRole]);
-
-
-    useEffect(() => {
-        // console.log(JSON.stringify(userObject, null, 2));
-        if (userObject && task === "Edit") {
-            setValue("user_id", userObject.user_id);
-            setValue("email", userObject.email);
-            setValue("first_name", userObject.first_name);
-            setValue("middle_name", userObject.middle_name);
-            setValue("last_name", userObject.last_name);
-            setValue("role", userObject.role);
-            setValue("created_at", userObject.created_at);
-            setValue("password", userObject.password);
-            setValue("image_url", userObject.image_url);
-            setValue("permissions", userObject.permissions);
-            setValue("program_id", userObject.program_id);
-            setValue("department_id", userObject.department_id);
-            setValue("intake_year", userObject.intake_year);
-            setValue("intake", userObject.intake);
-            setValue("status", userObject.status);
-            setValue("graduation_year", userObject.graduation_year);
-            setValue("credentials", userObject.credentials);
-            setValue("current_position", userObject.current_position);
-            setValue("company", userObject.company);
-
-        }
-    }, [actionAsyncStorage, userObject]);
 
     // useEffect(() => {
     //     console.log("Programs Options: ", programsOptions);
@@ -319,6 +392,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
                                 className="font-light w-full p-2 mb-3 border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-1 focus:ring-saitBlue focus:border-transparent"
                                 id="permissions" 
                                 {...register("permissions", { required: 'Permissions is required' })}
+                                defaultValue={userObject?.permissions || ""}
                             >
                                 <option value="">Select Permissions</option>
                                 {permissions.map((permission, index) => (
@@ -329,7 +403,7 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
                             </select>
                             {errors.role && <p className="text-red-500 text-sm">{String(errors.role.message)}</p>}
                         </div>
-                        )}
+                    )}
 
                     {watchedRole === "Student" && (
                         <div className="flex flex-wrap gap-6 w-full">
@@ -427,7 +501,24 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
                                                         option.department_id.toLowerCase().includes(searchTerm) 
                                                     );
                                                 }}
-                                                value={programsOptions.find(option => option.id === field.value) || null}
+                                                value={
+                                                    programsOptions.find(option => option.id === field.value) || 
+                                                    (userObject?.program_id && programsOptions.length > 0 ? { 
+                                                        id: userObject.program_id, 
+                                                        label: programsOptions.find(p => p.id === userObject.program_id)?.label || userObject.program_id,
+                                                        department_id: userObject.department_id,
+                                                        department_name: programsOptions.find(p => p.id === userObject.program_id)?.department_name || userObject.department_id
+                                                    } : null)
+                                                }
+                                                // value={
+                                                //     programsOptions.find(option => option.id === field.value) || 
+                                                //     (userObject?.program_id ? { 
+                                                //         id: userObject.program_id, 
+                                                //         label: userObject.program_id, 
+                                                //         department_id: userObject.department_id,
+                                                //         department_name: userObject.department_id
+                                                //     } : null)
+                                                // }
                                             />
                                         )}
                                     />
@@ -463,6 +554,8 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
                                                 {...field}
                                                 disablePortal
                                                 id="program-search"
+                                                loading={loadingPrograms}
+                                                loadingText="Loading..."
                                                 options={programsOptions}
                                                 getOptionLabel={(option) => 
                                                     option && option.label && option.id && option.department_name
@@ -536,7 +629,23 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
                                                         option.department_id.toLowerCase().includes(searchTerm) 
                                                     );
                                                 }}
-                                                value={programsOptions.find(option => option.id === field.value) || null}
+                                                value={
+                                                    programsOptions.find(option => option.id === field.value) || 
+                                                    (userObject?.program_id && programsOptions.length > 0 ? { 
+                                                        id: userObject.program_id, 
+                                                        label: programsOptions.find(p => p.id === userObject.program_id)?.label || userObject.program_id,
+                                                        department_id: userObject.department_id,
+                                                        department_name: programsOptions.find(p => p.id === userObject.program_id)?.department_name || userObject.department_id
+                                                    } : null)
+                                                }
+                                                // value={programsOptions.find(option => option.id === field.value) || null ||
+                                                //     (userObject?.program_id && {                    // Fallback to userObject if available
+                                                //         id: userObject.program_id, 
+                                                //         label: userObject.program_name, 
+                                                //         department_id: userObject.department_id,
+                                                //         department_name: userObject.department_name
+                                                //     })
+                                                // }
                                             />
                                         )}
                                     />
@@ -558,16 +667,22 @@ const UserEditor: React.FC<CreateUserProps> = ({ closeUserEditorPanel, task, reF
 
                     <div className="flex flex-row items-center justify-between w-full space-x-5">
                         {/* <div className="flex flex-row items-center justify-between w-1/3 space-x-5"> */}
-                            <Tooltip title={task === 'Create' ? 'Create User' : 'Update User'} arrow>
-                                <div>
-                                    <ActionButton title="Submit" onClick={handleSubmit((data: any) => submitForm(data))}    
-                                        textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
-                                </div>
-                            </Tooltip>
+                        {task === 'Edit' && (
                             <div>
-                                <ActionButton title="Cancel" onClick={() => closeUserEditorPanel()}
+                                <ActionButton title="Delete" onClick={() => closeUserEditorPanel()} icon={<DeleteRoundedIcon sx={{ fontSize: 20, marginRight: 1 }}/>} iconFirst={true}    
                                     textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
                             </div>
+                        )}
+                        <div className="flex flex-row space-x-4">
+                            <ActionButton title="Cancel" onClick={() => closeUserEditorPanel()}
+                                textColor="text-saitDarkRed" borderColor="border-saitDarkRed" hoverBgColor="bg-saitDarkRed" hoverTextColor="text-saitWhite"/>  
+                                                <Tooltip title={task === 'Create' ? 'Create User' : 'Update User'} arrow>
+                            <div>
+                                <ActionButton title="Submit" onClick={handleSubmit((data: any) => submitForm(data))}    
+                                    textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite" />
+                            </div>
+                        </Tooltip>
+                        </div>
                     </div>
                 </form>
             </section>

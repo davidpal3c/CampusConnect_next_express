@@ -26,7 +26,7 @@ import { UserRole } from '@/app/types/userTypes';
 
 
 
-export default function TableView({ users, filteredRole, fieldsByRole, reFetchUsers }: { users: any[]; filteredRole: UserRole; fieldsByRole: any, reFetchUsers: any }) {
+export default function TableView({ users, filteredRole, fieldsByRole, reFetchUsers, handleEditUser }: { users: any[]; filteredRole: UserRole; fieldsByRole: any, reFetchUsers: any, handleEditUser: any }) {
     
     const [combinedUsers, setCombinedUsers] = useState<any[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
@@ -291,11 +291,11 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
 
     // Base columns for the table (All users)
     const baseColumns: GridColDef[] = [
-        { field: "actions", headerName: "Actions", type: "actions", minWidth: 125, renderCell: (params: GridRenderCellParams) => {
+        { field: "actions", headerName: "Actions", type: "actions", minWidth: 100, renderCell: (params: GridRenderCellParams) => {
             const userId = params.row.user_id;
             return (
                 <div className="flex items-center justify-center w-full h-full space-x-0">
-                    <Tooltip title="Remove User" arrow>
+                    {/* <Tooltip title="Remove User" arrow>
                         <IconButton onClick={() => handleOnDelete(userId)}
                             sx={{
                                 color: '#666666',
@@ -309,9 +309,9 @@ export default function TableView({ users, filteredRole, fieldsByRole, reFetchUs
                         >
                             <DeleteRoundedIcon sx={{ fontSize: 23, color: '#666666' }}/>
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip> */}
                     <Tooltip title="Update User" arrow>
-                        <IconButton onClick={() => console.log(`Edit User ${userId}`)}
+                        <IconButton onClick={() => handleEditUser(params.row)}
                             sx={{
                                 color: '#666666',
                                 '&:hover': {

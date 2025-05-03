@@ -1,71 +1,79 @@
 "use client";
 
-// React & Next
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-
-// Components
+import Image from "next/image";
 import Loader from "@/app/components/Loader/Loader";
 import ActionButton from "@/app/components/Buttons/ActionButton";
-
-// Icons
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
-import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
-import Grid3x3Icon from "@mui/icons-material/Grid3x3";
-import SchoolIcon from "@mui/icons-material/School";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
-import GradeIcon from '@mui/icons-material/Grade';
-import WorkIcon from '@mui/icons-material/Work';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import { Tooltip } from '@mui/material';
+import {
+    ArrowBackIosRounded as BackIcon,
+    AlternateEmail as EmailIcon,
+    Grid3x3 as IdIcon,
+    School as SchoolIcon,
+    AccessTime as TimeIcon,
+    WorkspacePremium as AdminIcon,
+    Grade as GradeIcon,
+    Work as WorkIcon,
+    Edit as EditIcon
+} from "@mui/icons-material";
+import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
+import { Tooltip, IconButton, Chip } from '@mui/material';
 
 type User = {
     first_name?: string;
     last_name?: string;
     role?: string;
     email?: string;
-    imageUrl?: string;
+    image_url?: string;
     user_id?: string;
     created_at?: string;
-    Student?: { Program?: { name?: string; Department?: { name?: string } } };
-    Admin?: { permissions?: string };
-    Alumni?: { graduation_year?: string; credentials?: string; current_position?: string; company?: string };
+    Student?: {
+        Program?: {
+        name?: string;
+        Department?: {
+            name?: string;
+            department_id?: string;
+        };
+        program_id?: string;
+        };
+        intake?: string;
+        intake_year?: number;
+        status?: string;
+        student_type?: string;
+    };
+    Admin?: {
+        permissions?: string;
+    };
+    Alumni?: {
+        AlumniStudy?: Array<{
+        Program?: {
+            name?: string;
+            program_id?: string;
+        };
+        Department?: {
+            name?: string;
+            department_id?: string;
+        };
+        graduation_year?: number;
+        }>;
+        company?: string;
+        current_position?: string;
+    };
 }
 
-
 export default function UserDetails() {
-
-    // State Management
     const [user, setUser] = useState<User | null>(null);
-    const [openDialog, setOpenDialog] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
-
-    // Get the user ID from the URL
     const params = useParams();
     const id = params?.id;
 
     useEffect(() => {
-        if (id) {
-            if (typeof id === "string") {
-                fetchUserData(id);
-            }
+        if (id && typeof id === "string") {
+        fetchUserData(id);
         }
     }, [id]);
 
-
-    // Loader
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        if (user && user !== null) {
-            setIsLoading(false);
-        }
-        }, [user]);
-
-
-    // Fetch user data from the API
     const fetchUserData = async (userId: string) => {
         try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
@@ -73,150 +81,226 @@ export default function UserDetails() {
             headers: { "content-type": "application/json" },
             credentials: "include",
         });
+        
+        if (!response.ok) {
+            throw new Error("Failed to fetch user data");
+        }
+        
         const userData = await response.json();
-        setUser(userData);
-
-        console.log(userData);
+            setUser(userData);
+            setIsLoading(false);
         } catch (error) {
-        console.error("Error fetching user data:", error);
+            console.error("Error fetching user data:", error);
+            setIsLoading(false);
         }
     };
-  
-  // Display the date in a more readable format
-    const formatDate = (date: string) => new Date(date).toDateString();
 
-    if (!user) return <Loader isLoading={isLoading} />;
+    const formatDate = (date: string) => {
+        return new Date(date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    if (isLoading || !user) return <Loader isLoading={isLoading} />;
 
     const {
         first_name,
         last_name,
         role,
         email,
-        imageUrl,
+        image_url,
         user_id,
         created_at,
         Student,
         Admin,
-        Alumni,
+        Alumni
     } = user;
 
-    // Destructure role-specific fields based on the user role
-    const { Program } = Student || {};
-    const { Department } = Program || {};
-    const { graduation_year, credentials, current_position, company } = Alumni || {};
-    const { permissions } = Admin || {};
-
-
-    // Dialog Handlers
-
-    const handleOpen = () => {
-        setOpenDialog(true);
+    const getRoleColor = () => {
+        switch(role?.toLowerCase()) {
+            case 'admin': return 'bg-red-100 text-red-800';
+            case 'student': return 'bg-blue-100 text-blue-800';
+            case 'alumni': return 'bg-green-100 text-green-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
     };
 
-    const handleClose = () => {
-        setOpenDialog(false); 
-    };
-    
-    const handleSubmit = async (user: any) => {
-        setOpenDialog(false);
-        console.log(user);
+    // imageHandler
+    const getProfileImageUrl = () => {
+        if (!image_url && image_url !== '') return "/avatar-generic.jpg";
+        
+        if (image_url.includes('googleusercontent.com')) { 
+            return image_url.split('=')[0] + '=s400-c';                 // Remove any size parameters and set to 400px
+        }
+        
+        return image_url;
     };
 
     return (
-        <div className="p-4">        
-            <div className="flex justify-between items-center">
-                <Tooltip title="Back to Users" arrow>
-                    <IconButton onClick={() => router.push("/admin/users")} className="flex items-center mb-6 hover:bg-opacity-10 hover:text-saitPurple">
-                        <ArrowBackIosRoundedIcon />
-                    </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Update User Information" arrow>
-                    <div className="flex justify-between items-center">
-                        <ActionButton title="Edit User" onClick={() => console.log("Edit User")}
-                            textColor="text-saitBlue" borderColor="border-saitBlue" hoverBgColor="bg-saitBlue" hoverTextColor="text-saitWhite"/>      
-                    </div>
-                </Tooltip>
-            </div>
-
-            <div className="bg-saitWhite flex flex-col items-center justify-center p-12 rounded-lg shadow-md border border-slate-300">    
-                <div className="flex flex-row pt-20 pb-20 items-center justify-center">
-                    <div className="mr-20">
-                        {imageUrl ? (
-                            <img src={imageUrl.replace(/=s\d+-c$/, "=s400-c")} alt="User Photo" className="w-64 ml-3 mr-2 rounded-full border border-slate-500" />
-                        ) : (
-                            <img src="/face.png" alt="User Photo" className="w-64 ml-3 mr-2 rounded-full border border-slate-500" />
-                        )}
-                    </div>
-                    <div>
-                        <h1 className="text-4xl font-bold text-saitBlack mb-4">{first_name + " " + last_name}</h1>
-                        <p className="text-lg font-semibold text-saitLighterBlue">{role}</p>
-
-                        <div className="">
-                            <div className="flex flex-row space-x-4 items-center">
-                                <AlternateEmailIcon className="text-saitBlack text-4xl" />
-                                <p className="text-lg text-saitBlack underline">{email}</p>
-                            </div>
-                            <div className="flex flex-row space-x-4 items-center">
-                                <Grid3x3Icon className="text-saitBlack text-4xl" />
-                                <p className="text-lg text-saitBlack">{user_id}</p>
-                            </div>
-
-                            {/** Role Specific Fields */}
-
-                            {role == "Admin" && (
-                                <div className="flex flex-row space-x-4 items-center">
-                                    <WorkspacePremiumIcon className="text-saitBlack text-4xl" />
-                                    <p className="text-lg text-saitBlack">
-                                        Permissions: {permissions}
-                                    </p>
-                                </div>
-                            )}
-
-                            {role == "Student" && (
-                                <div className="flex flex-row space-x-4 items-center">
-                                    <SchoolIcon className="text-saitBlack text-4xl" />
-                                    <p className="text-lg text-saitBlack">
-                                        {Program?.name} - {Department?.name}
-                                    </p>
-                                </div>
-                            )}
-
-                            {role == "Alumni" && (
-                                <div className="space-y-6">
-                                    <div className="flex flex-row space-x-4 items-center">
-                                        <GradeIcon className="text-saitBlack text-4xl" />
-                                        <p className="text-lg text-saitBlack">
-                                            Graduated: {graduation_year}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex flex-row space-x-4 items-center">
-                                        <SchoolIcon className="text-saitBlack text-4xl" />
-                                        <p className="text-lg text-saitBlack">
-                                            {credentials}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex flex-row space-x-4 items-center">
-                                        <WorkIcon className="text-saitBlack text-4xl" />
-                                        <p className="text-lg text-saitBlack">
-                                            Works at: {company} as {current_position}
-                                        </p>
-                                    </div>
-
-                                </div>            
-                            )}
-                            <div className="flex flex-row space-x-4 items-center">
-                                <AccessTimeIcon className="text-saitBlack text-4xl" />
-                                <p className="text-lg text-saitBlack">Joined Campus Connect: {created_at ? formatDate(created_at) : "Unknown"}</p>
-                            </div>
-                        </div>
-                    
-                    </div>
-                </div> 
-            </div>
-
+        <div className="p-4 max-w-6xl mx-auto">
+        {/* Header with back button and edit action */}
+        <div className="flex justify-between items-center mb-8">
+            <Tooltip title="Back to Users" arrow>
+            <IconButton 
+                onClick={() => router.push("/admin/users")} 
+                className="hover:bg-slate-100"
+            >
+                <BackIcon />
+            </IconButton>
+            </Tooltip>
+            
+            <ActionButton 
+                title="Edit User" 
+                onClick={() => console.log("Edit User")}
+                icon={<EditIcon />}
+                borderColor="border-saitBlue" 
+                textColor="text-saitGray" 
+                hoverBgColor="bg-saitBlue" 
+                hoverTextColor="text-saitWhite" 
+                textSize="text-sm"
+            />
         </div>
-  );
+
+        {/* User Profile Card */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+            {/* Profile Header */}
+            <div className="bg-gradient-to-r from-slate-700 via-saitDarkPurple to-saitBlue p-6 text-white">
+            <div className="flex items-center justify-between">
+                <div>
+                <h1 className="text-3xl font-bold">{first_name} {last_name}</h1>
+                <div className="mt-2">
+                    <Chip 
+                        label={role} 
+                        className={`${getRoleColor()} font-semibold`}
+                        size="small"
+                    />
+                </div>
+                </div>
+                <div className="w-24 h-24 rounded-full border-4 border-white bg-white overflow-hidden">
+                <Image 
+                    src={getProfileImageUrl()}
+                    alt={`${first_name} ${last_name}`} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/avatar-generic.jpg";
+                    }}
+                    width={96}
+                    height={96}
+                />
+                </div>
+            </div>
+            </div>
+
+            {/* Rest of your component remains the same */}
+            {/* Profile Details */}
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Basic Info */}
+            <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Basic Information</h2>
+                <DetailItem icon={<IdIcon />} label="User ID" value={user_id} />
+                <DetailItem icon={<EmailIcon />} label="Email" value={email} isEmail />
+                <DetailItem icon={<TimeIcon />} label="Joined" value={created_at ? formatDate(created_at) : "Unknown"} />
+            </div>
+
+            {/* Role-Specific Info */}
+            <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
+                {role === 'Admin' ? 'Admin Details' : 
+                role === 'Student' ? 'Academic Information' : 
+                'Professional Information'}
+                </h2>
+
+                {role === 'Admin' && (
+                    <DetailItem 
+                        icon={<AdminIcon />} 
+                        label="Permissions" 
+                        value={Admin?.permissions || "Standard"} 
+                    />
+                )}
+
+                {role === 'Student' && (
+                    <>
+                        <DetailItem 
+                            icon={<SchoolIcon />} 
+                            label="Program" 
+                            value={Student?.Program?.name} 
+                        />
+                        <DetailItem 
+                            icon={<LocationCityRoundedIcon />} 
+                            label="Department" 
+                            value={Student?.Program?.Department?.name} 
+                        />
+                        <DetailItem 
+                            icon={<SchoolIcon />} 
+                            label="Status" 
+                            value={`${Student?.status} (${Student?.student_type})`} 
+                        />
+                        <DetailItem 
+                            icon={<SchoolIcon />} 
+                            label="Intake" 
+                            value={`${Student?.intake} ${Student?.intake_year}`} 
+                        />
+                    </>
+                )}
+
+                {role === 'Alumni' && (
+                <>
+                    {Alumni?.AlumniStudy?.map((study, index) => (
+                    <div key={index} className="space-y-2">
+                        <DetailItem 
+                            icon={<GradeIcon />} 
+                            label="Studied" 
+                            value={study.Program?.name} 
+                        />
+                        <DetailItem 
+                            icon={<GradeIcon />} 
+                            label="Graduated" 
+                            value={study.graduation_year?.toString()} 
+                        />
+                    </div>
+                    ))}
+                    <DetailItem 
+                        icon={<WorkIcon />} 
+                        label="Current Position" 
+                        value={Alumni?.current_position} 
+                    />
+                    <DetailItem 
+                        icon={<WorkIcon />} 
+                        label="Company" 
+                        value={Alumni?.company} 
+                    />
+                </>
+                )}
+            </div>
+            </div>
+        </div>
+        </div>
+    );
+    }
+
+function DetailItem({ icon, label, value, isEmail = false }: { 
+    icon: React.ReactNode, 
+    label: string, 
+    value?: string | null, 
+    isEmail?: boolean 
+}) {
+    if (!value) return null;
+
+    return (
+        <div className="flex items-start space-x-3">
+        <div className="text-saitBlue pt-1">{icon}</div>
+        <div>
+            <p className="text-sm text-gray-500">{label}</p>
+            {isEmail ? (
+            <a href={`mailto:${value}`} className="text-blue-600 hover:underline">
+                {value}
+            </a>
+            ) : (
+            <p className="font-medium text-gray-800">{value}</p>
+            )}
+        </div>
+        </div>
+    );
 }

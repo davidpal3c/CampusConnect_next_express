@@ -22,8 +22,11 @@ export default function UserItem({ userObject, handleEditUser }: UserItemProps) 
         return userObject.first_name.charAt(0).toUpperCase();
     });
 
-    const [initialLastName] = useState(() => {
-        return userObject.last_name.charAt(0).toUpperCase();
+    const [initialMiddleName] = useState(() => {
+        if (userObject.middle_name === null) {
+            return '';
+        }
+        return `${userObject.middle_name?.charAt(0).toUpperCase()}.`;
     });
 
     const [created_at] = useState(userObject.created_at);
@@ -47,7 +50,7 @@ export default function UserItem({ userObject, handleEditUser }: UserItemProps) 
                     </div>
                     <div>
                         <div className="flex items-center space-x-2">
-                            <h2 className="text-lg font-semibold group-hover:text-saitBlue">{`${userObject.first_name} ${initialLastName}. ${userObject.last_name}`}</h2>
+                            <h2 className="text-lg font-semibold group-hover:text-saitBlue">{`${userObject.first_name} ${initialMiddleName} ${userObject.last_name}`}</h2>
                             <span className={roleClass}>
                                 {userObject.role}
                             </span>
