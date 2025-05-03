@@ -160,8 +160,6 @@ export default function UsersDashboard() {
         setPanelTask('Edit');
         setSelectedUser(user);
         setIsPanelVisible(!isPanelVisible);
-
-        console.log(JSON.stringify(user, null, 2));
     };
 
     const handleCloseUserPanel = () => {
@@ -213,8 +211,6 @@ export default function UsersDashboard() {
         }
 
     }
-
-
 
     // fetch fields by role
     const fetchFieldsByRole = async (role: UserRole) => {
@@ -326,14 +322,6 @@ export default function UsersDashboard() {
                                 </div>
 
                                 <div className="flex items-center justify-evenly gap-4 md:w-full">
-                                    <Tooltip title="Import Users from Excel" arrow>
-                                        <div>
-                                            <ActionButton title="Import" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
-                                                onClick={() => console.log("import from excel button")} borderColor="border-saitPurple" textColor="text-saitGray" 
-                                                hoverBgColor="bg-saitPurple" hoverTextColor="text-saitWhite" textSize="text-sm"
-                                            />
-                                        </div>
-                                    </Tooltip>
                                     <Tooltip title="Add User" arrow>
                                         <div>
                                             <ActionButton title="Register User" icon={<AccountCircleRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} 
@@ -342,6 +330,15 @@ export default function UsersDashboard() {
                                             />
                                         </div>
                                     </Tooltip>
+                                    <Tooltip title="Import Users from Excel" arrow>
+                                        <div>
+                                            <ActionButton title="Import" icon={<SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 , marginRight: 1.2 }}/>} iconFirst={true}
+                                                onClick={() => console.log("import from excel button")} borderColor="border-saitPurple" textColor="text-saitGray" 
+                                                hoverBgColor="bg-saitPurple" hoverTextColor="text-saitWhite" textSize="text-sm"
+                                            />
+                                        </div>
+                                    </Tooltip>
+  
                                 </div>
                             </div>
                         }                                            
@@ -356,6 +353,7 @@ export default function UsersDashboard() {
                                 filteredRole={roleToFilter} 
                                 fieldsByRole={fieldsByRole}
                                 reFetchUsers={fetchUserData}
+                                handleEditUser={handleEditUser}
                             />
                         )}
 
@@ -371,7 +369,12 @@ export default function UsersDashboard() {
                             className="absolute top-0 right-0 h-auto w-full rounded-lg bg-saitWhite shadow-xl p-6 z-50"
                         >
                             <div className="">
-                                <UserEditor closeUserEditorPanel={handleCloseUserPanel} task={panelTask} reFetchUsers={fetchUserData}/>
+                                <UserEditor 
+                                    closeUserEditorPanel={handleCloseUserPanel} 
+                                    task={panelTask} 
+                                    reFetchUsers={fetchUserData}
+                                    userObject={selectedUser}
+                                />
                             </div>
                         </motion.div>
                         }

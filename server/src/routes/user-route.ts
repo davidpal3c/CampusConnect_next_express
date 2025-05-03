@@ -29,7 +29,7 @@ router.post('/', verifySession, adminRoute, validatePermissions(['Read-Write', '
 // router.patch('/:id', verifySession, validatePermissions, updateUser);
 
 // PUT /api/users/:id - Update a user by ID. This is a full update
-router.put('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), updateUser);
+router.patch('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), updateUser);
 
 // DELETE /api/users/:id - Delete a user by ID
 router.delete('/:id', verifySession, adminRoute, validatePermissions(['Full Access']), deleteUser);
