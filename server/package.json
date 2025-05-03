@@ -31,9 +31,13 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-validator": "^7.2.1",
     "firebase-admin": "^13.0.2",
+    "helmet": "^8.1.0",
     "react-hook-form": "^7.54.2",
-    "reactstrap": "^9.2.3"
+    "reactstrap": "^9.2.3",
+    "xss": "^1.0.15"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
