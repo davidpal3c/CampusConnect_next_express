@@ -42,7 +42,7 @@ export default function UsersDashboard() {
     const [originalUsers, setOriginalUsers] = useState<any []>([]);
     const [usersView, setUsersView] = useState("List");
     const [isPanelVisible, setIsPanelVisible] = useState<boolean>(false);
-    const userEditorRef = useRef(null);
+    const userEditorRef = useRef<HTMLDivElement>(null);
     const [fieldsByRole, setFieldsByRole] = useState([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -280,6 +280,16 @@ export default function UsersDashboard() {
         //     previousRoleRef.current = roleToFilter;
         // }
     }, [roleToFilter]);
+
+
+   // scroll to ArticleEditor when it is visible
+    useEffect(() => {
+        if (isPanelVisible && userEditorRef.current) {
+        userEditorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        }
+    }, [isPanelVisible]);
+    
 
     return (
         <div className="bg-saitWhite h-screen">

@@ -213,24 +213,6 @@ export default function ArticlesDashboard() {
     applySort(filtered, sortOption);
   }, [originalArticles, filterType, sortOption, searchQuery]);
 
-
-  // re-apply filtering when original articles change
-  // useEffect(() => {
-  //   if (filterType) {
-  //     handleFilterByType(filterType);
-  //   } else {
-  //     setFilteredArticles([...originalArticles]);
-  //     applySort(originalArticles, sortOption);
-  //   }
-  // }, [originalArticles]);
-
-
-  // // re-apply sorting when original articles change
-  // useEffect(() => {
-  //   if(sortOption) {
-  //     handleSort(sortOption);
-  //   };
-  // }, [originalArticles]);
   
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -272,8 +254,6 @@ export default function ArticlesDashboard() {
     { title: "Export to PDF", handler: () => console.log("Export to PDF"), icon: <BsFiletypePdf style={{ color: "#005795", fontSize: 20}} /> },
     { title: "Manage Article Types", handler: () => handleArticleTypesModalOpen(), icon: null },
   ]);
-
-
 
   // Article Types Modal
   const [openArticleTypesModal, setOpenArticleTypesModal] = useState(false);
