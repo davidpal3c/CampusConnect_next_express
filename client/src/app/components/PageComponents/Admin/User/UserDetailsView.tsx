@@ -190,19 +190,19 @@ export default function UserDetailsView() {
                     </div>
                 </div>
                 <div className="w-24 h-24 rounded-full border-4 border-white bg-white overflow-hidden">
-                <Image 
-                    src={getProfileImageUrl()}
-                    alt={`${first_name} ${last_name}`} 
-                    className="w-full h-full object-cover"
-                    width={96}
-                    height={96}
-                    priority
-                    onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.onerror = null;                                                          // Prevent infinite loop
-                        target.src = "/avatar-generic.jpg";
-                    }}
-                />
+                    <Image 
+                        src={getProfileImageUrl()}
+                        alt={`${first_name} ${last_name}`} 
+                        className="w-full h-full object-cover"
+                        width={96}
+                        height={96}
+                        priority
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null;                                                          // Prevent infinite loop
+                            target.src = "/avatar-generic.jpg";
+                        }}
+                    />
                 </div>
             </div>
             </div>
