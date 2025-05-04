@@ -47,6 +47,7 @@
     "@types/node": "^22.10.7",
     "nodemon": "^3.1.9",
     "prisma": "^6.5.0",
+    "snyk": "^1.1296.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }
