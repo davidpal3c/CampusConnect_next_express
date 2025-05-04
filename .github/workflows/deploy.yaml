@@ -4,8 +4,52 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - '**'
+      # - main
 
 jobs:
+  snyk-security:
+    name: Snyk Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Install Snyk CLI
+      run: npm install -g snyk
+
+    - name: Authenticate Snyk
+      run: snyk auth ${{ secrets.SNYK_API_KEY }}
+
+    - name: Snyk Test - Backend
+      working-directory: ./server
+      run: snyk test --severity-threshold=high
+
+    - name: Snyk Test - Frontend
+      working-directory: ./client
+      run: snyk test --severity-threshold=high
+
+    - name: Snyk IaC Test - Kubernetes Manifests
+      run: snyk iac test k8s/ --severity-threshold=high
+
+    - name: Snyk Monitor - Backend
+      if: github.ref == 'refs/heads/main'
+      working-directory: ./server
+      run: snyk monitor
+
+    - name: Snyk Monitor - Frontend
+      if: github.ref == 'refs/heads/main'
+      working-directory: ./client
+      run: snyk monitor
+
   build-and-deploy:
     name: Build & Deploy CampusConnect
     runs-on: ubuntu-latest
