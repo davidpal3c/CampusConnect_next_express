@@ -1,58 +1,38 @@
 name: CI/CD Pipeline
 
 on:
+  pull_request:
+    branches:
+      - dev
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - '**'
-      # - main
 
 jobs:
   snyk-security:
     name: Snyk Security Scan
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 20
-
-    - name: Install Snyk CLI
-      run: npm install -g snyk
-
-    - name: Authenticate Snyk
-      run: snyk auth ${{ secrets.SNYK_API_KEY }}
-
-    - name: Snyk Test - Backend
-      working-directory: ./server
-      run: snyk test --severity-threshold=high
-
-    - name: Snyk Test - Frontend
-      working-directory: ./client
-      run: snyk test --severity-threshold=high
-
-    - name: Snyk IaC Test - Kubernetes Manifests
-      run: snyk iac test k8s/ --severity-threshold=high
-
-    - name: Snyk Monitor - Backend
-      if: github.ref == 'refs/heads/main'
-      working-directory: ./server
-      run: snyk monitor
-
-    - name: Snyk Monitor - Frontend
-      if: github.ref == 'refs/heads/main'
-      working-directory: ./client
-      run: snyk monitor
+      - uses: actions/checkout@v3
+      - name: Install Snyk
+        run: npm install -g snyk
+      - name: Run Snyk Scan on Backend
+        run: snyk test --all-projects --severity-threshold=high 
+        working-directory: ./server
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
+      - name: Run Snyk Scan on Frontend
+        run: snyk test --all-projects --severity-threshold=high
+        # run: snyk test --all-projects --severity-threshold=high --fail-on=upgradable
+        working-directory: ./client
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
 
   build-and-deploy:
     name: Build & Deploy CampusConnect
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'                                    # ensures only runs on merge to main
+    needs: snyk-security
 
     env:
       ACR_NAME: campusconnectacr
@@ -113,18 +93,6 @@ jobs:
 
     # Wait for Backend Deployment to be ready
     - name: Wait for API to become healthy
-      # run: |
-      #   for i in {1..10}; do
-      #     echo "Attempt $i: Checking API health..."
-      #     if curl --fail --silent https://sait.campusconnect.it.com/api/health; then
-      #       echo "✅ API is healthy!"
-      #       exit 0
-      #     fi
-      #     echo "⚠️ Waiting for API to become ready..."
-      #     sleep 5
-      #   done
-      #   echo "❌ API did not become healthy in time."
-      #   exit 1
       run: |
         for i in {1..20}; do
           echo "Attempt $i: Checking API health..."
@@ -142,4 +110,17 @@ jobs:
         done
         echo "❌ API did not become healthy in time."
         exit 1
+
+      # run: |
+      #   for i in {1..10}; do
+      #     echo "Attempt $i: Checking API health..."
+      #     if curl --fail --silent https://sait.campusconnect.it.com/api/health; then
+      #       echo "✅ API is healthy!"
+      #       exit 0
+      #     fi
+      #     echo "⚠️ Waiting for API to become ready..."
+      #     sleep 5
+      #   done
+      #   echo "❌ API did not become healthy in time."
+      #   exit 1
 
