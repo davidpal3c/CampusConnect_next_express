@@ -5,6 +5,13 @@ CampusConnect is a full-stack web application developed for SAIT's International
 ## 🌐 Live Production (Testing)
 **URL**: [https://sait.campusconnect.it.com](https://sait.campusconnect.it.com)
 
+
+## 📦 Versioning & Updates
+- **v1.1.0** - *[April 2025]*  
+  🔐 **Security Update**: Integrated [Snyk](https://snyk.io) into GitHub Actions pipeline for vulnerability scanning of both frontend and backend apps.  
+  🛠 Enhanced deployment gating logic to separate dev and production updates.
+
+
 ## Explore Documentation and Charts
 [Application Overview](documentation/application-overview.md) <br>
 [Application Overview Diagram](documentation/charts/app-overview-chart.md)<br>
@@ -26,9 +33,19 @@ CampusConnect is a full-stack web application developed for SAIT's International
 - **Ingress Controller**: NGINX
 - **Authentication**: Firebase (Google & Microsoft SSO)
 
+
 ## 🔐 Secrets & Configuration Management
 - ConfigMaps & Secrets externalizing configuration from containers. 
 - Sensitive manifests (like `*-secret.yaml`) are **not** committed to the repo and must be applied manually.
+
+## 🔒 Security & Vulnerability Scanning
+Snyk has been integrated into the CI/CD pipeline to provide automated vulnerability scanning of application dependencies.
+
+- **On every pull request to `dev`**: Scans both backend and frontend, non-blocking (informational).
+- **On every push to `main`**: Enforces blocking security scans (fails on high-severity vulnerabilities).
+- 🔁 Continuous monitoring through the [Snyk Dashboard](https://snyk.io).
+
+All scans are performed pre-deployment and help ensure compliance with secure software development practices.
 
 ## 🛠️ In Progress
 - User Notifications
