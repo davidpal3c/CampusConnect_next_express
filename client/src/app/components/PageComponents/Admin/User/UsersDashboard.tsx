@@ -27,7 +27,7 @@ import { Tooltip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // types
-import { UserRole } from "@/app/types/userTypes";
+import { UserRole } from "@/app/types/User/userTypes";
 
 
 export default function UsersDashboard() {

@@ -22,7 +22,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
 // types
-import { UserRole } from '@/app/types/userTypes';
+import { UserRole } from '@/app/types/User/userTypes';
 
 
 

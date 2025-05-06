@@ -6,13 +6,17 @@ import Link from "next/link";
 
 import { fetchArticleById } from "../../../../api/users/articles";
 import ArticlesLayout from "../ArticlesLayout";
-import { ArticleInterface } from "../../../../api/users/props";
 import { useArticlesContext} from "@/app/_utils/articles-context";
 import { useUserData } from "@/app/_utils/userData-context";
 import { toast } from "react-toastify";
 
 import Loader from "@/app/components/Loader/Loader";
 import DOMPurify from "dompurify";
+
+// Types 
+import { User } from "@/app/types/User/userTypes";
+import { Article } from "@/app/types/Article/articleTypes";
+import { Department } from "@/app/types/Student/studentTypes";
 
 
 const ArticleContent = () => {
@@ -21,10 +25,22 @@ const ArticleContent = () => {
 
     // Context
     const { allArticles, articleTypes } = useArticlesContext();
-    const { userData } = useUserData();
-    const { Program: { Department: { department_id: departmentId, name: departmentName } = {} } = {} } = userData?.user || {};
-    
+    const { userData } = useUserData() as { userData: { user: User }; };
+    const fixedUser = {
+        ...userData?.user,
+        ...(userData?.user.Student
+          ? { Program: userData.user.Student.Program }
+          : {}),
+      };
+      
+      const { 
+        Program: { 
+          Department: { department_id: departmentId, name: departmentName } = {} 
+        } = {} 
+      } = fixedUser || {};
 
+    console.log(departmentId);
+      
     // State Management
     const [article, setArticle] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -106,8 +122,8 @@ const ArticleContent = () => {
 
                     <div className="flex flex-col mt-4">
                         {allArticles
-                            .filter((a: ArticleInterface) => a.article_id !== article_id && a.type.name === typeName)
-                            .map((a: ArticleInterface) => (
+                            .filter((a: Article) => a.article_id !== article_id && a.type.name === typeName)
+                            .map((a: Article) => (
                                 <Link key={a.article_id} href={`/user/articles/${a.article_id}`} passHref 
                                     className="flex flex-col mb-4 p-4 rounded-lg hover:bg-gray-100 transition duration-200 cursor-pointer">
                                     
@@ -121,24 +137,27 @@ const ArticleContent = () => {
                     <h2 className="text-2xl font-bold text-gray-900 border-b pb-2 mt-6">Articles Tailored to Your School</h2>
 
                     <div className="flex flex-col mt-4">
-                        {allArticles
-                            .filter((a: ArticleInterface) => 
-                                a.article_id !== article_id && 
-                                Array.isArray(a.audience.departments) && // Check if it's an array
-                                a.audience.departments.some(department => department.department_id === departmentId)
-                            )
-                            .map((a: ArticleInterface) => (
+                    {allArticles
+                        .filter((a: Article) => 
+                            a.article_id !== article_id && 
+                            Array.isArray(a.audience.departments) &&
+                            a.audience.departments.some((department: any) => {
+                                return department.department_id === departmentId;
+                            })
+                        )
+                        .map((a: Article) => (
                             <Link 
-                                key={a.article_id} 
-                                href={`/user/articles/${a.article_id}`} 
-                                passHref 
-                                className="flex flex-col mb-4 p-4 rounded-lg hover:bg-gray-100 transition duration-200 cursor-pointer"
+                            key={a.article_id} 
+                            href={`/user/articles/${a.article_id}`} 
+                            passHref 
+                            className="flex flex-col mb-4 p-4 rounded-lg hover:bg-gray-100 transition duration-200 cursor-pointer"
                             >
                                 <p className="text-lg font-semibold text-gray-900">{a.title}</p>
                                 <p className="text-sm text-gray-500 mt-1">Author: {a.author}</p>
                             </Link>
-                            ))
-                        }
+                        ))
+                    }
+
                     </div>
                 </div>
             </aside>

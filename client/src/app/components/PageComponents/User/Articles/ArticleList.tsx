@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { ArticleCard, ArticleFeaturedCard } from "./ArticleCards";
-import { ArticleInterface } from "@/app/api/users/props";
+import { Article } from "@/app/types/Article/articleTypes";
 
-export default function ArticleList({ articles }: { articles: ArticleInterface[] }) {
+export default function ArticleList({ articles }: { articles: Article[] }) {
 
     const mostRecentArticle = articles.reduce((latest, article) =>
-        new Date(article.created_at) > new Date(latest.created_at) ? article : latest,
+        new Date(article.datePublished ?? article.created_at) > new Date(latest.datePublished ?? latest.created_at)
+          ? article
+          : latest,
         articles[0]
-    );
+      );
+      
 
     return (
         <div className="py-6 space-y-8">

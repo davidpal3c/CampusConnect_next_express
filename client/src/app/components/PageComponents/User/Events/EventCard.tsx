@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-import { EventInterface } from "@/app/api/users/props";
+import { Event } from "@/app/types/Event/eventTypes";
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { getTime, formatToLongDate } from '@/app/_utils/dateUtils';
 
-export default function EventCard(props: EventInterface) {
+export default function EventCard(props: Event) {
   const { event_id, name, date, location, capacity, current_attendees } = props;
 
   const readableDate = formatToLongDate(date);

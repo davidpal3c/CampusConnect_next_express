@@ -1,14 +1,14 @@
 "use client";
 
-import { ArticleInterface } from "@/app/api/users/props";
+import { Article } from "@/app/types/Article/articleTypes";
 import Link from "next/link";
 
-export function ArticleCard(props: ArticleInterface) {
-    let { article_id, title, author, type_id, datePublished, imageUrl } = props;
+export function ArticleCard(props: Article) {
+    let { article_id, title, author, type_id, datePublished, imageUrl, created_at } = props;
 
-  datePublished = new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(
-    new Date(datePublished)
-  );
+    datePublished = new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(
+        new Date(datePublished ?? created_at)
+    );
 
     return (  
         <div className="border-gray-100 rounded-2xl shadow-lg border-2 transition-transform transform hover:scale-[1.03] hover:shadow-xl overflow-hidden">
@@ -30,12 +30,12 @@ export function ArticleCard(props: ArticleInterface) {
     );
 }
 
-export function ArticleFeaturedCard(props: ArticleInterface) {
-    let { article_id, title, author, type, datePublished, imageUrl, content } = props;
+export function ArticleFeaturedCard(props: Article) {
+    let { article_id, title, author, type_id, datePublished, imageUrl, content, created_at } = props;
 
     const wordCount = content.split(" ").length;
     const readingTime = Math.ceil(wordCount / 200);
-    const formattedDate = new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(new Date(datePublished));
+    const formattedDate = new Intl.DateTimeFormat("en-US", { timeZone: "UTC" }).format(new Date(datePublished ?? created_at));
     const shortContent = wordCount > 50 ? content.split(" ").slice(0, 50).join(" ") + "..." : content;
 
     return (

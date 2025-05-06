@@ -1,5 +1,6 @@
 import { useUserAuth } from "@/app/_utils/auth-context";
 import { useUserData } from "@/app/_utils/userData-context";
+import { User } from "@/app/types/User/userTypes";
 import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
@@ -21,7 +22,7 @@ type HeaderProps = {
 export default function Header({ handleSidebarToggle, shouldShowButton }: HeaderProps) {
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
-    const { userData } = useUserData();
+    const { userData } = useUserData() as { userData: User };
     const [avatarImg, setAvatarImg] = useState<string | null>(null);
     const router = useRouter();
 

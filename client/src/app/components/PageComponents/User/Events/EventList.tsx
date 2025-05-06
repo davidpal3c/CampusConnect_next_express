@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import EventCard from "./EventCard";
-import { EventInterface } from "@/app/api/users/props";
+import { Event } from "@/app/types/Event/eventTypes";
 import Loader from "@/app/components/Loader/Loader";
 
-export default function EventList({ events }: { events: EventInterface[] }) {
+export default function EventList({ events }: { events: Event[] }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [audienceFilter, setAudienceFilter] = useState("All");

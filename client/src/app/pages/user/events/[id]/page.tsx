@@ -99,7 +99,7 @@ const EventDetails = () => {
 
                     <a
                     href={googleCalendarUrl}
-
+                    target="_blank"
                     className="mt-6 inline-flex items-center px-4 py-2 bg-saitWhite border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition"
                     >
                     <img

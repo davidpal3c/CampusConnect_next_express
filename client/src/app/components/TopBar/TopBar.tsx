@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { useUserAuth } from "@/app/_utils/auth-context";
 import { useUserData } from "@/app/_utils/userData-context";
 import { useRouter } from "next/navigation";
-
+import { User } from "@/app/types/User/userTypes"
+ 
 import { TopBarButton } from "./TopBarButtons";
 import Loader from "../Loader/Loader";
 import TopBarNavigator from "./TopBarNavigator";
@@ -13,10 +14,11 @@ import { Menu, MenuItem } from "@mui/material";
 
 export default function TopNavBar() {
     const router = useRouter();
-    const { userData, loadingUser } = useUserData();
+    const { userData, loadingUser } = useUserData() as { userData: { user: User }; loadingUser: boolean };
+    const user = userData?.user as User;  
     const { authUserLoading, signOutAll } = useUserAuth();
-    const image_url = userData?.user.image_url || "/avatar-generic.jpg";
-    const user_id = userData?.user.user_id;    
+    const image_url = user?.image_url || "/avatar-generic.jpg";
+    const user_id = user?.user_id;    
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget);

@@ -3,13 +3,17 @@ import { useUserData } from "@/app/_utils/userData-context";
 import Image from "next/image";
 import { useState } from "react";
 
+// Types
+import { User } from "@/app/types/User/userTypes";
+
 export default function Profile() {
-  const { userData } = useUserData();
+  const { userData } = useUserData() as { userData: User };
+
   let image = userData?.image_url;
   let firstName = userData?.first_name;
   let lastName = userData?.last_name;
   let email = userData?.email;
-  let program = userData?.studentFields.Program.name;
+  let program = userData?.Student?.Program?.name; 
   const [isEditable, setIsEditable] = useState(false);
 
   return (    

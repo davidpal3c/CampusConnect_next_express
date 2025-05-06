@@ -25,6 +25,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 
+// Types
+import { User } from "@/app/types/User/userTypes";
+
 type CreateArticleProps = { 
     closeOnClick?: any,
     action: string,
@@ -38,7 +41,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
 
     const { articleTypesData } = useArticleTypes();
 
-    const { userData } = useUserData();
+    const { userData } = useUserData() as { userData: User };
     const [ userFullName, setUserFullName ] = useState("");
     const [contentMode, setContentMode] = useState("simplified");   
     const [articleContent, setArticleContent] = useState("");

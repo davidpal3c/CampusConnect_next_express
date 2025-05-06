@@ -19,7 +19,7 @@ import EditRoundedIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Tooltip } from "@mui/material";
 import { motion, AnimatePresence } from 'framer-motion';
-import { Article } from "@/app/types/articleTypes";
+import { Article } from "@/app/types/Article/articleTypes";
 
 type ArticleDetailedProps = {
     articlesData: Article[];

@@ -4,8 +4,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import ArticleList from "@/app/components/PageComponents/User/Articles/ArticleList";
 import { useArticlesContext } from "@/app/_utils/articles-context";
 import ArticlesLayout from "./ArticlesLayout";
-import { ArticleTypeInterface } from "../../../api/users/props";
 import ArticleTypeButton from "@/app/components/PageComponents/User/Articles/ArticleTypeButton";
+
+// Types 
+import { Article, ArticleType, allArticlesType } from "@/app/types/Article/articleTypes";
 
 type TypesCount = {
   [key: string]: number;
@@ -25,12 +27,12 @@ const Articles = () => {
     }
   }, [allArticles, articleTypes]);
 
-  const getArticleCountsByType = (allArticles: any, articleTypes: any) => {
+  const getArticleCountsByType = (allArticles: Article[], articleTypes: ArticleType[]) => {
     const countsByType = new Map();
-    articleTypes.forEach((type: any) => {
+    articleTypes.forEach((type) => {
       countsByType.set(type.type_id, 0);
     });
-    allArticles.forEach((article: any) => {
+    allArticles.forEach((article) => {
       const typeId = article.type_id;
       if (countsByType.has(typeId)) {
         countsByType.set(typeId, countsByType.get(typeId) + 1);
@@ -45,8 +47,8 @@ const Articles = () => {
 
   const filteredArticles = useMemo(() => {
     if (typeName === "All Articles") return allArticles;
-    const selectedType = articleTypes.find((t) => t.name === typeName);
-    return selectedType ? allArticles.filter(article => article.type_id === selectedType.type_id) : [];
+    const selectedType = articleTypes.find((t: ArticleType) => t.name === typeName);
+    return selectedType ? allArticles.filter((article: Article) => article.type_id === selectedType.type_id) : [];
   }, [typeName, allArticles, articleTypes]);
 
   const skeletonArray = Array(4).fill(null);
@@ -72,8 +74,8 @@ const Articles = () => {
       ) : (
         <>
           <div className="flex flex-wrap gap-2 mb-8">
-            <ArticleTypeButton articleType={{ type_id: 0, name: "All Articles" }} type={typeName} setType={setTypeName} />
-            {articleTypes.map((articleType: ArticleTypeInterface) => (
+            <ArticleTypeButton articleType={allArticlesType}  type={typeName} setType={setTypeName} />
+            {articleTypes.map((articleType: ArticleType) => (
               articleCounts[articleType.type_id] > 0 && (
                 <ArticleTypeButton
                   key={articleType.type_id}

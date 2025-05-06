@@ -7,26 +7,30 @@ import Image from "next/image";
 import { useUserData } from "@/app/_utils/userData-context";
 import { useUserAuth } from "@/app/_utils/auth-context";
 
-import UserPageMenu from "@/app/components/PageComponents/User/UserPageMenu";
 import OverViewCard from "@/app/components/PageComponents/User/Dashboard/OverviewCard";
 import EventCard from "@/app/components/PageComponents/User/Events/EventCard";
 import { ArticleCard } from "@/app/components/PageComponents/User/Articles/ArticleCards";
 import Loader from "@/app/components/Loader/Loader"; 
 
 import { fetchRecentArticles, fetchRecentEvents } from "./dashboardFetch";
-import { EventInterface, ArticleInterface } from "@/app/api/users/props";
 
 import { toast } from "react-toastify";
 
+// Types
+import { Article } from "@/app/types/Article/articleTypes";
+import { Event } from "@/app/types/Event/eventTypes";
+import { User } from "@/app/types/User/userTypes";
+
+
 export default function UserPage() {
   const router = useRouter();
-  const { userData } = useUserData();
+  const { userData } = useUserData() as { userData: { user: User }};
   const { authUserLoading, user } = useUserAuth();
 
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [articles, setArticles] = useState<ArticleInterface[]>([]);
-  const [events, setEvents] = useState<EventInterface[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     setIsClient(true);
