@@ -14,7 +14,7 @@ import AudienceSelectionModal from '@/app/components/PageComponents/Admin/Articl
 import CriteriaAccordion from './CriteriaAccordion';
 import { uploadImage } from '@/app/api/upload-image'
 import { toast } from "react-toastify";
-
+import { UserData } from '@/app/types/userTypes';
 //mui
 import CloseIcon from '@mui/icons-material/Close';
 import { Tooltip } from '@mui/material';
@@ -38,7 +38,7 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
 
     const { articleTypesData } = useArticleTypes();
 
-    const { userData } = useUserData();
+    const { userData }: { userData: UserData } = useUserData();
     const [ userFullName, setUserFullName ] = useState("");
     const [contentMode, setContentMode] = useState("simplified");   
     const [articleContent, setArticleContent] = useState("");
@@ -312,9 +312,10 @@ const ArticleEditor: React.FC<CreateArticleProps> = ({ closeOnClick, action, art
         setTimeout(() => setShowAccordion(true), 0);       
     }, [articleObject]);
 
-    useEffect(() => {
-        console.log("Article Object: ", articleObject);
-    }, []);
+    // useEffect(() => {
+    //     // console.log("Article Object: ", articleObject);
+    //     console.log("Audience Criteria: ", audienceCriteria);   
+    // }, [audienceCriteria]);
 
     return(
         <main className="h-full w-full">

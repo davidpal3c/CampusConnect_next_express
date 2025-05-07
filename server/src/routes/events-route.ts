@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { verifySession, validatePermissions } from '../middleware/user-middleware';
 import { adminRoute } from '../middleware/user-middleware';
 import { getUserId } from '../middleware/events-middleware';
-import { getAllEvents, getEventById, getMyEvents, getEventsByHost, getEventAttendees, 
+import { getAllEvents, getEventById, getMyEvents, getRecentEvents ,getEventsByHost, getEventAttendees, 
     createEvent, registerForEvent, updateEvent, updateEventFull, deleteEvent, 
     unregisterForEvent } from '../controllers/events-controller';
 
@@ -12,14 +12,17 @@ const router = express.Router();
 // GET /api/events/ - Get all events
 router.get('/', verifySession, getAllEvents);
 
-// GET /api/events/:id - Get event by ID
-router.get('/:id', verifySession, getEventById);   
-
 // GET /api/events/me - Get user rsvp events
 router.get('/me', verifySession, getMyEvents);
 
+// GET /api/events/recent - Get recent events
+router.get('/recent/', verifySession, getRecentEvents);
+
 // GET /api/events/host/ - Get all events by host
 router.get('/host/', verifySession, getEventsByHost);
+
+// GET /api/events/:id - Get event by ID
+router.get('/:id', verifySession, getEventById);   
 
 // GET /api/events/:id/attendees - Get all attendees(data) for an event
 router.get('/:id/attendees', verifySession, adminRoute, getEventAttendees);

@@ -18,7 +18,7 @@ export default function ArticleCard({ article } : { article: any }) {
         }
     }
 
-    const [articleTitleReduced] = useState(truncateText(article.title, 36) || "Title not available");
+    const [articleTitleReduced] = useState(truncateText(article.title, 32) || "Title not available");
     const [articleAuthorReduced] = useState(truncateText(article.author, 25) || "Author not available");
     const [ref, isVisible] = useLazyLoad(); 
 
@@ -31,7 +31,7 @@ export default function ArticleCard({ article } : { article: any }) {
                             {article ? (
                                 <Image
                                     ref={ref as MutableRefObject<HTMLImageElement | null>}
-                                    src={article.imageUrl}
+                                    src={article.imageUrl || '/img_placeholder.png'}
                                     alt={`${article.title}-image` || "Placeholder image"}
                                     className="object-cover w-full h-full overflow-hidden"
                                     width={300}
@@ -63,7 +63,7 @@ export default function ArticleCard({ article } : { article: any }) {
                         </div>
                         <div className="flex flex-col h-16 ">
                             <div className="flex justify-between items-center mt-2">
-                                <h2 className="text-lg font-bold flex flex-wrap">{articleTitleReduced}</h2>
+                                <h2 className="text-md font-bold flex flex-wrap">{articleTitleReduced}</h2>
                                 <p className="text-sm text-gray-600">{dateReadable}</p>
                             </div>
                         </div>

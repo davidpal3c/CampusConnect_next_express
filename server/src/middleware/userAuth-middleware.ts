@@ -22,6 +22,7 @@ declare module 'express-serve-static-core' {
 }
 
 export const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+
     try {
         // firebase initialization
         initializeFirebaseAdmin();
@@ -40,9 +41,9 @@ export const protectRoute = async (req: AuthenticatedRequest, res: Response, nex
         req.user = { decodedToken: decodedToken };                             
         next();
     } catch (error: any) {
+        console.error('Protect Route error: ', error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error', error: error.message });
         return;
-        // return res.redirect(`${process.env.CLIENT_ORIGIN}/admin/login`);
     }
 }
 
@@ -79,6 +80,12 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
                     }
                 }
             });
+
+            if (!studentFields) {
+                console.error("Student fields not found for user", email);
+                res.status(404).json({ status: 'error', message: 'Student profile incomplete. Contact support.' });
+                return;
+            }
             
             req.user = { ...req.user, dbUser: user, studentFields: studentFields };
 
@@ -108,11 +115,16 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
                 } 
             });
         
-            // console.log("Alumni Fields: ", alumniFields);
+            if (!alumniFields) {
+                console.error("Alumni fields not found for user", email);
+                res.status(404).json({ status: 'error', message: 'Alumni profile incomplete. Contact support.' });
+                return;
+            }
         
             req.user = { ...req.user, dbUser: user, alumniFields: alumniFields };
 
         } else {
+            console.error(`User role not matched. Role received: ${user?.role}`);
             res.status(403).json({
                 status: 'error',
                 message: 'Forbidden Access: User role not found. Please contact support.' 
@@ -130,6 +142,7 @@ export const userRoute = async (req: AuthenticatedRequest, res: Response, next: 
 }
 
 export const setCustomClaims = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    
     try {
         const { decodedToken, dbUser } = req.user;
 
@@ -161,7 +174,7 @@ export const setUserImage = async (req: AuthenticatedRequest, res: Response, nex
 
         if (storedPicture?.image_url === picture) {
             // console.log("User image already set:", storedPicture?.image_url);
-            next();
+            return next();
         }
         
         await prisma.user.update({

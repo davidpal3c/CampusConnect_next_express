@@ -3,20 +3,22 @@ import HomeIcon from '@mui/icons-material/Home';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import SchoolIcon from '@mui/icons-material/School';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
-const ICON_MAP: Record<ArticleType["name"], React.ComponentType<{ className?: string }>> = {
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  "All Articles": LibraryBooksIcon,
   "Pre-Arrival": FlightLandIcon,
   "News": NewspaperIcon,
-  "General Information": HomeIcon,
-  "Campus Information": SchoolIcon
+  "General": HomeIcon,
+  "Campus": SchoolIcon
 };
 
 type ArticleType = {
-  type_id: string; 
-  name: string; 
-  created_at: string; 
-  updated_at: string; 
-  isDefault: boolean; 
+  type_id?: string; 
+  name?: string; 
+  created_at?: string; 
+  updated_at?: string; 
+  isDefault?: boolean; 
 };
 
 
@@ -27,18 +29,22 @@ type ArticleTypeButtonProps = {
   };
 
 export default function ArticleTypeButton({ articleType, type, setType }: ArticleTypeButtonProps) {
-  const Icon = ICON_MAP[articleType.name] || InfoIcon; // Default icon for unknown types
-
+  const Icon = ICON_MAP[articleType.name ?? ""] || InfoIcon;
+  
   return (
     <button
-      key={articleType.type_id}
-      onClick={() => setType(articleType.name)}
-      className={`flex items-center gap-2 ${
-        articleType.name === type ? "bg-saitLightBlue text-saitWhite" : "bg-white text-saitLightBlue"
-      } text-saitLightBlue border-saitLightBlue border-[1px] px-4 py-2 rounded-md shadow-md`}
+      onClick={() => setType(articleType.name ? articleType.name : "")}
+      className={`flex items-center gap-2
+        ${articleType.name === type ? "bg-saitLightBlue text-saitWhite" : "bg-white text-saitLightBlue"}
+      border-saitLightBlue border px-3 py-2 rounded-md shadow-md
+        text-sm sm:text-base
+        whitespace-nowrap
+        transition-all duration-200 ease-in-out
+      `}
     >
-      <Icon className="size-5" /> 
+      <Icon className="size-4 sm:size-5" />
       {articleType.name}
     </button>
-  );
-}
+    );
+  }
+  

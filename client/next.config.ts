@@ -3,10 +3,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      'i.ibb.co',
-      'lh3.googleusercontent.com', // if using Google Auth
-    ],
+    // domains: [
+    //   'i.ibb.co',
+    //   'lh3.googleusercontent.com', // if using Google Auth
+    // ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -15,12 +15,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'i.ibb.co', 
+        pathname: '/**',
+        // pathname: '/a/**'
       },
-    ]
+    ],
+    minimumCacheTTL: 86400, 
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   async rewrites() {
     return [
@@ -41,9 +47,11 @@ const nextConfig: NextConfig = {
 
       // User pages
       { source: '/user/events', destination: '/pages/user/events'},
+      { source: '/user/events/:id', destination: '/pages/user/events/:id'},
       { source: '/user/groups', destination: '/pages/user/groups'},
       { source: '/user/articles', destination: '/pages/user/articles'},
       { source: '/user/articles/:id', destination: '/pages/user/articles/:id'},
+      { source: '/user/profile', destination: '/pages/user/profile'}
     ];
   },
 

@@ -11,17 +11,18 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Image from 'next/image';
 import { Tooltip } from "@mui/material";
-
+import { UserData } from "@/app/types/userTypes";
 
 type HeaderProps = {
     handleSidebarToggle: () => void;
     shouldShowButton: boolean;
 }
 
+
 export default function Header({ handleSidebarToggle, shouldShowButton }: HeaderProps) {
 
     const { user, authUserLoading, signOutFirebase, signOutAll } = useUserAuth();
-    const { userData } = useUserData();
+    const { userData }: { userData: UserData } = useUserData();
     const [avatarImg, setAvatarImg] = useState<string | null>(null);
     const router = useRouter();
 
@@ -41,7 +42,6 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
 
         try {
             await signOutAll();
-            // await signOutFirebase();
             router.push("/admin/login");
         } catch (err) {
             console.log("Sign Out error:", err);
@@ -54,9 +54,6 @@ export default function Header({ handleSidebarToggle, shouldShowButton }: Header
         }
     }, [user, userData]);
 
-    useEffect(() => {
-        console.log("User: ", user);
-    }, [user]);
 
     return (
         <header className="flex justify-between items-center h-[3.5rem] md:h-16 p-2 -mt-2 w-full">

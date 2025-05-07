@@ -3,7 +3,7 @@ import ActionButton from "@/app/components/Buttons/ActionButton";
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { toast } from "react-toastify";
-import { deleteUsersByIds } from "@/app/api/admin/users/user";
+import { deleteUsersByIds } from "@/app/api/admin/users";
 
 
 type UserDeleteMultipleModalProps = {
@@ -53,10 +53,10 @@ export default function UserDeleteMultipleModal({ usersData, userIds, noEditor, 
         // closeArticleEditor();
     };
     
-    useEffect(() => {
-        console.log('selected rows: ', usersData);
-        console.log('selected rows IDs: ', userIds);
-    }, [userIds, usersData]);
+    // useEffect(() => {
+    //     console.log('selected rows: ', usersData);
+    //     console.log('selected rows IDs: ', userIds);
+    // }, [userIds, usersData]);
 
     return(
         <Modal 
@@ -73,7 +73,7 @@ export default function UserDeleteMultipleModal({ usersData, userIds, noEditor, 
                 <div className="flex flex-col items-center justify-center p-4 my-2">    
                     <p className="text-center">Are you sure you want to delete {userIds.length > 1 ? ('these users?') : ('this user?')}</p>
                     <div className="flex flex-col items-center justify-center w-full mt-4">
-                        {userIds.length > 1 ? <p className="text-center font-semibold italic text-sm mb-2">You are about to delete <span className='text-lg text-red-500'>{userIds.length}</span> articles.</p> : null}    
+                        {userIds.length > 1 ? <p className="text-center font-semibold italic text-sm mb-2">You are about to delete <span className='text-lg text-red-500'>{userIds.length}</span> users.</p> : null}    
                         {usersData.map((data, index) => {
                             return (
                                 <p key={index} className="text-center italic text-sm text-color-500">

@@ -271,7 +271,7 @@ const Events = () => {
   }
 
   return (
-    <main className="bg-saitWhite h-screen p-4 xl:pr-8">
+    <main className="flex flex-col items-center justify-center p-4">
       <div>
       <header className="flex flex-col items-center justify-between border-b-2 border-saitBlack pb-3 lg:flex-row md:space-y-3 xs:space-y-3"> 
         <h1 className="text-2xl font-bold">Events</h1>

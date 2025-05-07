@@ -37,3 +37,32 @@ export const formatToDateTime = (isoString: string) => {
 
     return `${month} ${day}, ${year} - ${time}`; 
 }   
+
+export const formatToLongDate = (isoString: string) => {
+    const date = new Date(isoString);
+    return new Intl.DateTimeFormat("en-US", {
+        dateStyle: "long", 
+    }).format(date)};
+
+export const getTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true, 
+  }).format(date)};
+
+
+export const formatDateForCalendar = (isoString: string) => {
+    const start = new Date(isoString);
+    const end = new Date(start.getTime() + 60 * 60 * 1000); 
+
+    const toCalFormat = (date: Date) => {
+        return date.toISOString().replace(/[-:]|\.\d{3}/g, "").slice(0, 15);
+    };
+
+    return {
+        start: toCalFormat(start),
+        end: toCalFormat(end),
+    };
+};

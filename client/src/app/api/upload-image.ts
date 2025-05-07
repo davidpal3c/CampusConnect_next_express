@@ -32,12 +32,12 @@ export const uploadImage = async(file: File) => {
         const responseData = await response.json();
 
         if(!response.ok) {
-            console.log("Error uploading image: ", responseData);
-            console.error("An error occurred uploading image");
+            // console.log("Error uploading image: ", responseData);
+            console.error("An error occurred uploading image", responseData.error?.message || 'Image upload failed');
             return { error: responseData.error?.message || 'Image upload failed' };
         }
 
-        console.log("Image upload response: ", responseData)
+        // console.log("Image upload response: ", responseData)
         if (responseData.success) {
             return responseData.data.url;    
                   

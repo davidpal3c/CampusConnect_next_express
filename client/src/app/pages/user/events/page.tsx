@@ -1,65 +1,61 @@
 "use client";
-import EventListCard from "@/app/components/PageComponents/User/Events/EventListCard";
+
+import { useEffect, useState } from "react";
+import EventList from "@/app/components/PageComponents/User/Events/EventList";
 import UserPageMenu from "@/app/components/PageComponents/User/UserPageMenu";
+import { fetchEvents } from "@/app/api/users/events"; 
 
 export default function Events() {
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      const fetchedEvents = await fetchEvents();
+      if (fetchedEvents) {
+        setEvents(fetchedEvents);
+      }
+      setIsLoading(false);
+    };
+
+    loadEvents();
+  }, []);
+
   function onClickAllEvents() {
-    // TODO
+    // TODO: 
   }
 
   function onClickMyEvents() {
-    // TODO
+    // TODO: 
   }
 
   function onClickMyCalendar() {
-    // TODO
+    // TODO: 
   }
-  const testEvents = [
-    {
-      title: "Applied Technology Seminar",
-      date: "March 18, 2025",
-      location: "NN 108, Senator Burns Building | SAIT Main Campus",
-      image: "/seminar.jpg",
-      text: "Join us for an exclusive and insightful Technology Seminar where leading industry experts will share groundbreaking innovations, emerging trends, and in-depth analyses of the latest advancements shaping the ever-evolving tech landscape.",
-    },
-    {
-      title: "Zen Den | Origami workshop",
-      date: "March 19, 2025",
-      location: "MB 328 - Student Zen Den - Stan Grad",
-      image: "/origami.jpg",
-      text: "Relax and recharge by crating beautiful paper designs in this meditative workshop. Whether you're a beginner or an experienced artist, this session offers a serene environment to explore creativity through intricate paper designs.",
-    },
-    {
-      title: "Drop in and Learn - Exam Writing Skills",
-      date: "March 18, 2025",
-      location: "CA 121 - Aldred Centre | SAIT Main Campus",
-      image: "/exam.jpg",
-      text: "Visit us for a friendly chat with a fellow SAIT student about improving writing and presentation skills. Our peer writing specialist is knowledgeable in report writing, essay writing, planning assignments, presentation skills, and much more.",
-    },
-  ];
+
   return (
-    <div className="flex-col">
-      <div className="ml-6 my-4 flex">
-        <UserPageMenu
-          menuItems={[
-            { title: "All Events", onClick: onClickAllEvents },
-            { title: "My Events", onClick: onClickMyEvents },
-            { title: "My Calendar", onClick: onClickMyCalendar },
-          ]}
-        />
-      </div>
-      <div className="flex flex-col justify-center items-center gap-4">
-        {testEvents.slice(0, 3).map((event, index) => (
-          <EventListCard
-            key={index}
-            title={event.title}
-            date={event.date}
-            location={event.location}
-            image={event.image}
-            text={event.text}
-          />
-        ))}
-      </div>
+    <div className="flex-col px-6 py-4">
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <EventCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : (
+        <EventList events={events} />
+      )}
+    </div>
+  );
+}
+
+// TO DO: Move to a folder with the articles one
+
+const EventCardSkeleton = () => {
+  return (
+    <div className="animate-pulse p-4 border rounded-lg shadow-sm bg-white space-y-4">
+      <div className="h-6 bg-gray-200 rounded w-3/4" />
+      <div className="h-4 bg-gray-200 rounded w-1/2" />
+      <div className="h-4 bg-gray-200 rounded w-full" />
     </div>
   );
 }

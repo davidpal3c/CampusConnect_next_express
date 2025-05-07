@@ -25,7 +25,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-ENV NODE_ENV=production
+ARG CLIENT_ORIGIN
+ARG NODE_ENV
+
+ENV CLIENT_ORIGIN=$CLIENT_ORIGIN
+ENV NODE_ENV=$NODE_ENV
 
 # copying only necessary files for production 
 COPY package*.json ./
@@ -41,6 +45,7 @@ RUN npm install --omit=dev
 
 # Generate Prisma client
 RUN npx prisma generate
+
 
 CMD ["node", "dist/server.js"]
 

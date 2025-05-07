@@ -28,7 +28,8 @@ export default function EventCard({ event, onEventSelect, onEventDelete, isAdmin
   const eventHostReduced = truncateText(event.host, 25);
 
   return (
-    <div className="flex flex-col p-4 border-blue-600 rounded-lg shadow-sm hover:shadow-md transition-shadow h-full">
+    <div className="flex flex-col p-4 border rounded-xl shadow-sm h-full bg-white
+    hover:border-saitLighterBlueOg hover:shadow-blue-100 hover:shadow-xl hover:scale-105 transition-transform transition-shadow duration-300 ease-in-out">
       {event ? (
         <div className="flex flex-col h-full">
           {/* Status and Date */}
