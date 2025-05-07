@@ -48,7 +48,7 @@ type CalendarEvent = {
 // Conversion function
 const convertToCalendarEvent = (eventData: EventData): CalendarEvent => {
   return {
-    id: eventData.id || Date.now().toString(),
+    id: eventData.event_id || Date.now().toString(),
     title: eventData.name,
     start: new Date(eventData.date),
     end: new Date(new Date(eventData.date).getTime() + 2 * 60 * 60 * 1000), // 2 hour duration
@@ -66,6 +66,7 @@ type Event = EventData & {
 }
 
 const INITIAL_DATA: EventData = {
+  event_id: '',
   name: '',
   date: '',
   location: '',
