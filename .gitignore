@@ -59,7 +59,7 @@ client/.next/
 # production
 /build
 
-/docs
+# /docs
 
 # misc
 .DS_Store
