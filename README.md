@@ -22,6 +22,10 @@ CampusConnect is a full-stack web application developed for SAIT's International
 [Performance Tests Results](tests/performance_tests/TC-018/index.html)<br>
 
 
+**⚠️ Deprecated:** [Old Figma Prototype]
+[here](https://www.figma.com/design/ujUIa1L0ThiMmE0h6anTAA/Capstone?node-id=0-1)
+
+
 ## 🚀 Current Tech Stack
 - **Frontend**: Next.js + React + Tailwind CSS
 - **Backend**: Node.js + Express + Prisma ORM
