@@ -1,12 +1,12 @@
-# CampusConnect 🛠️ 
+# CampusConnect 
 
 CampusConnect is a full-stack web application developed for SAIT's International Centre to replace the current iCent platform. It serves international and domestic students, alumni, and administrators, offering key features like campus event registration, group messaging, user notifications, and analytics.
 
-## 🌐 Live Production (Testing)
+## Live Production (Testing)
 **URL**: [https://sait.campusconnect.it.com](https://sait.campusconnect.it.com)
 
 
-## 📦 Versioning & Updates
+## Versioning & Updates
 - **v1.1.0** - *[April 2025]*  
   🔐 **Security Update**: Integrated [Snyk](https://snyk.io) into GitHub Actions pipeline for vulnerability scanning of both frontend and backend apps.  
   🛠 Enhanced deployment gating logic to separate dev and production updates.
@@ -22,11 +22,9 @@ CampusConnect is a full-stack web application developed for SAIT's International
 [Performance Tests Results](tests/performance_tests/TC-018/index.html)<br>
 
 
-**⚠️ Deprecated:** [Old Figma Prototype]
-[here](https://www.figma.com/design/ujUIa1L0ThiMmE0h6anTAA/Capstone?node-id=0-1)
 
 
-## 🚀 Current Tech Stack
+## Current Tech Stack
 - **Frontend**: Next.js + React + Tailwind CSS
 - **Backend**: Node.js + Express + Prisma ORM
 - **Database**: PostgreSQL (managed via Prisma)
@@ -38,20 +36,20 @@ CampusConnect is a full-stack web application developed for SAIT's International
 - **Authentication**: Firebase (Google & Microsoft SSO)
 
 
-## 🔐 Secrets & Configuration Management
+## Secrets & Configuration Management
 - ConfigMaps & Secrets externalizing configuration from containers. 
 - Sensitive manifests (like `*-secret.yaml`) are **not** committed to the repo and must be applied manually.
 
-## 🔒 Security & Vulnerability Scanning
+## Security & Vulnerability Scanning
 Snyk has been integrated into the CI/CD pipeline to provide automated vulnerability scanning of application dependencies.
 
 - **On every pull request to `dev`**: Scans both backend and frontend, non-blocking (informational).
 - **On every push to `main`**: Enforces blocking security scans (fails on high-severity vulnerabilities).
-- 🔁 Continuous monitoring through the [Snyk Dashboard](https://snyk.io).
+- Continuous monitoring through the [Snyk Dashboard](https://snyk.io).
 
 All scans are performed pre-deployment and help ensure compliance with secure software development practices.
 
-## 🛠️ In Progress
+## In Progress
 - User Notifications
 - Groups and Real-Time messaging using WebSockets 
 
@@ -62,11 +60,13 @@ All scans are performed pre-deployment and help ensure compliance with secure so
 - Code Documentation 
 <br>
 
+<!-- 
 ## Codebase Walkthrough
 **Youtube**: [https://www.youtube.com/watch?v=RZQtdscfpSs](https://www.youtube.com/watch?v=RZQtdscfpSs)
+-->
 
-📣 **Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
+**Contributions welcome.** More documentation, user flows, and API details will be published as development continues.
 
-<!-- 📬 **Organization Email.** support@campusconnect.it.com -->
+<!-- **Organization Email.** support@campusconnect.it.com -->
 
 
