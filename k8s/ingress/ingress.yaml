@@ -41,10 +41,6 @@ spec:
       secretName: campusconnect-tls
 
 
-# # do, if frontend calls /api/..., but your backend is expecting /...
-# # Also fine-grained path handling using regular expressions
-# # Need more flexibility with routing and rewrites
-
 
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
